@@ -1,0 +1,85 @@
+body {
+    background-color: #080909;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Inter";
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.05) rgba(255, 255, 255, 0);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    height: 125px; 
+    position: sticky;
+    margin-left: 20px;
+}
+
+.logo {
+    width: 5%;
+    height: 125px; 
+    transition: opacity 0.5s;
+    object-fit: contain;
+    display: block;
+}
+
+.container {
+    margin-top: 20px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.information {
+    margin-left: 3px;
+    margin-right: 3px;
+    font-size: 30px;
+    font-family: "Inter";
+    text-align: center;
+}
+
+.feature-list ul, .feature-list ol {
+    list-style-type: none;
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.feature-list li {
+    font-size: 25px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-family: "Inter";
+}
+
+footer {
+    font-size: 20px;
+    font-family: "Inter";
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+li img {
+    height: 35px;
+}
+
+input {
+    color: white;
+    width: 350px;
+    height: 50px;
+    padding: 5px;
+    border-radius: 4px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.057);
+    font-size: 25px;
+    text-align: center;
+    outline: none;
+    display: inline-block;
+}
