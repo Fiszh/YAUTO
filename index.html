@@ -1,8 +1,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="main/styles.css">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     </style>
@@ -11,6 +9,10 @@
 </head>
 
 <body>
+    <div id="ChatDisplay" class="chat-messages"></div>
+
+    </div>
+
     <div class="logo-container">
         <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp">
     </div>
@@ -69,28 +71,35 @@
         ];
 
         const logoElements = document.getElementsByClassName('logo');
-        const intervalTime = 3000;
-        let lastImageIndex = -1;
+        if (logoElements) {
+            const intervalTime = 3000;
+            let lastImageIndex = -1;
 
-        function changeImage() {
-            const logo = logoElements[0];
-            let randomIndex;
+            function changeImage() {
+                if (logoElements && logoElements[0]) {
+                    const logo = logoElements[0];
+                    let randomIndex;
 
-            do {
-                randomIndex = Math.floor(Math.random() * images.length);
-            } while (randomIndex === lastImageIndex);
+                    do {
+                        randomIndex = Math.floor(Math.random() * images.length);
+                    } while (randomIndex === lastImageIndex);
 
-            logo.style.opacity = 0;
+                    logo.style.opacity = 0;
 
-            setTimeout(() => {
-                logo.src = images[randomIndex];
-                logo.style.opacity = 1;
-                lastImageIndex = randomIndex;
-            }, 500);
+                    setTimeout(() => {
+                        logo.src = images[randomIndex];
+                        logo.style.opacity = 1;
+                        lastImageIndex = randomIndex;
+                    }, 500);
+                }
+            }
+
+            setInterval(changeImage, intervalTime);
         }
-
-        setInterval(changeImage, intervalTime);
     </script>
+
+    <script src="src/tmi.js"></script>
+    <script src="src/settings.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,27 @@
+body {
+    overflow: hidden;
+    font-family: "Inter";
+    font-size: 35px;
+    color: white;
+    text-shadow: 1px 1px 15px rgba(0, 0, 0, 1);
+}
+
+#ChatDisplay {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#ChatDisplay::-webkit-scrollbar {
+    display: none;
+}
+
+.emote-wrapper .emote {
+    vertical-align: middle;
+}
+
+.emote-wrapper {
+    position: relative;
+    display: inline-block;
+}
