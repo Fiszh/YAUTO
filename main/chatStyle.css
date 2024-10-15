@@ -2,18 +2,17 @@ body {
     overflow: hidden;
     font-family: "Inter";
     font-size: 35px;
-    color: white;
+    color: white
 }
 
 #ChatDisplay {
     margin-left: auto;
     width: 99%;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex-direction: column-reverse;
+    display: flex;
+    flex-direction: column;
     justify-content: flex-end;
-    word-wrap: break-word;
+    overflow: hidden;
 }
 
 body::-webkit-scrollbar,

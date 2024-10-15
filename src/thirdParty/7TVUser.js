@@ -100,7 +100,7 @@ async function getUserPersonalEmotes(user_id) {
         }
 
         return null;
-    } catch(error) {
+    } catch (error) {
         return null;
     }
 }
@@ -236,10 +236,29 @@ async function loadPaint(user_id, textElement, userstate, sevenTVData) {
             paintInfo.shadow = customShadow;
         }
 
-        textElement.style.cssText = `background-image: ${paintInfo.backgroundImage}; filter: ${paintInfo.shadow};`;
+        let canDisplayShadows = true
+        let canDisplayPaints = true
+
+        let style = `background-image: ${paintInfo.backgroundImage};`
+
+        if (settings && settings.paintShadows && settings.paintShadows == "0") {
+            canDisplayShadows = false
+        }
+
+        if (settings && settings.paints && settings.paints == "0") {
+            canDisplayPaints = false
+        }
+
+        if (canDisplayShadows) {
+            style += ` filter: ${paintInfo.shadow};`;
+        }
+
+        if (canDisplayPaints) {
+            textElement.style.cssText = style;
+        }
+
         textElement.style.backgroundColor = userstate.color || randomColor || 'white';
         textElement.classList.add('paint');
-
     } catch (error) {
         console.error('Error fetching data:', error);
     }

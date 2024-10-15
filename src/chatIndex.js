@@ -14,10 +14,6 @@ const client = new tmi.Client({
         debug: false,
         skipUpdatingEmotesets: true
     },
-    //identity: {
-    //    username: tmiUsername,
-    //    password: tmiPass
-    //},
     channels: [settings.channel]
 });
 
@@ -54,7 +50,7 @@ client.on("message", async (channel, userstate, message, self) => {
         }
 
         const sevenTV_id = await get7TVUserID(userstate["user-id"])
-        console.log(sevenTV_id)
+
         let sevenTVUserData = null
 
         if (sevenTV_id) {
@@ -66,7 +62,7 @@ client.on("message", async (channel, userstate, message, self) => {
             color: userColor,
             sevenTVId: sevenTV_id,
             sevenTVData: sevenTVUserData,
-            avatar: "https://imgs.search.brave.com/JAHeWxUYEwHB7KV6V1IbI9oL7wxJwIQ4Sbp8dHQL09A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjAx/MzkxNTc2NC9waG90/by91c2VyLWljb24t/aW4tZmxhdC1zdHls/ZS5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9UEotMnZvUWZh/Q3hhZUNsdzZYYlVz/QkNaT3NTTjlIVWVC/SUg1Qk82VmRScz0",
+            avatar: null,
             userId: userstate["user-id"]
         };
 
@@ -78,16 +74,12 @@ let chatDisplay = document.getElementById("ChatDisplay");
 
 //TWITCH
 let channelTwitchID = '0';
-let userTwitchId = '0';
-let TTVGlobalEmoteData = [];
-let TTVEmoteData = [];
 let TTVSubBadgeData = [];
-let TTVBitBadgeData = [];
 let TTVGlobalBadgeData = [];
+let TTVBitBadgeData = [];
 let TTVUsersData = [];
-let blockedUsersData = [];
 let TTVBitsData = [];
-let TTVWebSocket;
+let version;
 
 const twitchColors = [
     "#FF0000", // Red
@@ -120,8 +112,6 @@ let SevenTVWebsocket;
 let SevenTVGlobalEmoteData = [];
 let SevenTVEmoteData = [];
 
-let BlockedEmotesData = [];
-
 //FFZ
 let FFZGlobalEmoteData = [];
 let FFZEmoteData = [];
@@ -140,9 +130,14 @@ async function handleMessage(userstate, message, channel) {
         userstate["badges-raw"] += ',YAUTCDev/1';
     }
 
+    if (["404660262", "166427338"].includes(userstate["user-id"])) {
+        userstate["badges-raw"] += ',YAUTCContributor/1';
+    }
+
     let username = userstate.username;
     let displayname = userstate["display-name"]
     let finalUsername = userstate.username
+    const message_id = userstate.id || "0"
 
     if (username && displayname) {
         if (username.toLowerCase() == displayname.toLowerCase()) {
@@ -154,6 +149,9 @@ async function handleMessage(userstate, message, channel) {
 
     const messageElement = document.createElement("div");
     messageElement.classList.add('message');
+
+    messageElement.setAttribute("message_id", message_id);
+    messageElement.setAttribute("sender", username);
 
     let TTVMessageEmoteData = [];
 
@@ -236,7 +234,6 @@ async function handleMessage(userstate, message, channel) {
                             </span>`;
     }
 
-    // Determine the message HTML based on user information
     let messageHTML = `<div class="message-text">
                             ${badges}
                                 <span class="name-wrapper">
@@ -255,11 +252,9 @@ async function handleMessage(userstate, message, channel) {
 
     chatDisplay.appendChild(messageElement);
 
-    // Remove the whole wait for the message
+    // Calling this function now removes the whole wait for the message to appear
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
-
-    // Determine the message HTML based on user information
 
     let finalMessageHTML = `<div class="message-text">
                             ${badges}
@@ -309,7 +304,6 @@ function getRandomTwitchColor() {
 
 async function updateAllEmoteData() {
     allEmoteData = [
-        ...TTVGlobalEmoteData,
         ...SevenTVGlobalEmoteData,
         ...SevenTVEmoteData,
         ...BTTVGlobalEmoteData,
@@ -361,7 +355,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             let foundUser;
             let emoteType = '';
 
-            if (false && userstate && userstate['bits']) {
+            if (userstate && userstate['bits']) {
                 let match = part.match(/^([a-zA-Z]+)(\d+)$/);
 
                 if (match) {
@@ -458,10 +452,6 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
 
                 let creator = foundEmote.creator ? `Created by: ${foundEmote.creator}` : '';
                 let emoteStyle = 'style="height: 36px; position: absolute;"';
-
-                if (BlockedEmotesData.find(emote => emote.url == foundEmote.url)) {
-                    emoteStyle = 'style="filter: blur(10px); height: 36px; position: absolute;"';
-                }
 
                 let { width, height } = foundEmote.width && foundEmote.height
                     ? { width: foundEmote.width, height: foundEmote.height }
@@ -603,6 +593,29 @@ async function getImageSize(urlOrDimensions, retries = 3) {
     });
 }
 
+function findEntryAndTier(prefix, bits) {
+    prefix = prefix.toLowerCase();
+
+    for (let entry of TTVBitsData) {
+        if (entry.name.toLowerCase() !== prefix) continue;
+
+        for (let i = 0; i < entry.tiers.length; i++) {
+            let currentTier = entry.tiers[i];
+            let nextTier = entry.tiers[i + 1];
+
+            if (!nextTier && bits >= currentTier.min_bits) {
+                return { name: entry.name, tier: currentTier };
+            }
+
+            if (bits >= currentTier.min_bits && bits < nextTier.min_bits) {
+                return { name: entry.name, tier: currentTier };
+            }
+        }
+    }
+
+    return null;
+}
+
 async function getTwitchUser(arg0) {
     let url;
 
@@ -725,6 +738,103 @@ async function getBadges() {
     })
 }
 
+const gqlQueries = {
+    url: 'https://gql.twitch.tv/gql',
+    headers: {
+        'Client-ID': 'ue6666qo983tsx6so1t0vnawi233wa',
+        'Client-Version': version,
+        'Referer': 'https://twitch.tv/',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1; Smart Box C1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        'Content-Type': 'application/json'
+    }
+}
+
+async function fetchTTVGlobalBitsData() {
+    try {
+        const body_global = JSON.stringify({
+            "query": "query BitsConfigContext_Global { cheerConfig { displayConfig { backgrounds colors { bits color } order scales types { animation extension } } groups { templateURL nodes { id prefix type campaign { id brandImageURL brandName thresholds { id minimumBits matchedPercent } minimumBitsAmount bitsTotal bitsUsed bitsPercentageRemaining userLimit self { id bitsUsed canBeSponsored } } tiers { id bits canShowInBitsCard } } } } }"
+        });
+
+        const response_global = await fetch(gqlQueries.url, {
+            method: 'POST',
+            headers: gqlQueries.headers,
+            body: body_global
+        });
+
+        if (!response_global.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data_global = await response_global.json();
+
+        const displayConfig = data_global.data.cheerConfig.displayConfig.colors
+
+        TTVBitsData = data_global.data.cheerConfig.groups[0].nodes.map(emote => ({
+            name: emote.prefix,
+            tiers: emote.tiers.map(tier => ({
+                min_bits: tier["bits"],
+                url: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${emote.prefix.toLowerCase()}/dark/animated/${tier["bits"]}/4.gif`,
+                emote_link: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${emote.prefix.toLowerCase()}/dark/animated/${tier["bits"]}/4.gif`,
+                color: displayConfig.find(color => color.bits === tier["bits"]).color
+            })),
+            site: 'TTV'
+        }));
+
+        console.log(FgMagenta + 'Success in getting bits emotes!' + FgWhite)
+    } catch (error) {
+        console.log('Error fetching user ID:', error);
+    }
+}
+
+async function fetchTTVBitsData() {
+    try {
+        const body = JSON.stringify({
+            "query": `query BitsConfigContext_Channel { channel: user(login: \"${settings.channel}\") { cheer { id cheerGroups { templateURL nodes { id prefix type tiers { id bits } } } } } }`
+        });
+
+        const response = await fetch(gqlQueries.url, {
+            method: 'POST',
+            headers: gqlQueries.headers,
+            body: body
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.data || !data.data.channel || !data.data.channel.cheer) {
+            console.log("Channel doesn't have any custom bits emotes!")
+            return
+        }
+ 
+        const parts = data.data.channel.cheer.cheerGroups[0].templateURL.split('/');
+        const action_prefix = parts[5];
+
+        const user_data = await getTwitchUser(settings.channel)
+
+        const color = user_data.chatColor || getRandomTwitchColor()
+
+        const channel_bit_emotes = data.data.channel.cheer.cheerGroups.map(emote => ({
+            name: emote.nodes[0].prefix,
+            tiers: emote.nodes[0].tiers.map(tier => ({
+                min_bits: tier["bits"],
+                url: `https://d3aqoihi2n8ty8.cloudfront.net/partner-actions/${channelTwitchID}/${action_prefix}/${tier["bits"]}/dark/animated/4.gif`,
+                emote_link: `https://d3aqoihi2n8ty8.cloudfront.net/partner-actions/${channelTwitchID}/${action_prefix}/${tier["bits"]}/dark/animated/4.gif`,
+                color: color
+            })),
+            site: 'TTV'
+        }));
+
+        TTVBitsData = [...TTVBitsData, ...channel_bit_emotes];
+
+        console.log(FgMagenta + 'Success in getting bits emotes!' + FgWhite)
+    } catch (error) {
+        console.log('Error fetching user ID:', error);
+    }
+}
+
 async function loadChat() {
     // TTV
 
@@ -732,6 +842,10 @@ async function loadChat() {
 
     channelTwitchID = get_user.id
 
+    await getVersion() // IMPORTANT
+
+    fetchTTVGlobalBitsData()
+    fetchTTVBitsData()
     getBadges()
 
     //THIRD PARTY
@@ -744,25 +858,90 @@ async function loadChat() {
 
     SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
 
+    // WEBSOCKET
+    detect7TVEmoteSetChange();
+
     // BTTV
 
-    await fetchBTTVGlobalEmoteData();
-    await fetchBTTVEmoteData();
+    fetchBTTVGlobalEmoteData();
+    fetchBTTVEmoteData();
+
+    // WEBSOCKET
+    detectBTTVEmoteSetChange();
 
     // FFZ
 
-    await fetchFFZGlobalEmotes();
-    await fetchFFZEmotes();
+    fetchFFZGlobalEmotes();
+    fetchFFZEmotes();
 
-    await getFFZBadges();
+    getFFZBadges();
 }
 
-function scrollToBottom() {
-    chatDisplay.scrollTo({
-        top: chatDisplay.scrollHeight,
-        behavior: 'smooth'
-    });
+async function getVersion() {
+    const version_response = await fetch("https://static.twitchcdn.net/config/manifest.json?v=1")
+
+    if (!version_response.ok) {
+        console.log(version_response)
+        return false
+    }
+
+    const version_data = await version_response.json()
+
+    version = version_data.channels[0].releases[0].buildId
 }
+
+function removeInvisibleElements() {
+    const elements = chatDisplay.children;
+
+    for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        const rect = element.getBoundingClientRect();
+        const chatDisplayRect = chatDisplay.getBoundingClientRect();
+
+        if (
+            rect.bottom < chatDisplayRect.top ||
+            rect.top > chatDisplayRect.bottom
+        ) {
+            chatDisplay.removeChild(element);
+        }
+    }
+}
+
+function deleteMessages(attribute, value) {
+    if (attribute) {
+        const elementsToDelete = chatDisplay.querySelectorAll(`[${attribute}="${value}"]`);
+
+        elementsToDelete.forEach(element => {
+            element.remove();
+        });
+    } else {
+        chatDisplay.innerHTML = '';
+    }
+}
+
+// CHEER
+
+client.on("cheer", (channel, userstate, message) => {
+    handleMessage(userstate, message, channel)
+});
+
+// MODERATION ACTIONS
+
+client.on("timeout", (channel, username, reason, duration, userstate) => {
+    deleteMessages("sender", String(username))
+});
+
+client.on("ban", (channel, username, reason, userstate) => {
+    deleteMessages("sender", String(username))
+});
+
+client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
+    deleteMessages("message_id", String(userstate["target-msg-id"]))
+});
+
+client.on("clearchat", (channel) => {
+    deleteMessages()
+});
 
 loadChat()
-setInterval(scrollToBottom, 500);
+setInterval(removeInvisibleElements, 500);

@@ -31,8 +31,7 @@ body {
 .container {
     margin-top: 20px;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
