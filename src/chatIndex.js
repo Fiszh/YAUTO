@@ -1,5 +1,14 @@
 console.log("chat index.js hooked up!")
 
+const FgBlack = "\x1b[30m";
+const FgRed = "\x1b[31m";
+const FgGreen = "\x1b[32m";
+const FgYellow = "\x1b[33m";
+const FgBlue = "\x1b[34m";
+const FgMagenta = "\x1b[35m";
+const FgCyan = "\x1b[36m";
+const FgWhite = "\x1b[37m";
+
 const client = new tmi.Client({
     options: {
         debug: false,
@@ -18,8 +27,51 @@ client.on('connected', async (address, port) => {
     console.log("connected!")
 });
 
-client.on("message", (channel, userstate, message, self)  => {
+client.on("message", async (channel, userstate, message, self) => {
     handleMessage(userstate, message, channel)
+
+    // PAINTS AND BADGES (7TV)
+    foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
+
+    const currentTime = Date.now();
+    let elapsedTime = 0
+
+    if (foundUser && foundUser.sevenTVData && foundUser.sevenTVData.lastUpdate) {
+        elapsedTime = currentTime - foundUser.sevenTVData.lastUpdate;
+
+        if (elapsedTime >= 300000) {
+            if (foundUser.sevenTVId) {
+                foundUser.sevenTVData = await getUser(foundUser.sevenTVId, foundUser.userId)
+            }
+        }
+    }
+
+    if (!foundUser) {
+        let userColor = userstate.color
+
+        if (userstate.color === null || userstate.color === undefined || !userstate.color) {
+            userColor = getRandomTwitchColor();
+        }
+
+        const sevenTV_id = await get7TVUserID(userstate["user-id"])
+        console.log(sevenTV_id)
+        let sevenTVUserData = null
+
+        if (sevenTV_id) {
+            sevenTVUserData = await getUser(sevenTV_id, userstate["user-id"]);
+        }
+
+        let user = {
+            name: `@${userstate.username}`,
+            color: userColor,
+            sevenTVId: sevenTV_id,
+            sevenTVData: sevenTVUserData,
+            avatar: "https://imgs.search.brave.com/JAHeWxUYEwHB7KV6V1IbI9oL7wxJwIQ4Sbp8dHQL09A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjAx/MzkxNTc2NC9waG90/by91c2VyLWljb24t/aW4tZmxhdC1zdHls/ZS5qcGc_cz02MTJ4/NjEyJnc9MCZrPTIw/JmM9UEotMnZvUWZh/Q3hhZUNsdzZYYlVz/QkNaT3NTTjlIVWVC/SUg1Qk82VmRScz0",
+            userId: userstate["user-id"]
+        };
+
+        TTVUsersData.push(user);
+    }
 });
 
 let chatDisplay = document.getElementById("ChatDisplay");
@@ -120,7 +172,7 @@ async function handleMessage(userstate, message, channel) {
 
     let badges = '';
 
-    if (false && userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
+    if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
         let rawBadges = userstate['badges-raw'];
         let badgesSplit = rawBadges.split(',');
 
@@ -200,6 +252,7 @@ async function handleMessage(userstate, message, channel) {
     }
 
     // Append the new message element
+
     chatDisplay.appendChild(messageElement);
 
     // Remove the whole wait for the message
@@ -232,6 +285,9 @@ async function handleMessage(userstate, message, channel) {
                 if (foundUser) {
                     if (foundUser.sevenTVId && foundUser.sevenTVData) {
                         await setSevenTVPaint(strongElement, foundUser.sevenTVId, foundUser, foundUser.sevenTVData);
+                    } else {
+                        const randomColor = getRandomTwitchColor()
+                        strongElement.style.color = userstate.color || randomColor;
                     }
                 } else {
                     const randomColor = getRandomTwitchColor()
@@ -251,9 +307,23 @@ function getRandomTwitchColor() {
     return twitchColors[randomIndex];
 }
 
+async function updateAllEmoteData() {
+    allEmoteData = [
+        ...TTVGlobalEmoteData,
+        ...SevenTVGlobalEmoteData,
+        ...SevenTVEmoteData,
+        ...BTTVGlobalEmoteData,
+        ...BTTVEmoteData,
+        ...FFZGlobalEmoteData,
+        ...FFZEmoteData,
+    ];
+}
+
 async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
     if (!inputString) { return inputString }
     let lastEmote = false;
+
+    updateAllEmoteData()
 
     try {
         const ttvEmoteData = [
@@ -408,9 +478,6 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                     foundEmote.height = desiredHeight;
                 }
 
-                console.log(foundEmote.height)
-                console.log(foundEmote.width)
-
                 let lastEmoteWrapper;
                 let tempElement;
                 if (replacedParts.length > 0) {
@@ -536,8 +603,158 @@ async function getImageSize(urlOrDimensions, retries = 3) {
     });
 }
 
-function getUser() {
-    
+async function getTwitchUser(arg0) {
+    let url;
+
+    if (/^\d+$/.test(arg0)) {
+        url = `https://api.ivr.fi/v2/twitch/user?id=${arg0}`;
+    } else {
+        url = `https://api.ivr.fi/v2/twitch/user?login=${encodeURIComponent(arg0)}`;
+    }
+
+    const response = await fetch(url, {
+        headers: {
+            accept: "application/json"
+        }
+    })
+
+    if (!response.ok) {
+        console.error(response)
+        return
+    }
+
+    const data = await response.json()
+
+    return data[0]
+}
+
+async function getBadges() {
+    //CHANNEL
+    const response = await fetch(`https://api.ivr.fi/v2/twitch/badges/channel?login=${settings.channel}`, {
+        headers: {
+            accept: "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+
+    //SUBS
+    data.forEach(element => {
+        if (element["set_id"] === 'subscriber') {
+            if (element && Object.keys(element).length > 0) {
+                TTVSubBadgeData = Object.entries(element)
+                    .flatMap(([set_id, badges]) => {
+                        if (set_id !== 'set_id' && Array.isArray(badges)) {
+                            return badges.filter(badge => badge !== 'subscriber')
+                                .map(badge => ({
+                                    id: badge.id,
+                                    url: badge["image_url_4x"],
+                                    title: badge.title
+                                }));
+                        }
+                        return [];
+                    });
+            }
+        }
+    });
+
+    //BITS
+    data.forEach(element => {
+        if (element["set_id"] === 'bits') {
+            if (element && Object.keys(element).length > 0) {
+                TTVBitBadgeData = Object.entries(element)
+                    .flatMap(([set_id, badges]) => {
+                        if (set_id !== 'set_id' && Array.isArray(badges)) {
+                            return badges.filter(badge => badge !== 'bits')
+                                .map(badge => ({
+                                    id: badge.id,
+                                    url: badge["image_url_4x"],
+                                    title: badge.title
+                                }));
+                        }
+                        return [];
+                    });
+            }
+        }
+    });
+
+    //GLOBAL
+    const response1 = await fetch(`https://api.ivr.fi/v2/twitch/badges/global`, {
+        headers: {
+            accept: "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    const data1 = await response1.json();
+
+    data1.forEach(element => {
+        if (element["versions"]) {
+            if (element && Object.keys(element).length > 0) {
+                TTVGlobalBadgeData.push(
+                    ...element["versions"].map(badge => ({
+                        id: element.set_id + "_" + badge.id,
+                        url: badge["image_url_4x"],
+                        title: badge.title
+                    }))
+                );
+            }
+            return [];
+        }
+    });
+
+    //CUSTOM BADGES
+
+    TTVGlobalBadgeData.push({
+        id: 'YAUTCDev' + "_" + 1,
+        url: 'https://femboy.beauty/xHVwg',
+        title: 'YAUTC Dev'
+    })
+
+    TTVGlobalBadgeData.push({
+        id: 'YAUTCContributor' + "_" + 1,
+        url: 'https://femboy.beauty/6jyOJ',
+        title: 'YAUTC Contributor'
+    })
+}
+
+async function loadChat() {
+    // TTV
+
+    const get_user = await getTwitchUser(settings.channel)
+
+    channelTwitchID = get_user.id
+
+    getBadges()
+
+    //THIRD PARTY
+
+    // 7TV
+
+    SevenTVID = await get7TVUserID(channelTwitchID);
+    await get7TVEmoteSetID(SevenTVID);
+    SevenTVGlobalEmoteData = await fetch7TVEmoteData('global');
+
+    SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
+
+    // BTTV
+
+    await fetchBTTVGlobalEmoteData();
+    await fetchBTTVEmoteData();
+
+    // FFZ
+
+    await fetchFFZGlobalEmotes();
+    await fetchFFZEmotes();
+
+    await getFFZBadges();
 }
 
 function scrollToBottom() {
@@ -547,4 +764,5 @@ function scrollToBottom() {
     });
 }
 
+loadChat()
 setInterval(scrollToBottom, 500);

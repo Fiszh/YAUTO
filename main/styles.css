@@ -83,3 +83,13 @@ input {
     outline: none;
     display: inline-block;
 }
+
+footer a {
+    text-decoration: none;
+    color: white;
+}
+
+footer a:hover {
+    text-decoration: none;
+    color:rgb(88, 88, 88);
+}

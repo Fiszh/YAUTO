@@ -3,16 +3,20 @@ body {
     font-family: "Inter";
     font-size: 35px;
     color: white;
-    text-shadow: 1px 1px 15px rgba(0, 0, 0, 1);
 }
 
 #ChatDisplay {
-    width: 100%;
+    margin-left: auto;
+    width: 99%;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    word-wrap: break-word;
 }
 
+body::-webkit-scrollbar,
 #ChatDisplay::-webkit-scrollbar {
     display: none;
 }
@@ -21,7 +25,33 @@ body {
     vertical-align: middle;
 }
 
+.name-wrapper,
+.badge-wrapper,
 .emote-wrapper {
     position: relative;
     display: inline-block;
+}
+
+.badge {
+    max-width: 1em;
+    max-height: 1em;
+    margin: 5px;
+    vertical-align: middle;
+}
+
+.twemoji {
+    width: 36px !important;
+    height: 36px !important;
+    max-width: 36px;
+    max-height: 36px;
+    vertical-align: middle;
+}
+
+.paint {
+    display: block;
+    text-align: center;
+    -webkit-text-fill-color: transparent;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    background-size: cover !important;
 }

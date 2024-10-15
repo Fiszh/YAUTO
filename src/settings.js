@@ -12,6 +12,13 @@ if (current_url_split.length > 0 && current_url_split[current_url_split.length -
     }
 }
 
+function appendScript(src) {
+    const script = document.createElement('script');
+    script.src = src;
+
+    document.body.appendChild(script);
+}
+
 let settings = {}
 
 if (load === "chat") {
@@ -57,10 +64,13 @@ if (load === "chat") {
 
     document.head.appendChild(link);
 
-    const script = document.createElement('script');
-    script.src = 'src/chatIndex.js';
+    appendScript('src/thirdParty/7TV.js')
+    appendScript('src/thirdParty/7TVUser.js')
+    appendScript('src/thirdParty/BTTV.js')
+    appendScript('src/thirdParty/FFZ.js')
 
-    document.body.appendChild(script);
+    // MAIN INDEX
+    appendScript('src/chatIndex.js')
 } else {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
