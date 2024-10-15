@@ -48,3 +48,8 @@ https://fiszh.github.io/YAUTO/
 
 #### User Customization
 - Badges
+
+## Configuration
+
+### 7TV Paints
+### 7TV Paint shadows
