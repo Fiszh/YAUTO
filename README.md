@@ -52,5 +52,5 @@ https://fiszh.github.io/YAUTO/
 ## Configuration
 
 ### 7TV
--Paints (enable/disable)
--Paints shadows (enable/disable)
+- Paints (enable/disable)
+- Paints shadows (enable/disable)
