@@ -12,7 +12,7 @@ https://fiszh.github.io/YAUTO/
 - Follow Emotes
 - Sub Emotes
 - Bit Emotes
-- 
+  
 ### Moderation
 - Stream Moderation actions:
   - Message Deleting
