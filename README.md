@@ -2,6 +2,22 @@
 
 https://fiszh.github.io/YAUTO/
 
+## Configuration
+
+### Customization
+- Bold message text
+- Uppercase text
+- Custom font
+- Font size
+- Colored mentions
+
+### TTV
+- Moderation actions
+
+### 7TV
+- Paints
+- Paints shadows
+
 ## Supported Services
 
 ### ![TTV Logo](https://femboy.beauty/JkODO) [TwitchTV](https://www.twitch.tv/)
@@ -48,9 +64,3 @@ https://fiszh.github.io/YAUTO/
 
 #### User Customization
 - Badges
-
-## Configuration
-
-### 7TV
-- Paints (enable/disable)
-- Paints shadows (enable/disable)
