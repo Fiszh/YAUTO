@@ -234,12 +234,22 @@ async function handleMessage(userstate, message, channel) {
                             </span>`;
     }
 
+    if (settings && settings.msgCaps && settings.msgCaps === '1') {
+        finalUsername = finalUsername.toUpperCase()
+    }
+
+    let rendererMessage = message
+
+    if (settings && settings.msgBold && settings.msgBold === '1') {
+        rendererMessage = `<strong>${message}</strong>`;
+    }
+
     let messageHTML = `<div class="message-text">
                             ${badges}
                                 <span class="name-wrapper">
                                     <strong id="username-strong">${finalUsername}</strong>
                                 </span>
-                            ${message}
+                            ${rendererMessage}
                         </div>`;
 
     messageElement.innerHTML = messageHTML;
@@ -255,6 +265,10 @@ async function handleMessage(userstate, message, channel) {
     // Calling this function now removes the whole wait for the message to appear
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
+    
+    if (settings && settings.msgBold && settings.msgBold === '1') {
+        results = `<strong>${results}</strong>`;
+    }
 
     let finalMessageHTML = `<div class="message-text">
                             ${badges}
@@ -294,6 +308,8 @@ async function handleMessage(userstate, message, channel) {
 }
 
 async function checkPart(part, string) {
+    if (settings && settings.mentionColor && settings.mentionColor === '0') { return false; }
+
     return (part.toLowerCase() === string)
 }
 
@@ -350,7 +366,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
         const replacedParts = [];
 
         for (let i = 0; i < EmoteSplit.length; i++) {
-            const part = EmoteSplit[i];
+            let part = EmoteSplit[i];
             let foundEmote;
             let foundUser;
             let emoteType = '';
@@ -450,14 +466,12 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                     additionalInfo += `, Alias of: ${foundEmote.original_name}`;
                 }
 
-                let creator = foundEmote.creator ? `Created by: ${foundEmote.creator}` : '';
-                let emoteStyle = 'style="height: 36px; position: absolute;"';
+                let creator = foundEmote.creator ? `Created by: ${foundEmote.cfreator}` : '';
+                let emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
 
                 let { width, height } = foundEmote.width && foundEmote.height
                     ? { width: foundEmote.width, height: foundEmote.height }
                     : await getImageSize(foundEmote.url);
-
-                const desiredHeight = 36;
 
                 // Calculate the aspect ratio if height and width are already present
                 if (width && height) {
@@ -482,14 +496,14 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 if (!lastEmoteWrapper || !lastEmote || !foundEmote.flags || foundEmote.flags !== 256) {
                     emoteHTML = `<span class="emote-wrapper" tooltip-name="${foundEmote.name}${additionalInfo}" tooltip-type="${emoteType}" tooltip-creator="${creator}" tooltip-image="${foundEmote.url}" style="color:${foundEmote.color || 'white'}">
                             <a href="${foundEmote.emote_link || foundEmote.url}" target="_blank;" style="display: inline-flex; justify-content: center">
-                                <img src="https://femboy.beauty/zN7uA" alt="ignore" class="emote" style="height: 36px; width: ${foundEmote.width}px; position: relative; visibility: hidden;">
+                                <img src="https://femboy.beauty/zN7uA" alt="ignore" class="emote" style="height: ${desiredHeight}px; width: ${foundEmote.width}px; position: relative; visibility: hidden;">
                                 <img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>
                             </a>
                             ${foundEmote.bits || ''}
                         </span>`;
                 } else if (lastEmoteWrapper && lastEmote && foundEmote.flags && foundEmote.flags === 256) {
                     willReturn = false;
-                    emoteStyle = 'style="height: 36px; position: absolute;"';
+                    emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
                     const aTag = lastEmoteWrapper.querySelector('a');
                     aTag.innerHTML += `<img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>`;
 
@@ -513,6 +527,10 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             } else if (foundUser) {
                 lastEmote = false;
 
+                if (settings && settings.msgCaps && settings.msgCaps === '1') {
+                    part = part.toUpperCase()
+                }
+
                 const userHTML = `<span class="name-wrapper">
                             <strong style="color: ${foundUser.color}">${part}</strong>
                         </span>`;
@@ -520,12 +538,17 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             } else {
                 lastEmote = false;
 
+                if (settings && settings.msgCaps && settings.msgCaps === '1') {
+                    part = part.toUpperCase()
+                }
+
                 const twemojiHTML = twemoji.parse(part, {
                     base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
                     folder: 'svg',
                     ext: '.svg',
                     className: 'twemoji'
                 });
+
                 replacedParts.push(twemojiHTML);
             }
         }
@@ -550,7 +573,6 @@ async function getImageSize(urlOrDimensions, retries = 3) {
     return new Promise((resolve, reject) => {
         if (typeof urlOrDimensions === 'object' && urlOrDimensions.width && urlOrDimensions.height) {
             const { width, height } = urlOrDimensions;
-            const desiredHeight = 36;
             const dimensions = calculateAspectRatio(width, height, desiredHeight);
 
             resolve(dimensions);
@@ -563,7 +585,6 @@ async function getImageSize(urlOrDimensions, retries = 3) {
                     const naturalWidth = this.naturalWidth;
                     const naturalHeight = this.naturalHeight;
 
-                    const desiredHeight = 36;
                     const dimensions = calculateAspectRatio(naturalWidth, naturalHeight, desiredHeight);
 
                     img.remove();
@@ -727,13 +748,13 @@ async function getBadges() {
 
     TTVGlobalBadgeData.push({
         id: 'YAUTCDev' + "_" + 1,
-        url: 'https://femboy.beauty/xHVwg',
+        url: 'https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.avif',
         title: 'YAUTC Dev'
     })
 
     TTVGlobalBadgeData.push({
         id: 'YAUTCContributor' + "_" + 1,
-        url: 'https://femboy.beauty/6jyOJ',
+        url: 'https://cdn.7tv.app/emote/6565de391be41eb14272c825/4x.avif',
         title: 'YAUTC Contributor'
     })
 }
@@ -908,6 +929,8 @@ function removeInvisibleElements() {
 }
 
 function deleteMessages(attribute, value) {
+    if (settings && settings.modAction && settings.modAction === '0') { return; }
+
     if (attribute) {
         const elementsToDelete = chatDisplay.querySelectorAll(`[${attribute}="${value}"]`);
 

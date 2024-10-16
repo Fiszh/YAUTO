@@ -1,7 +1,7 @@
 body {
     overflow: hidden;
     font-family: "Inter";
-    font-size: 35px;
+    font-size: 36px;
     color: white
 }
 
@@ -35,14 +35,6 @@ body::-webkit-scrollbar,
     max-width: 1em;
     max-height: 1em;
     margin: 5px;
-    vertical-align: middle;
-}
-
-.twemoji {
-    width: 36px !important;
-    height: 36px !important;
-    max-width: 36px;
-    max-height: 36px;
     vertical-align: middle;
 }
 

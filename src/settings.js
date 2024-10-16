@@ -1,12 +1,15 @@
-const current_url = window.location.href;
+const url = window.location.href;
+const current_url = decodeURIComponent(url);
 const current_url_split = current_url.split('/')
 let load = 'main'
+
+let desiredHeight = 36;
 
 if (current_url_split.length > 0 && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
     const settings = current_url_split[current_url_split.length - 1].split("?")
 
     console.log(settings)
-    
+
     if (settings.find(setting => setting.includes("channel="))) {
         load = "chat"
     }
@@ -26,7 +29,7 @@ if (load === "chat") {
 
     settings_url.forEach(item => {
         const parts = item.split('=');
-        
+
         if (parts.length === 2) {
             const key = parts[0].trim();
             const value = parts[1].trim();
@@ -64,6 +67,8 @@ if (load === "chat") {
 
     document.head.appendChild(link);
 
+    appendScript('src/tmi.js')
+
     appendScript('src/thirdParty/7TV.js')
     appendScript('src/thirdParty/7TVUser.js')
     appendScript('src/thirdParty/BTTV.js')
@@ -71,10 +76,36 @@ if (load === "chat") {
 
     // MAIN INDEX
     appendScript('src/chatIndex.js')
+
+
+    if (settings.font) {
+        document.body.style.fontFamily = `"${settings.font}", "Inter"`;
+    }
+
+    if (settings.fontSize) {
+        document.body.style.fontSize = `${settings.fontSize}px`;
+        desiredHeight = Number(settings.fontSize)
+
+        const style = document.createElement('style');
+        style.textContent = `
+            .twemoji {
+                width: ${desiredHeight}px !important;
+                height: ${desiredHeight}px !important;
+                max-width: ${desiredHeight}px;
+                max-height: ${desiredHeight}px;
+                vertical-align: middle;
+            }
+        `;
+
+        // Append the new style element to the head
+        document.head.appendChild(style);
+    }
 } else {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'main/styles.css';
 
     document.head.appendChild(link);
+
+    appendScript('src/landingPage/settngs.js')
 }
