@@ -899,7 +899,7 @@ async function loadChat() {
 }
 
 async function getVersion() {
-    const version_response = await fetch("https://static.twitchcdn.net/config/manifest.json?v=1")
+    const version_response = await fetch("https://api.spanix.team/proxy/https://static.twitchcdn.net/config/manifest.json?v=1")
 
     if (!version_response.ok) {
         console.log(version_response)
