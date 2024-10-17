@@ -37,6 +37,14 @@ const configuration = {
         min: 0,
         value: 36
     },
+    fade_out: {
+        name: 'Text fade out',
+        type: 'number',
+        param: 'fadeOut',
+        max: 600,
+        min: 0,
+        value: 0
+    },
     bot_display: {
         name: 'Display bots in chat',
         type: 'boolean',

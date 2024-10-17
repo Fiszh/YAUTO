@@ -296,6 +296,8 @@ async function handleMessage(userstate, message, channel) {
 
     chatDisplay.appendChild(messageElement);
 
+    fadeOut(messageElement)
+
     // Calling this function now removes the whole wait for the message to appear
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
@@ -339,6 +341,21 @@ async function handleMessage(userstate, message, channel) {
             }
         });
     }
+}
+
+async function fadeOut(element) {
+    if (!settings || !settings.fadeOut) { return; }
+    
+    const fadeOutTime = settings.fadeOut * 1000
+
+    setTimeout(() => {
+        element.style.transition = 'opacity 1s ease';
+        element.classList.add('fade');
+
+        setTimeout(() => {
+            element.remove();
+        }, 1000);
+    }, fadeOutTime || 30000);
 }
 
 async function checkPart(part, string) {
@@ -890,6 +907,13 @@ async function fetchTTVBitsData() {
     }
 }
 
+async function loadInBits() {
+    await getVersion() // IMPORTANT
+
+    fetchTTVGlobalBitsData()
+    fetchTTVBitsData()
+}
+
 async function loadChat() {
     // TTV
 
@@ -897,10 +921,8 @@ async function loadChat() {
 
     channelTwitchID = get_user.id
 
-    await getVersion() // IMPORTANT
+    loadInBits()
 
-    fetchTTVGlobalBitsData()
-    fetchTTVBitsData()
     getBadges()
 
     //THIRD PARTY
