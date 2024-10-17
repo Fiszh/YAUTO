@@ -2,7 +2,7 @@ body {
     overflow: hidden;
     font-family: "Inter";
     font-size: 36px;
-    color: white
+    color: white;
 }
 
 #ChatDisplay {

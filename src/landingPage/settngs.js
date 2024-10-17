@@ -37,6 +37,24 @@ const configuration = {
         min: 0,
         value: 36
     },
+    bot_display: {
+        name: 'Display bots in chat',
+        type: 'boolean',
+        value: true,
+        param: 'bots'
+    },
+    user_blacklist: {
+        name: 'Custom user blacklist (seperate using " ")',
+        type: 'text',
+        value: "",
+        param: 'userBL'
+    },
+    prefix_blacklist: {
+        name: 'Custom prefix blacklist (seperate using " ", usage of "?" will break this)',
+        type: 'text',
+        value: "",
+        param: 'prefixBL'
+    },
     moderation_actions: {
         name: 'Moderation actions (message deletion) effect displayed chat messages',
         type: 'boolean',

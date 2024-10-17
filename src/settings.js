@@ -33,9 +33,18 @@ if (load === "chat") {
         if (parts.length === 2) {
             const key = parts[0].trim();
             const value = parts[1].trim();
-            settings[key] = value;
+
+            if (["userBL", "prefixBL"].includes(String(key))) {
+                const parts = String(value).split(' ');
+
+                settings[key] = parts;
+            } else {
+                settings[key] = value;
+            }
         }
     });
+
+    console.log(settings)
 
     const container = document.querySelector('.container');
     const logo = document.querySelector('.logo-container');
@@ -75,9 +84,21 @@ if (load === "chat") {
     // MAIN INDEX
     appendScript('src/chatIndex.js')
 
-
     if (settings.font) {
         document.body.style.fontFamily = `"${settings.font}", "Inter"`;
+    }
+
+    if (settings.fontStroke) {
+        document.body.style.textShadow = `
+            ${settings.fontStroke}px ${settings.fontStroke}px 0 #000,
+            -${settings.fontStroke}px ${settings.fontStroke}px 0 #000,
+            -${settings.fontStroke}px -${settings.fontStroke}px 0 #000,
+            ${settings.fontStroke}px -${settings.fontStroke}px 0 #000
+        `.trim();
+    }   
+
+    if (settings.fontShadow) {
+        document.body.style.filter = `drop-shadow(${settings.fontStroke} ${settings.fontStroke} 0.2rem black)`;
     }
 
     if (settings.fontSize) {

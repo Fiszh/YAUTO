@@ -24,6 +24,40 @@ client.on('connected', async (address, port) => {
 });
 
 client.on("message", async (channel, userstate, message, self) => {
+    const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username)
+
+    // BLOCK BOTS
+
+    if (FFZBadge && FFZBadge.id && FFZBadge.id == "bot") {
+        if (settings && settings.bots && settings.bots == "0") {
+            return
+        }
+    }
+
+    // BLOCK PREFIX
+
+    const messagePrefix = message.charAt(0);
+
+    if (settings && settings.prefixBL && settings.prefixBL.includes(messagePrefix)) {
+        return
+    }
+
+    // BLOCK USERS
+
+    if (settings && settings.userBL && settings.userBL.includes(userstate.username)) {
+        return
+    }
+
+    // MOD RELOAD COMMAND
+
+    if (userstate['badges-raw']) {
+        if (userstate.mod || userstate['badges-raw'].includes('broadcaster/1')) {
+            if (message.toLowerCase() === "!reloadoverlay") {
+                window.location.reload(true);
+            }
+        }
+    }
+
     handleMessage(userstate, message, channel)
 
     // PAINTS AND BADGES (7TV)
@@ -265,7 +299,7 @@ async function handleMessage(userstate, message, channel) {
     // Calling this function now removes the whole wait for the message to appear
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
-    
+
     if (settings && settings.msgBold && settings.msgBold === '1') {
         results = `<strong>${results}</strong>`;
     }
@@ -829,7 +863,7 @@ async function fetchTTVBitsData() {
             console.log("Channel doesn't have any custom bits emotes!")
             return
         }
- 
+
         const parts = data.data.channel.cheer.cheerGroups[0].templateURL.split('/');
         const action_prefix = parts[5];
 
