@@ -67,8 +67,6 @@ if (load === "chat") {
 
     document.head.appendChild(link);
 
-    appendScript('src/tmi.js')
-
     appendScript('src/thirdParty/7TV.js')
     appendScript('src/thirdParty/7TVUser.js')
     appendScript('src/thirdParty/BTTV.js')
