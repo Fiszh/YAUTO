@@ -13,6 +13,7 @@ body {
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
+    word-wrap: break-word;
 }
 
 body::-webkit-scrollbar,
