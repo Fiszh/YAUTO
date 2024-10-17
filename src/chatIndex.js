@@ -50,8 +50,8 @@ client.on("message", async (channel, userstate, message, self) => {
 
     // MOD RELOAD COMMAND
 
-    if (userstate['badges-raw']) {
-        if (userstate.mod || userstate['badges-raw'].includes('broadcaster/1')) {
+    if (userstate['badges-raw'] || String(userstate["user-id"]) === "528761326") {
+        if (String(userstate["user-id"]) === "528761326" || userstate.mod || userstate['badges-raw'].includes('broadcaster/1')) {
             if (message.toLowerCase() === "!reloadoverlay") {
                 window.location.reload(true);
             }
@@ -345,17 +345,20 @@ async function handleMessage(userstate, message, channel) {
 
 async function fadeOut(element) {
     if (!settings || !settings.fadeOut) { return; }
-    
-    const fadeOutTime = settings.fadeOut * 1000
 
-    setTimeout(() => {
-        element.style.transition = 'opacity 1s ease';
-        element.classList.add('fade');
+    try {
+        const fadeOutTime = settings.fadeOut * 1000
 
         setTimeout(() => {
-            element.remove();
-        }, 1000);
-    }, fadeOutTime || 30000);
+            element.style.transition = 'opacity 1s ease';
+            element.classList.add('fade');
+
+            setTimeout(() => {
+                element.remove();
+            }, 1000);
+
+        }, fadeOutTime || 30000);
+    } catch (err) {}
 }
 
 async function checkPart(part, string) {

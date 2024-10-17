@@ -104,21 +104,20 @@ if (load === "chat") {
     if (settings.fontSize) {
         document.body.style.fontSize = `${settings.fontSize}px`;
         desiredHeight = Number(settings.fontSize)
-
-        const style = document.createElement('style');
-        style.textContent = `
-            .twemoji {
-                width: ${desiredHeight}px !important;
-                height: ${desiredHeight}px !important;
-                max-width: ${desiredHeight}px;
-                max-height: ${desiredHeight}px;
-                vertical-align: middle;
-            }
-        `;
-
-        // Append the new style element to the head
-        document.head.appendChild(style);
     }
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        .twemoji {
+            width: ${desiredHeight}px !important;
+            height: ${desiredHeight}px !important;
+            max-width: ${desiredHeight}px;
+            max-height: ${desiredHeight}px;
+            vertical-align: middle;
+        }
+    `;
+    
+    document.head.appendChild(style);
 } else {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
