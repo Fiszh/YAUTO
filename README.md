@@ -10,6 +10,9 @@ https://fiszh.github.io/YAUTO/
 - Custom font
 - Font size
 - Colored mentions
+- Display bots in chat
+- User blacklist
+- Prefix blacklist
 
 ### TTV
 - Moderation actions
