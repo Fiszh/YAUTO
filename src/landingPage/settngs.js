@@ -58,7 +58,7 @@ const configuration = {
         param: 'userBL'
     },
     prefix_blacklist: {
-        name: 'Custom prefix blacklist (seperate using " ", usage of "?" will break this)',
+        name: 'Custom prefix blacklist (seperate using " ")',
         type: 'text',
         value: "",
         param: 'prefixBL'

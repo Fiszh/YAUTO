@@ -1,6 +1,5 @@
 const url = window.location.href;
-const current_url = decodeURIComponent(url);
-const current_url_split = current_url.split('/')
+const current_url_split = url.split('/')
 let load = 'main'
 
 let desiredHeight = 36;
@@ -32,7 +31,7 @@ if (load === "chat") {
 
         if (parts.length === 2) {
             const key = parts[0].trim();
-            const value = parts[1].trim();
+            const value = decodeURIComponent(parts[1].trim());
 
             if (["userBL", "prefixBL"].includes(String(key))) {
                 const parts = String(value).split(' ');
