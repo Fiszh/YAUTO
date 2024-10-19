@@ -58,10 +58,15 @@ client.on("message", async (channel, userstate, message, self) => {
         }
     }
 
+    const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
+
+    if (foundUser && foundUser.color) {
+        userstate.color = foundUser.color
+    }
+
     handleMessage(userstate, message, channel)
 
     // PAINTS AND BADGES (7TV)
-    foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
 
     const currentTime = Date.now();
     let elapsedTime = 0
