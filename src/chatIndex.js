@@ -85,7 +85,8 @@ client.on("message", async (channel, userstate, message, self) => {
         let userColor = userstate.color
 
         if (userstate.color === null || userstate.color === undefined || !userstate.color) {
-            userColor = getRandomTwitchColor();
+            userColor = getRandomTwitchColor(userstate.username);
+            userstate.color = userColor
         }
 
         const sevenTV_id = await get7TVUserID(userstate["user-id"])
@@ -336,11 +337,11 @@ async function handleMessage(userstate, message, channel) {
                     if (foundUser.sevenTVId && foundUser.sevenTVData) {
                         await setSevenTVPaint(strongElement, foundUser.sevenTVId, foundUser, foundUser.sevenTVData);
                     } else {
-                        const randomColor = getRandomTwitchColor()
+                        const randomColor = getRandomTwitchColor(userstate.username)
                         strongElement.style.color = userstate.color || randomColor;
                     }
                 } else {
-                    const randomColor = getRandomTwitchColor()
+                    const randomColor = getRandomTwitchColor(userstate.username)
                     strongElement.style.color = userstate.color || randomColor;
                 }
             }
@@ -372,9 +373,23 @@ async function checkPart(part, string) {
     return (part.toLowerCase() === string)
 }
 
-function getRandomTwitchColor() {
-    const randomIndex = Math.floor(Math.random() * twitchColors.length);
-    return twitchColors[randomIndex];
+function getRandomTwitchColor(name) {
+    if (!name) {
+        const randomIndex = Math.floor(Math.random() * twitchColors.length);
+        return twitchColors[randomIndex];
+    }
+
+    let hash = 0;
+    
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    hash = Math.abs(hash);
+    
+    const colorIndex = hash % twitchColors.length;
+    
+    return twitchColors[colorIndex];
 }
 
 async function updateAllEmoteData() {
@@ -894,7 +909,7 @@ async function fetchTTVBitsData() {
 
         const user_data = await getTwitchUser(settings.channel)
 
-        const color = user_data.chatColor || getRandomTwitchColor()
+        const color = user_data.chatColor || getRandomTwitchColor(settings.channel)
 
         const channel_bit_emotes = data.data.channel.cheer.cheerGroups.map(emote => ({
             name: emote.nodes[0].prefix,
