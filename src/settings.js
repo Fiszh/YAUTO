@@ -104,6 +104,10 @@ if (load === "chat") {
         document.body.style.fontSize = `${settings.fontSize}px`;
         desiredHeight = Number(settings.fontSize)
     }
+
+    if (settings.emoteSize) {
+        desiredHeight = Number(settings.emoteSize)
+    }
     
     const style = document.createElement('style');
     style.textContent = `
@@ -111,8 +115,6 @@ if (load === "chat") {
             width: ${desiredHeight}px !important;
             height: ${desiredHeight}px !important;
             max-width: ${desiredHeight}px;
-            max-height: ${desiredHeight}px;
-            vertical-align: middle;
         }
     `;
     

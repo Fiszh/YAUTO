@@ -33,7 +33,15 @@ const configuration = {
         name: 'Font size',
         type: 'number',
         param: 'fontSize',
-        max: 100,
+        max: 500,
+        min: 0,
+        value: 36
+    },
+    emote_size: {
+        name: 'Emote size',
+        type: 'number',
+        param: 'emoteSize',
+        max: 500,
         min: 0,
         value: 36
     },
