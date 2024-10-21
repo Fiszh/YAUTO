@@ -364,7 +364,7 @@ async function fadeOut(element) {
             }, 1000);
 
         }, fadeOutTime || 30000);
-    } catch (err) {}
+    } catch (err) { }
 }
 
 async function checkPart(part, string) {
@@ -380,15 +380,15 @@ function getRandomTwitchColor(name) {
     }
 
     let hash = 0;
-    
+
     for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
-    
+
     hash = Math.abs(hash);
-    
+
     const colorIndex = hash % twitchColors.length;
-    
+
     return twitchColors[colorIndex];
 }
 
@@ -937,6 +937,44 @@ async function loadInBits() {
     fetchTTVBitsData()
 }
 
+async function load7TV() {
+    try {
+        SevenTVID = await get7TVUserID(channelTwitchID);
+        await get7TVEmoteSetID(SevenTVID);
+        SevenTVGlobalEmoteData = await fetch7TVEmoteData('global');
+
+        SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
+
+        // WEBSOCKET
+        detect7TVEmoteSetChange();
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+async function loadBTTV() {
+    try {
+        fetchBTTVGlobalEmoteData();
+        fetchBTTVEmoteData();
+
+        // WEBSOCKET
+        detectBTTVEmoteSetChange();
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+async function loadFFZ() {
+    try {
+        fetchFFZGlobalEmotes();
+        fetchFFZEmotes();
+
+        getFFZBadges();
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 async function loadChat() {
     // TTV
 
@@ -952,29 +990,15 @@ async function loadChat() {
 
     // 7TV
 
-    SevenTVID = await get7TVUserID(channelTwitchID);
-    await get7TVEmoteSetID(SevenTVID);
-    SevenTVGlobalEmoteData = await fetch7TVEmoteData('global');
-
-    SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
-
-    // WEBSOCKET
-    detect7TVEmoteSetChange();
+    load7TV();
 
     // BTTV
 
-    fetchBTTVGlobalEmoteData();
-    fetchBTTVEmoteData();
-
-    // WEBSOCKET
-    detectBTTVEmoteSetChange();
+    loadBTTV();
 
     // FFZ
 
-    fetchFFZGlobalEmotes();
-    fetchFFZEmotes();
-
-    getFFZBadges();
+    loadFFZ();
 }
 
 async function getVersion() {

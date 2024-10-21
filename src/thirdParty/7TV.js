@@ -18,7 +18,7 @@ async function get7TVUserID(user_id) {
             throw new Error('Invalid response format.');
         }
     } catch (error) {
-        //console.error('Error fetching user ID:', error);
+        return 0
     }
 }
 
