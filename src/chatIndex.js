@@ -174,6 +174,10 @@ async function handleMessage(userstate, message, channel) {
         userstate["badges-raw"] += ',YAUTCContributor/1';
     }
 
+    if (["413189785", "61094148"].includes(userstate["user-id"])) {
+        userstate["badges-raw"] += ',YAUTCTester/1';
+    }
+
     let username = userstate.username;
     let displayname = userstate["display-name"]
     let finalUsername = userstate.username
@@ -822,14 +826,20 @@ async function getBadges() {
 
     TTVGlobalBadgeData.push({
         id: 'YAUTCDev' + "_" + 1,
-        url: 'https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.avif',
+        url: 'https://cdn.7tv.app/emote/01FD8MX8H80009D1JB6G15TFSA/4x.webp',
         title: 'YAUTC Dev'
     })
 
     TTVGlobalBadgeData.push({
         id: 'YAUTCContributor' + "_" + 1,
         url: 'https://cdn.7tv.app/emote/6565de391be41eb14272c825/4x.avif',
-        title: 'YAUTC Contributor'
+        title: 'YAUTO Contributor'
+    })
+
+    TTVGlobalBadgeData.push({
+        id: 'YAUTCTester' + "_" + 1,
+        url: 'https://cdn.7tv.app/emote/01HYJRKPGG0006K2DABY5APXFB/4x.webp',
+        title: 'YAUTO Tester'
     })
 }
 
