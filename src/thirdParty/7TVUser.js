@@ -186,7 +186,7 @@ async function getUser(user_id, twitch_user_id) {
         }
 
         if (data.data.user.style && data.data.user.style["badge"]) {
-            infoTable.badge.url = `https://cdn.7tv.app/badge/${data.data.user.style["badge"].id}/3x`
+            infoTable.badge.url = `https://cdn.7tv.app/badge/${data.data.user.style["badge"].id}/4x`
             infoTable.badge.title = data.data.user.style["badge"].name
         }
 
