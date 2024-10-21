@@ -37,6 +37,12 @@ const configuration = {
         min: 0,
         value: 36
     },
+    font_stroke: {
+        name: 'Font stroke',
+        type: 'boolean',
+        value: false,
+        param: 'fontStroke'
+    },
     emote_size: {
         name: 'Emote size',
         type: 'number',

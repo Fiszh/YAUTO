@@ -87,15 +87,6 @@ if (load === "chat") {
         document.body.style.fontFamily = `"${settings.font}", "Inter"`;
     }
 
-    if (settings.fontStroke) {
-        document.body.style.textShadow = `
-            ${settings.fontStroke}px ${settings.fontStroke}px 0 #000,
-            -${settings.fontStroke}px ${settings.fontStroke}px 0 #000,
-            -${settings.fontStroke}px -${settings.fontStroke}px 0 #000,
-            ${settings.fontStroke}px -${settings.fontStroke}px 0 #000
-        `.trim();
-    }   
-
     if (settings.fontShadow) {
         document.body.style.filter = `drop-shadow(${settings.fontStroke} ${settings.fontStroke} 0.2rem black)`;
     }
@@ -107,6 +98,14 @@ if (load === "chat") {
 
     if (settings.emoteSize) {
         desiredHeight = Number(settings.emoteSize)
+    }
+
+    if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
+        document.body.style.textShadow = 
+        '-1px -1px 0 black, ' +
+        '1px -1px 0 black, ' +
+        '-1px 1px 0 black, ' +
+        '1px 1px 0 black';    
     }
     
     const style = document.createElement('style');
