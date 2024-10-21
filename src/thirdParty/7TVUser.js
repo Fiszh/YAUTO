@@ -85,12 +85,14 @@ async function getUserPersonalEmotes(user_id) {
 
         for (const emote_set of data.user.emote_sets) {
             if (!fetchedEmoteSets[emote_set.id]) {
-                const emote_data = await fetch7TVEmoteData(emote_set.id);
+                if (emote_set.flags === 4) {
+                    const emote_data = await fetch7TVEmoteData(emote_set.id);
 
-                if (emote_data && emote_data != null) {
-                    fetchedEmoteSets[emote_set.id] = emote_data;
+                    if (emote_data && emote_data != null) {
+                        fetchedEmoteSets[emote_set.id] = emote_data;
 
-                    emoteData.push(...emote_data);
+                        emoteData.push(...emote_data);
+                    }
                 }
             }
         }
