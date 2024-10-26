@@ -165,7 +165,24 @@ let BTTVEmoteData = [];
 
 let allEmoteData = [];
 
+async function trimPart(text) {
+    if (text) {
+        return text.trim()
+    } else {
+        return text
+    }
+}
+
 async function handleMessage(userstate, message, channel) {
+    if (!message) { return; }
+
+    message = String(message)
+
+    message = message
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/<br\s*\/?>/gi, '<br>');
+
     if (userstate["user-id"] === "528761326") {
         userstate["badges-raw"] += ',YAUTCDev/1';
     }
@@ -178,9 +195,9 @@ async function handleMessage(userstate, message, channel) {
         userstate["badges-raw"] += ',YAUTCTester/1';
     }
 
-    let username = userstate.username;
-    let displayname = userstate["display-name"]
-    let finalUsername = userstate.username
+    let username = await trimPart(userstate.username);
+    let displayname = await trimPart(userstate["display-name"]);
+    let finalUsername = await trimPart(userstate.username);
     const message_id = userstate.id || "0"
 
     if (username && displayname) {
