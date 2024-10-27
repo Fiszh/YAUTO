@@ -59,6 +59,12 @@ const configuration = {
         min: 0,
         value: 0
     },
+    msg_redeem: {
+        name: 'Display channel points redeem messages',
+        type: 'boolean',
+        value: true,
+        param: 'redeem'
+    },
     bot_display: {
         name: 'Display bots in chat',
         type: 'boolean',

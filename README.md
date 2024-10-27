@@ -13,9 +13,11 @@ https://fiszh.github.io/YAUTO/
 - Display bots in chat
 - User blacklist
 - Prefix blacklist
+- Text stroke
 
 ### TTV
 - Moderation actions
+- Display channel points redeem messages
 
 ### 7TV
 - Paints

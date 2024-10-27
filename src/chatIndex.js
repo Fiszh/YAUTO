@@ -107,6 +107,10 @@ client.on("message", async (channel, userstate, message, self) => {
         };
 
         TTVUsersData.push(user);
+    } else {
+        if (foundUser.color && userstate && userstate.color) {
+            foundUser.color = userstate.color
+        }
     }
 });
 
@@ -119,6 +123,7 @@ let TTVGlobalBadgeData = [];
 let TTVBitBadgeData = [];
 let TTVUsersData = [];
 let TTVBitsData = [];
+let TTVUserRedeems = [];
 let version;
 
 const twitchColors = [
@@ -175,6 +180,13 @@ async function trimPart(text) {
 
 async function handleMessage(userstate, message, channel) {
     if (!message) { return; }
+
+    if (settings && settings.redeem && settings.redeem === '0') {
+        if (TTVUserRedeems[userstate.username]) {
+            delete TTVUserRedeems[userstate.username];
+            return; 
+        }
+    }
 
     message = String(message)
 
@@ -1071,6 +1083,14 @@ function deleteMessages(attribute, value) {
         chatDisplay.innerHTML = '';
     }
 }
+
+client.on("redeem", (channel, userstate, message) => {
+    TTVUserRedeems[`${userstate}`] = userstate;
+
+    setTimeout(() => {
+        delete TTVUserRedeems[`${userstate}`];
+    }, 5000);
+});
 
 // CHEER
 
