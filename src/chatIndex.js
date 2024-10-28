@@ -312,7 +312,7 @@ async function handleMessage(userstate, message, channel) {
 
     let rendererMessage = tagsReplaced
 
-    if (userSettings && userSettings['msgBold']) {
+    if (settings && settings.msgBold && settings.msgBold === '1') {
         rendererMessage = `<strong>${tagsReplaced}</strong>`;
     }
 
