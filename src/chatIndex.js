@@ -190,10 +190,9 @@ async function handleMessage(userstate, message, channel) {
 
     message = String(message)
 
-    message = message
+    const tagsReplaced = message
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/<br\s*\/?>/gi, '<br>');
 
     if (userstate["user-id"] === "528761326") {
         userstate["badges-raw"] += ',YAUTCDev/1';
@@ -311,10 +310,10 @@ async function handleMessage(userstate, message, channel) {
         finalUsername = finalUsername.toUpperCase()
     }
 
-    let rendererMessage = message
+    let rendererMessage = tagsReplaced
 
-    if (settings && settings.msgBold && settings.msgBold === '1') {
-        rendererMessage = `<strong>${message}</strong>`;
+    if (userSettings && userSettings['msgBold']) {
+        rendererMessage = `<strong>${tagsReplaced}</strong>`;
     }
 
     let messageHTML = `<div class="message-text">
@@ -648,6 +647,10 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 if (settings && settings.msgCaps && settings.msgCaps === '1') {
                     part = part.toUpperCase()
                 }
+
+                part = part
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
 
                 const twemojiHTML = twemoji.parse(part, {
                     base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
