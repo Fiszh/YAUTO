@@ -68,4 +68,4 @@ https://fiszh.github.io/YAUTO/
 - Channel emotes
 
 #### User Customization
-- Badges
+- Global and channel badges

@@ -30,12 +30,14 @@ async function fetchFFZGlobalEmotes() {
     }
 }
 
-async function fetchFFZEmotes() {
+async function fetchFFZUserData() {
     try {
         const response = await fetch(`https://api.frankerfacez.com/v1/room/id/${channelTwitchID}`);
+
         if (!response.ok) {
-            throw new Error(`Failed to fetch FFZ global emotes`);
+            throw new Error(`Failed to fetch FFZ channel data`);
         }
+
         const data = await response.json();
 
         FFZEmoteData = data.sets[data.room.set].emoticons.map(emote => {
@@ -55,9 +57,37 @@ async function fetchFFZEmotes() {
             };
         });
 
-        console.log(FgGreen + 'Success in getting Channel FrankerFaceZ emotes!' + FgWhite);
+        // BADGES 
+
+        if (data.room) {
+            if (data.room["vip_badge"] && Object.keys(data.room["vip_badge"]).length > 0) {
+                const maxKey = Math.max(...Object.keys(data.room["vip_badge"]).map(Number));
+                const maxUrl = data.room["vip_badge"][maxKey.toString()];
+
+                FFZUserBadgeData['vip_badge'] = maxUrl
+            }
+            if (data.room["mod_urls"] && Object.keys(data.room["mod_urls"]).length > 0) {
+                const maxKey = Math.max(...Object.keys(data.room["mod_urls"]).map(Number));
+                const maxUrl = data.room["mod_urls"][maxKey.toString()];
+
+                FFZUserBadgeData['mod_badge'] = maxUrl
+            }
+            if (data.room["user_badge_ids"] && Object.keys(data.room["user_badge_ids"]).length > 0) {
+                const transformedBadges = {};
+
+                Object.entries(data.room["user_badges"]).forEach(([badge, users]) => {
+                    users.forEach(user => {
+                        transformedBadges[user] = badge;
+                    });
+                });
+
+                FFZUserBadgeData['user_badges'] = transformedBadges;
+            }
+        }
+
+        console.log(FgGreen + 'Success in getting Channel FrankerFaceZ data!' + FgWhite);
     } catch (error) {
-        console.error('Error fetching FFZ user emotes:', error);
+        console.error('Error fetching FFZ channel data:', error);
         throw error;
     }
 }

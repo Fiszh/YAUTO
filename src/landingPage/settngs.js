@@ -66,7 +66,7 @@ const configuration = {
         param: 'redeem'
     },
     bot_display: {
-        name: 'Display bots in chat',
+        name: 'Display bots in chat (Based on FFZ bot badges)',
         type: 'boolean',
         value: true,
         param: 'bots'

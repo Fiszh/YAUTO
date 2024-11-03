@@ -34,6 +34,12 @@ client.on("message", async (channel, userstate, message, self) => {
         }
     }
 
+    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username] && FFZUserBadgeData["user_badges"][userstate.username] === "2") {
+        if (settings && settings.bots && settings.bots == "0") {
+            return
+        }
+    }
+
     // BLOCK PREFIX
 
     const messagePrefix = message.charAt(0);
@@ -162,6 +168,7 @@ let FFZGlobalEmoteData = [];
 let FFZEmoteData = [];
 
 let FFZBadgeData = [];
+let FFZUserBadgeData = [];
 
 //BTTV
 let BTTVWebsocket;
@@ -256,6 +263,16 @@ async function handleMessage(userstate, message, channel) {
                 if (BitBadge) continue;
             }
 
+            if (badge && badge.id) {
+                if (badge.id === "moderator_1" && FFZUserBadgeData["mod_badge"]) {
+                    continue;
+                }
+    
+                if (badge.id === "vip_1" && FFZUserBadgeData["vip_badge"]) {
+                    continue;
+                } 
+            }
+
             if (badge) {
                 badges += `<span class="badge-wrapper">
                             <img src="${badge.url}" alt="${badge.title}" class="badge">
@@ -296,6 +313,28 @@ async function handleMessage(userstate, message, channel) {
         badges += `<span class="badge-wrapper">
                                 <img style="background-color: ${foundFFZBadge.color};" src="${foundFFZBadge.url}" alt="${foundFFZBadge.title}" class="badge">
                             </span>`;
+    }
+
+    if (userstate['badges-raw'] && userstate['badges-raw'].includes('moderator/1') && FFZUserBadgeData["mod_badge"]) {
+        badges += `<span class="badge-wrapper" tooltip-name="Moderator" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["mod_badge"]}">
+                                <img style="background-color: #00ad03;" src="${FFZUserBadgeData["mod_badge"]}" alt="Moderator" class="badge">
+                            </span>`;
+    }
+
+    if (userstate['badges-raw'] && userstate['badges-raw'].includes('vip/1') && FFZUserBadgeData["vip_badge"]) {
+        badges += `<span class="badge-wrapper" tooltip-name="VIP" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["vip_badge"]}">
+                                <img style="background-color: #e005b9;" src="${FFZUserBadgeData["vip_badge"]}" alt="VIP" class="badge">
+                            </span>`;
+    }
+
+    if (FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username]) {
+        const foundBadge = FFZBadgeData.find(badge => badge.url === `https://cdn.frankerfacez.com/badge/${FFZUserBadgeData["user_badges"][userstate.username]}/4`)
+
+        if (foundBadge) {
+            badges += `<span class="badge-wrapper" tooltip-name="${foundBadge.title}" tooltip-type="Badge" tooltip-creator="" tooltip-image="${foundBadge.url}">
+                                    <img style="background-color: ${foundBadge.color};" src="${foundBadge.url}" alt="${foundBadge.title}" class="badge">
+                                </span>`;
+        }
     }
 
     // 7tv Badges
@@ -1009,7 +1048,7 @@ async function loadBTTV() {
 async function loadFFZ() {
     try {
         fetchFFZGlobalEmotes();
-        fetchFFZEmotes();
+        fetchFFZUserData();
 
         getFFZBadges();
     } catch (err) {
