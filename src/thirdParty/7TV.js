@@ -55,18 +55,21 @@ async function fetch7TVEmoteData(emoteSet) {
                 ? owner.display_name || owner.username || "UNKNOWN"
                 : "NONE";
 
-            const emote4x = emote.data.host.files.find(file => file.name === "4x.avif");
-
+            const emote4x = emote.data.host.files.find(file => file.name === "4x.avif") 
+                || emote.data.host.files.find(file => file.name === "3x.avif") 
+                || emote.data.host.files.find(file => file.name === "2x.avif") 
+                || emote.data.host.files.find(file => file.name === "1x.avif");
+            
             return {
                 name: emote.name,
-                url: `https://cdn.7tv.app/emote/${emote.id}/4x.avif`,
+                url: `https://cdn.7tv.app/emote/${emote.id}/${emote4x?.name || "1x.avif"}`,
                 flags: emote.data?.flags,
                 original_name: emote.data?.name,
                 creator,
                 emote_link: `https://7tv.app/emotes/${emote.id}`,
                 site: emoteSet === 'global' ? 'Global 7TV' : '7TV',
-                height: emote4x.height || 0,
-                width: emote4x.width || 0,
+                height: emote4x?.height,
+                width: emote4x?.width
             };
         });
     } catch (error) {
