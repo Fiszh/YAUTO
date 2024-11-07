@@ -60,6 +60,8 @@ client.on("message", async (channel, userstate, message, self) => {
         if (String(userstate["user-id"]) === "528761326" || userstate.mod || userstate['badges-raw'].includes('broadcaster/1')) {
             if (message.toLowerCase() === "!reloadoverlay") {
                 window.location.reload(true);
+            } else if (message.toLowerCase() === "!refreshoverlay") {
+                window.location.reload();
             }
         }
     }
