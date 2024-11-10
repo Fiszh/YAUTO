@@ -76,7 +76,7 @@ if (load === "chat") {
     document.head.appendChild(link);
 
     appendScript('src/thirdParty/7TV.js')
-    appendScript('src/thirdParty/7TVUser.js')
+    appendScript('src/thirdParty/SevenTVCosmetics.js')
     appendScript('src/thirdParty/BTTV.js')
     appendScript('src/thirdParty/FFZ.js')
 

@@ -62,54 +62,30 @@ client.on("message", async (channel, userstate, message, self) => {
                 window.location.reload(true);
             } else if (message.toLowerCase() === "!refreshoverlay") {
                 window.location.reload();
+            } else if (message.toLowerCase() === "!reloadwebsockets") {
+                try {
+                    SevenTVWebsocket.close();
+                    BTTVWebsocket.close();
+                } catch(err) {}
             }
         }
     }
 
     const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
 
-    if (foundUser && foundUser.color) {
-        userstate.color = foundUser.color
-    }
-
-    handleMessage(userstate, message, channel)
-
-    // PAINTS AND BADGES (7TV)
-
-    const currentTime = Date.now();
-    let elapsedTime = 0
-
-    if (foundUser && foundUser.sevenTVData && foundUser.sevenTVData.lastUpdate) {
-        elapsedTime = currentTime - foundUser.sevenTVData.lastUpdate;
-
-        if (elapsedTime >= 300000) {
-            if (foundUser.sevenTVId) {
-                foundUser.sevenTVData = await getUser(foundUser.sevenTVId, foundUser.userId)
-            }
-        }
-    }
+    foundUserCosmetics = cosmetics.user_info.find(user => user["ttv_user_id"] === userstate["user-id"]);
 
     if (!foundUser) {
         let userColor = userstate.color
 
         if (userstate.color === null || userstate.color === undefined || !userstate.color) {
-            userColor = getRandomTwitchColor(userstate.username);
-            userstate.color = userColor
-        }
-
-        const sevenTV_id = await get7TVUserID(userstate["user-id"])
-
-        let sevenTVUserData = null
-
-        if (sevenTV_id) {
-            sevenTVUserData = await getUser(sevenTV_id, userstate["user-id"]);
+            userColor = getRandomTwitchColor();
         }
 
         let user = {
             name: `@${userstate.username}`,
             color: userColor,
-            sevenTVId: sevenTV_id,
-            sevenTVData: sevenTVUserData,
+            cosmetics: foundUserCosmetics,
             avatar: null,
             userId: userstate["user-id"]
         };
@@ -118,8 +94,11 @@ client.on("message", async (channel, userstate, message, self) => {
     } else {
         if (foundUser.color && userstate && userstate.color) {
             foundUser.color = userstate.color
+            foundUser.cosmetics = foundUserCosmetics
         }
     }
+
+    handleMessage(userstate, message, channel);
 });
 
 let chatDisplay = document.getElementById("ChatDisplay");
@@ -341,10 +320,14 @@ async function handleMessage(userstate, message, channel) {
 
     // 7tv Badges
 
-    if (foundUser && foundUser.sevenTVData && foundUser.sevenTVData.badge.url) {
-        badges += `<span class="badge-wrapper">
-                                <img src="${foundUser.sevenTVData.badge.url}" alt="${foundUser.sevenTVData.badge.title}" class="badge">
+    if (foundUser && foundUser.cosmetics && foundUser.cosmetics["badge_id"]) {
+        const foundBadge = cosmetics.badges.find(Badge => Badge.id === foundUser.cosmetics["badge_id"]);
+
+        if (foundBadge) {
+            badges += `<span class="badge-wrapper" tooltip-name="${foundBadge.title}" tooltip-type="Badge" tooltip-creator="" tooltip-image="${foundBadge.url}">
+                                <img src="${foundBadge.url}" alt="${foundBadge.title}" class="badge">
                             </span>`;
+        }
     }
 
     if (settings && settings.msgCaps && settings.msgCaps === '1') {
@@ -407,8 +390,8 @@ async function handleMessage(userstate, message, channel) {
                 const foundUser = TTVUsersData.find(user => user.name === name);
 
                 if (foundUser) {
-                    if (foundUser.sevenTVId && foundUser.sevenTVData) {
-                        await setSevenTVPaint(strongElement, foundUser.sevenTVId, foundUser, foundUser.sevenTVData);
+                    if (foundUser.cosmetics) {
+                        await displayCosmeticPaint(foundUser.userId, foundUser.color, strongElement);
                     } else {
                         const randomColor = getRandomTwitchColor(userstate.username)
                         strongElement.style.color = userstate.color || randomColor;
@@ -551,11 +534,11 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             }
 
             // Prioritize personalEmotes
-            if (foundMessageSender && foundMessageSender.sevenTVData) {
-                const sevenTVData = foundMessageSender.sevenTVData;
+            if (foundMessageSender && foundMessageSender.cosmetics) {
+                const cosmetics = foundMessageSender.cosmetics;
 
-                if (sevenTVData.personal_emotes && sevenTVData.personal_emotes.length > 0) {
-                    for (const emote of sevenTVData.personal_emotes) {
+                if (cosmetics.personal_emotes && cosmetics.personal_emotes.length > 0) {
+                    for (const emote of cosmetics.personal_emotes) {
                         if (part === emote.name) {
                             foundEmote = emote;
                             emoteType = 'Personal';

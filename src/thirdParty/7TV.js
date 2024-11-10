@@ -81,10 +81,50 @@ async function fetch7TVEmoteData(emoteSet) {
 // WEBSOCKET
 
 async function detect7TVEmoteSetChange() {
-    SevenTVWebsocket = new WebSocket(`wss://events.7tv.io/v3@emote_set.update<object_id=${SevenTVemoteSetId}>`);
+    SevenTVWebsocket = new WebSocket('wss://events.7tv.io/v3');
 
     SevenTVWebsocket.onopen = async () => {
         console.log(FgBlue + 'SevenTV ' + FgWhite + 'WebSocket connection opened.');
+
+        const subscribeEmoteSetMessage = {
+            op: 35,
+            t: Date.now(),
+            d: {
+                type: `emote_set.update`,
+                condition: {
+                    object_id: SevenTVemoteSetId,
+                }
+            }
+        };
+
+        const subscribeEmoteMessage = {
+            op: 35,
+            t: Date.now(),
+            d: {
+                type: 'user.*',
+                condition: {
+                    object_id: SevenTVID,
+                }
+            }
+        };
+
+        const subscribeEntitlementCreateMessage = {
+            op: 35,
+            t: Date.now(),
+            d: {
+                type: 'entitlement.create',
+                condition: { platform: 'TWITCH', ctx: 'channel', id: channelTwitchID }
+            }
+        }
+        
+        if (SevenTVID) {
+            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteSetMessage));
+            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteMessage));
+        }
+
+        await SevenTVWebsocket.send(JSON.stringify(subscribeEntitlementCreateMessage));
+
+        console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to all of the events.');
     };
 
     SevenTVWebsocket.onmessage = async (event) => {
@@ -93,6 +133,12 @@ async function detect7TVEmoteSetChange() {
 
             if (message && message.d && message.d.body) {
                 const body = message.d.body;
+                let canProceed = false;
+
+                if (message.d.type === "cosmetic.create" || body.id !== SevenTVID) {
+                    updateCosmetics(body)
+                    return
+                }
 
                 let tableData = {
                     name: 'none',
@@ -121,6 +167,8 @@ async function detect7TVEmoteSetChange() {
                         user: body.actor["display_name"],
                         action: 'add'
                     };
+
+                    canProceed = true;
                 } else if (body["pulled"]) {
                     if (!body.pulled[0]) { return; }
                     tableData = {
@@ -129,19 +177,41 @@ async function detect7TVEmoteSetChange() {
                         user: body.actor["display_name"],
                         action: 'remove'
                     };
+
+                    canProceed = true;
                 } else if (body["updated"]) {
                     if (!body.updated[0]) { return; }
 
-                    tableData = {
-                        newName: body.updated[0]["value"].name,
-                        oldName: body.updated[0]["old_value"].name,
-                        user: body.actor["display_name"],
-                        site: '7TV',
-                        action: 'update'
-                    };
+                    if (body["updated"][0]["key"] === 'connections') {
+                        tableData = "emote_set.change"
+
+                        tableData = {
+                            newSetName: body.updated[0]["value"][0]["value"].name,
+                            newSetId: body.updated[0]["value"][0]["value"].id,
+                            oldSetName: body.updated[0]["value"][0]["old_value"].name,
+                            oldSetId: body.updated[0]["value"][0]["old_value"].id,
+                            user: body.actor["display_name"],
+                            site: '7TV',
+                            action: 'emote_set.change'
+                        };
+
+                        canProceed = true;
+                    } else {
+                        tableData = {
+                            newName: body.updated[0]["value"].name,
+                            oldName: body.updated[0]["old_value"].name,
+                            user: body.actor["display_name"],
+                            site: '7TV',
+                            action: 'update'
+                        };
+
+                        canProceed = true;
+                    }
                 }
 
-                update7TVEmoteSet(tableData)
+                if (canProceed) {
+                    update7TVEmoteSet(tableData)
+                }
             }
         } catch (error) {
             console.log('Error parsing message:', error);
@@ -165,10 +235,10 @@ async function update7TVEmoteSet(table) {
         delete table.action;
         SevenTVEmoteData.push(table);
 
-        console.log(FgBlue + `${table.user} ADDED ${table.name}` + FgWhite);
+        await handleMessage(custom_userstate.SevenTV, `${table.user} ADDED ${table.name}`);
     } else if (table.action === 'remove') {
-        let foundEmote = SevenTVEmoteData.find(emote => emote.url === table.url);
-        console.log(FgBlue + `${table.user} REMOVED ${foundEmote.name}` + FgWhite);
+        let foundEmote = SevenTVEmoteData.find(emote => emote.original_name === table.name);
+        await handleMessage(custom_userstate.SevenTV, `${table.user} REMOVED ${foundEmote.name}`);
 
         SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.url !== table.url);
     } else if (table.action === 'update') {
@@ -176,10 +246,30 @@ async function update7TVEmoteSet(table) {
         foundEmote.name = table.newName
         //SevenTVEmoteData.push(table);
 
-        console.log(FgBlue + `${table.user} RENAMED ${table.oldName} TO ${table.newName}` + FgWhite);
+        await handleMessage(custom_userstate.SevenTV, `${table.user} RENAMED ${table.oldName} TO ${table.newName}`);
 
         //SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.name !== table.oldName);
+    } else if (table.action === 'emote_set.change') {
+        SevenTVemoteSetId = table.newSetId
+
+        SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
+
+        await handleMessage(custom_userstate.SevenTV, `EMOTE SET CHAGNED TO ${table["newSetName"]}`)
+
+        //WEBSOCKET
+        await SevenTVWebsocket.close();
     }
 
     await updateAllEmoteData();
+}
+
+function argbToRgba(color) {
+    if (color < 0) {
+        color = color >>> 0;
+    }
+
+    const red = (color >> 24) & 0xFF;
+    const green = (color >> 16) & 0xFF;
+    const blue = (color >> 8) & 0xFF;
+    return `rgba(${red}, ${green}, ${blue}, 1)`;
 }
