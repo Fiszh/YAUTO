@@ -101,13 +101,13 @@ if (load === "chat") {
     }
 
     if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
-        document.body.style.textShadow = 
-        '-1px -1px 0 black, ' +
-        '1px -1px 0 black, ' +
-        '-1px 1px 0 black, ' +
-        '1px 1px 0 black';    
+        document.body.style.textShadow =
+            '-1px -1px 0 black, ' +
+            '1px -1px 0 black, ' +
+            '-1px 1px 0 black, ' +
+            '1px 1px 0 black';
     }
-    
+
     const style = document.createElement('style');
     style.textContent = `
         .twemoji {
@@ -116,7 +116,7 @@ if (load === "chat") {
             max-width: ${desiredHeight}px;
         }
     `;
-    
+
     document.head.appendChild(style);
 } else {
     const link = document.createElement('link');

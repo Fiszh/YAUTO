@@ -17,9 +17,23 @@ const client = new tmi.Client({
     channels: [settings.channel]
 });
 
+const connecting = document.createElement('div');
+connecting.classList.add('connecting-text');
+connecting.textContent = 'Connecting to chat';
+
+if (document.getElementById('ChatDisplay')) {
+    document.getElementById('ChatDisplay').appendChild(connecting);
+}
+
 client.connect()
 
 client.on('connected', async (address, port) => {
+    const connecting = document.getElementsByClassName('connecting-text');
+    
+    if (connecting) {
+        connecting[0].remove();
+    }
+
     console.log("connected!")
 });
 
@@ -66,7 +80,7 @@ client.on("message", async (channel, userstate, message, self) => {
                 try {
                     SevenTVWebsocket.close();
                     BTTVWebsocket.close();
-                } catch(err) {}
+                } catch (err) { }
             }
         }
     }
@@ -172,7 +186,7 @@ async function handleMessage(userstate, message, channel) {
     if (settings && settings.redeem && settings.redeem === '0') {
         if (TTVUserRedeems[userstate.username]) {
             delete TTVUserRedeems[userstate.username];
-            return; 
+            return;
         }
     }
 
@@ -248,10 +262,10 @@ async function handleMessage(userstate, message, channel) {
                 if (badge.id === "moderator_1" && FFZUserBadgeData["mod_badge"]) {
                     continue;
                 }
-    
+
                 if (badge.id === "vip_1" && FFZUserBadgeData["vip_badge"]) {
                     continue;
-                } 
+                }
             }
 
             if (badge) {
