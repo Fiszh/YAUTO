@@ -119,24 +119,24 @@ async function updateCosmetics(body) {
     } else {
         if (body.id || body.object.ref_id) {
             const userId = body.id === "00000000000000000000000000" ? body.object.ref_id || "default_id" : body.id;
-
+        
             if (userId) {
                 const foundUser = cosmetics.user_info.find(user => user["personal_set_id"] === userId);
-
+        
                 if (foundUser && body["pushed"]) {
                     const mappedEmotes = await mapPersonalEmotes(body.pushed);
-
+        
                     // AVOID DUPLICATION
                     const uniqueEmotes = mappedEmotes.filter(emote =>
-                        !foundUser.personal_emotes.some(existingEmote => existingEmote.id === emote.id)
+                        !foundUser.personal_emotes.some(existingEmote => existingEmote.url === emote.url)
                     );
-
+        
                     foundUser["personal_emotes"].push(...uniqueEmotes);
-
-                    // AVOID DUPLICATION
+        
+                    // UPDATE USER INFO
                     if (foundUser["ttv_user_id"]) {
                         const foundTwitchUser = TTVUsersData.find(user => user.userId === foundUser["ttv_user_id"]);
-
+        
                         if (foundTwitchUser) {
                             if (foundTwitchUser.cosmetics) {
                                 foundTwitchUser.cosmetics["personal_emotes"].push(...uniqueEmotes);
@@ -146,6 +146,7 @@ async function updateCosmetics(body) {
                 }
             }
         }
+        
     }
 }
 
