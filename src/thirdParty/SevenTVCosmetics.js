@@ -31,7 +31,7 @@ async function updateCosmetics(body) {
             const object = body.object
 
             if (!object.user) {
-                const  data = object.data
+                const data = object.data
 
                 const foundPaint = cosmetics.paints.find(paint =>
                     paint &&
@@ -92,21 +92,21 @@ async function updateCosmetics(body) {
 
                 // SHADOWS
                 let shadow = null;
-    
+
                 if (data.shadows.length > 0) {
                     const shadows = data.shadows;
-    
+
                     shadow = await shadows.map(shadow => {
                         let rgbaColor = argbToRgba(shadow.color);
-    
+
                         rgbaColor = rgbaColor.replace(/rgba\((\d+), (\d+), (\d+), (\d+(\.\d+)?)\)/, `rgba($1, $2, $3)`);
-    
+
                         return `drop-shadow(${rgbaColor} ${shadow.x_offset}px ${shadow.y_offset}px ${shadow.radius}px)`;
                     }).join(' ');
-    
+
                     push["shadows"] = shadow
                 }
-    
+
                 cosmetics.paints.push(push)
             }
         } else if (body.object.name == "Personal Emotes" || body.object.user || body.object.id === "00000000000000000000000000") {
@@ -124,19 +124,22 @@ async function updateCosmetics(body) {
                 const foundUser = cosmetics.user_info.find(user => user["personal_set_id"] === userId);
 
                 if (foundUser && body["pushed"]) {
-                    foundUser.personal_emotes = await mapPersonalEmotes(body.pushed);
+                    const mappedEmotes = await mapPersonalEmotes(body.pushed);
 
-                    // UPDATE USER INFO
+                    // AVOID DUPLICATION
+                    const uniqueEmotes = mappedEmotes.filter(emote =>
+                        !foundUser.personal_emotes.some(existingEmote => existingEmote.id === emote.id)
+                    );
+
+                    foundUser["personal_emotes"].push(...uniqueEmotes);
+
+                    // AVOID DUPLICATION
                     if (foundUser["ttv_user_id"]) {
-                        if (Array.isArray(TTVUsersData)) {
-                            const foundTwitchUser = TTVUsersData.find(user => user.userId === foundUser["ttv_user_id"]);
-                
-                            if (foundTwitchUser) {
-                                if (foundTwitchUser.cosmetics) {
-                                    Object.assign(foundTwitchUser.cosmetics, foundUser);
-                                } else {
-                                    foundTwitchUser.cosmetics = foundUser;
-                                }
+                        const foundTwitchUser = TTVUsersData.find(user => user.userId === foundUser["ttv_user_id"]);
+
+                        if (foundTwitchUser) {
+                            if (foundTwitchUser.cosmetics) {
+                                foundTwitchUser.cosmetics["personal_emotes"].push(...uniqueEmotes);
                             }
                         }
                     }
@@ -147,11 +150,9 @@ async function updateCosmetics(body) {
 }
 
 async function createCosmetic7TVProfile(body) {
-    if ((!body.object.owner || !body.object.owner.id) && !body.object.user.id) {
-        return;
-    }
+    if ((!body.object.owner || !body.object.owner.id) && !body.object.user.id) { return; }
 
-    const owner = body.object.owner || body.object.user
+    const owner = body.object.owner || body.object.user;
 
     let infoTable = {
         "lastUpdate": Date.now(),
@@ -160,36 +161,35 @@ async function createCosmetic7TVProfile(body) {
         "paint_id": null,
         "badge_id": null,
         "avatar_url": null,
-        "personal_set_id": null,
-        "personal_emotes": null,
-    }
+        "personal_emotes": [],
+    };
 
     if (owner.connections) {
         const twitchConnection = owner.connections.find(connection => connection["platform"] === "TWITCH");
 
         if (twitchConnection) {
-            infoTable["ttv_user_id"] = twitchConnection.id
+            infoTable["ttv_user_id"] = twitchConnection.id;
         }
     }
 
     if (owner.style) {
-        const styleInfo = owner.style
+        const styleInfo = owner.style;
 
         if (styleInfo["paint_id"]) {
-            infoTable["paint_id"] = styleInfo["paint_id"]
+            infoTable["paint_id"] = styleInfo["paint_id"];
         }
 
         if (styleInfo["badge_id"]) {
-            infoTable["badge_id"] = styleInfo["badge_id"]
+            infoTable["badge_id"] = styleInfo["badge_id"];
         }
     }
 
     if (owner.avatar_url) {
-        infoTable["avatar_url"] = owner.avatar_url
+        infoTable["avatar_url"] = owner.avatar_url;
     }
 
     if (body.object.flags === 4) {
-        infoTable["personal_set_id"] = body.object.id
+        infoTable["personal_set_id"] = String(body.object.id);
     }
 
     // AVOID DUPLICATION
@@ -197,9 +197,13 @@ async function createCosmetic7TVProfile(body) {
         const foundUser = cosmetics.user_info.find(user => user["user_id"] === owner.id);
 
         if (foundUser) {
+            if (foundUser.personal_emotes && Array.isArray(foundUser.personal_emotes)) {
+                infoTable["personal_emotes"] = foundUser.personal_emotes;
+            }
+
             Object.assign(foundUser, infoTable);
         } else {
-            cosmetics.user_info.push(infoTable)
+            cosmetics.user_info.push(infoTable);
         }
     }
 
@@ -210,6 +214,10 @@ async function createCosmetic7TVProfile(body) {
 
             if (foundTwitchUser) {
                 if (foundTwitchUser.cosmetics) {
+                    if (foundTwitchUser.cosmetics.personal_emotes && Array.isArray(foundTwitchUser.cosmetics.personal_emotes)) {
+                        infoTable["personal_emotes"] = foundTwitchUser.cosmetics.personal_emotes;
+                    }
+                    
                     Object.assign(foundTwitchUser.cosmetics, infoTable);
                 } else {
                     foundTwitchUser.cosmetics = infoTable;
@@ -257,14 +265,13 @@ async function displayCosmeticPaint(user_id, color, textElement) {
         if (foundPaint) {
             let style = `background-image: ${foundPaint.backgroundImage};`
 
-            if (settings && (!settings.paintShadows || settings.paintShadows == "1")) {
+            if (userSettings && userSettings['paintShadows']) {
                 style += ` filter: ${foundPaint.shadows};`;
             }
-    
-            if (settings && (!settings.paints || settings.paints == "1")) {
+
+            if (userSettings && userSettings['paints']) {
                 textElement.style.cssText = style;
             }
-    
         }
     }
 
