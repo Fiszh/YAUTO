@@ -85,6 +85,16 @@ client.on("message", async (channel, userstate, message, self) => {
         }
     }
 
+    // TEST COMMANDS 
+
+    if (String(userstate["user-id"]) === "528761326") {
+        if (message.toLowerCase().startsWith("!adduser")) {
+            if (message.split(" ")[1]) {
+                pushCosmeticUserUsingGQL(message.split(" ")[1])
+            }
+        }
+    }
+
     const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
 
     foundUserCosmetics = cosmetics.user_info.find(user => user["ttv_user_id"] === userstate["user-id"]);

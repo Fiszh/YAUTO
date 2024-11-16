@@ -77,6 +77,7 @@ if (load === "chat") {
 
     appendScript('src/thirdParty/7TV.js')
     appendScript('src/thirdParty/SevenTVCosmetics.js')
+    appendScript('src/thirdParty/SevenTVHelperV2.js')
     appendScript('src/thirdParty/BTTV.js')
     appendScript('src/thirdParty/FFZ.js')
 

@@ -230,7 +230,14 @@ async function createCosmetic7TVProfile(body) {
 
 async function mapPersonalEmotes(emotes) {
     return emotes.map(emoteData => {
-        const emote = emoteData.value
+        if (!emoteData) { return; }
+
+        let emote = emoteData.value
+
+        if (!emoteData["value"]) {
+            emote = emoteData
+        }
+
         const owner = emote.data?.owner;
 
         const creator = owner && Object.keys(owner).length > 0
@@ -266,11 +273,11 @@ async function displayCosmeticPaint(user_id, color, textElement) {
         if (foundPaint) {
             let style = `background-image: ${foundPaint.backgroundImage};`
 
-            if (userSettings && userSettings['paintShadows']) {
+            if (settings && (!settings.paintShadows || settings.paintShadows == "1")) {
                 style += ` filter: ${foundPaint.shadows};`;
             }
 
-            if (userSettings && userSettings['paints']) {
+            if (settings && (!settings.paints || settings.paints == "1")) {
                 textElement.style.cssText = style;
             }
         }
