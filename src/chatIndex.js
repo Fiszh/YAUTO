@@ -19,7 +19,7 @@ const client = new tmi.Client({
 
 const connecting = document.createElement('div');
 connecting.classList.add('connecting-text');
-connecting.textContent = 'Connecting to chat';
+connecting.textContent = `Connecting to ${settings.channel} chat`;
 
 if (document.getElementById('ChatDisplay')) {
     document.getElementById('ChatDisplay').appendChild(connecting);
