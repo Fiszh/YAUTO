@@ -84,18 +84,38 @@ async function detect7TVEmoteSetChange() {
     SevenTVWebsocket = new WebSocket('wss://events.7tv.io/v3');
 
     SevenTVWebsocket.onopen = async () => {
+        let waitStartTime = Date.now();
+
         console.log(FgBlue + 'SevenTV ' + FgWhite + 'WebSocket connection opened.');
 
-        const subscribeEmoteSetMessage = {
+        waitStartTime = Date.now();
+
+        while (channelTwitchID === "0" && Date.now() - waitStartTime < timeout) {
+            console.log(FgYellow + 'Waiting for channelTwitchID to be set...' + FgWhite);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        const subscribeEntitlementCreateMessage = {
             op: 35,
             t: Date.now(),
             d: {
-                type: `emote_set.update`,
-                condition: {
-                    object_id: SevenTVemoteSetId,
-                }
+                type: 'entitlement.create',
+                condition: { platform: 'TWITCH', ctx: 'channel', id: channelTwitchID }
             }
-        };
+        }
+
+        if (channelTwitchID !== "0") {
+            await SevenTVWebsocket.send(JSON.stringify(subscribeEntitlementCreateMessage));
+
+            console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to entitlement.create');
+        }
+
+        waitStartTime = Date.now();
+
+        while ((SevenTVID === "0" || SevenTVemoteSetId === "0") && Date.now() - waitStartTime < timeout) {
+            console.log(FgYellow + 'Waiting for SevenTVID or SevenTVemoteSetId to be set...' + FgWhite);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
 
         const subscribeEmoteMessage = {
             op: 35,
@@ -108,21 +128,29 @@ async function detect7TVEmoteSetChange() {
             }
         };
 
-        const subscribeEntitlementCreateMessage = {
+        if (SevenTVID !== "0") {
+            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteMessage));
+
+            console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to user.*');
+        }
+
+        const subscribeEmoteSetMessage = {
             op: 35,
             t: Date.now(),
             d: {
-                type: 'entitlement.create',
-                condition: { platform: 'TWITCH', ctx: 'channel', id: channelTwitchID }
+                type: `emote_set.update`,
+                condition: {
+                    object_id: SevenTVemoteSetId,
+                }
             }
-        }
-        
-        if (SevenTVID) {
-            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteSetMessage));
-            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteMessage));
-        }
+        };
 
-        await SevenTVWebsocket.send(JSON.stringify(subscribeEntitlementCreateMessage));
+
+        if (SevenTVemoteSetId !== "0") {
+            await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteSetMessage));
+
+            console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to emote_set.update');
+        }
 
         console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to all of the events.');
     };

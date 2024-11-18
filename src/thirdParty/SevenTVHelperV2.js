@@ -142,7 +142,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         "badge_id": null,
         "avatar_url": null,
         "personal_set_id": null,
-        "personal_emotes": null,
+        "personal_emotes": [],
     }
 
     if (userStyle && Object.keys(userStyle).length > 0) {
@@ -165,7 +165,8 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
                 infoTable["personal_set_id"] = set["id"]
 
                 if (set["emotes"] && set["emotes"].length > 0) {
-                    infoTable["personal_emotes"] = await mapPersonalEmotes(set["emotes"])
+                    const emotes = await mapPersonalEmotes(set["emotes"]);
+                    infoTable["personal_emotes"].push(...emotes);
                 }
             }
         }
