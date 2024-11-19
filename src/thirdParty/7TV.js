@@ -163,9 +163,9 @@ async function detect7TVEmoteSetChange() {
                 const body = message.d.body;
                 let canProceed = false;
 
-                if (message.d.type === "cosmetic.create" || body.id !== SevenTVID) {
-                    updateCosmetics(body)
-                    return
+                if (message.d.type === "cosmetic.create" || !message.d.body["actor"]) {
+                    updateCosmetics(body);
+                    return;
                 }
 
                 let tableData = {
@@ -263,29 +263,61 @@ async function update7TVEmoteSet(table) {
         delete table.action;
         SevenTVEmoteData.push(table);
 
-        await handleMessage(custom_userstate.SevenTV, `${table.user} ADDED ${table.name}`);
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} added ${table.name}`);
     } else if (table.action === 'remove') {
         let foundEmote = SevenTVEmoteData.find(emote => emote.original_name === table.name);
-        await handleMessage(custom_userstate.SevenTV, `${table.user} REMOVED ${foundEmote.name}`);
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} removed ${foundEmote.name}`);
 
         SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.url !== table.url);
     } else if (table.action === 'update') {
+        if (!table.newName || !table.newName) { return; }
+        
         let foundEmote = SevenTVEmoteData.find(emote => emote.name === table.oldName);
         foundEmote.name = table.newName
         //SevenTVEmoteData.push(table);
 
-        await handleMessage(custom_userstate.SevenTV, `${table.user} RENAMED ${table.oldName} TO ${table.newName}`);
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} renamed ${table.oldName} to ${table.newName}`);
 
         //SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.name !== table.oldName);
     } else if (table.action === 'emote_set.change') {
+        const unsubscribeEmoteSetMessage = {
+            op: 36,
+            t: Date.now(),
+            d: {
+                type: `emote_set.update`,
+                condition: {
+                    object_id: SevenTVemoteSetId,
+                }
+            }
+        };
+
+        await SevenTVWebsocket.send(JSON.stringify(unsubscribeEmoteSetMessage));
+
+        console.log(FgBlue + 'SevenTV ' + FgWhite + 'UnSubscribed to emote_set.update');
+
         SevenTVemoteSetId = table.newSetId
 
         SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
 
-        await handleMessage(custom_userstate.SevenTV, `EMOTE SET CHAGNED TO ${table["newSetName"]}`)
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `Emote set changed to ${table["newSetName"]}`)
+
+        const subscribeEmoteSetMessage = {
+            op: 35,
+            t: Date.now(),
+            d: {
+                type: `emote_set.update`,
+                condition: {
+                    object_id: SevenTVemoteSetId,
+                }
+            }
+        };
+
+        await SevenTVWebsocket.send(JSON.stringify(subscribeEmoteSetMessage));
+
+        console.log(FgBlue + 'SevenTV ' + FgWhite + 'Subscribed to emote_set.update');
 
         //WEBSOCKET
-        await SevenTVWebsocket.close();
+        //await SevenTVWebsocket.close();
     }
 
     await updateAllEmoteData();

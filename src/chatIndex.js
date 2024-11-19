@@ -214,7 +214,7 @@ async function handleMessage(userstate, message, channel) {
         userstate["badges-raw"] += ',YAUTCContributor/1';
     }
 
-    if (["413189785", "61094148"].includes(userstate["user-id"])) {
+    if (["413189785", "61094148", "440235768"].includes(userstate["user-id"])) {
         userstate["badges-raw"] += ',YAUTCTester/1';
     }
 
