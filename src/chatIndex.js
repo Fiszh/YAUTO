@@ -29,7 +29,7 @@ client.connect()
 
 client.on('connected', async (address, port) => {
     const connecting = document.getElementsByClassName('connecting-text');
-    
+
     if (connecting) {
         connecting[0].remove();
     }
@@ -127,6 +127,9 @@ client.on("message", async (channel, userstate, message, self) => {
 
 let chatDisplay = document.getElementById("ChatDisplay");
 
+//CUSTOM 
+let customBadgeData = [];
+
 //TWITCH
 let channelTwitchID = '0';
 let TTVSubBadgeData = [];
@@ -206,18 +209,6 @@ async function handleMessage(userstate, message, channel) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
 
-    if (userstate["user-id"] === "528761326") {
-        userstate["badges-raw"] += ',YAUTCDev/1';
-    }
-
-    if (["404660262", "166427338"].includes(userstate["user-id"])) {
-        userstate["badges-raw"] += ',YAUTCContributor/1';
-    }
-
-    if (["413189785", "61094148", "440235768"].includes(userstate["user-id"])) {
-        userstate["badges-raw"] += ',YAUTCTester/1';
-    }
-
     let username = await trimPart(userstate.username);
     let displayname = await trimPart(userstate["display-name"]);
     let finalUsername = await trimPart(userstate.username);
@@ -253,6 +244,16 @@ async function handleMessage(userstate, message, channel) {
     }
 
     let badges = '';
+
+    // CUSTOM BADGES
+
+    const custom_badge = customBadgeData.find(badge => badge.users.includes(userstate["user-id"]));
+
+    if (custom_badge) {
+        badges += `<span class="badge-wrapper">
+                        <img style="background-color: ${custom_badge.color || '#ffffff'};" src="${custom_badge.url}" alt="${custom_badge.title}" class="badge">
+                    </span>`;
+    }
 
     if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
         let rawBadges = userstate['badges-raw'];
@@ -904,23 +905,19 @@ async function getBadges() {
 
     //CUSTOM BADGES
 
-    TTVGlobalBadgeData.push({
-        id: 'YAUTCDev' + "_" + 1,
-        url: 'https://cdn.7tv.app/emote/01FD8MX8H80009D1JB6G15TFSA/4x.webp',
-        title: 'YAUTC Dev'
-    })
+    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pastebin.com/raw/ubxa3f5h')}`)
 
-    TTVGlobalBadgeData.push({
-        id: 'YAUTCContributor' + "_" + 1,
-        url: 'https://cdn.7tv.app/emote/6565de391be41eb14272c825/4x.avif',
-        title: 'YAUTO Contributor'
-    })
+    if (!custom_response.ok) { return; }
 
-    TTVGlobalBadgeData.push({
-        id: 'YAUTCTester' + "_" + 1,
-        url: 'https://cdn.7tv.app/emote/01HYJRKPGG0006K2DABY5APXFB/4x.webp',
-        title: 'YAUTO Tester'
-    })
+    let data2 = await custom_response.json()
+
+    if (!data2["contents"]) { return; }
+
+    data2 = JSON.parse(data2.contents);
+
+    if (!data2 || !data2["badges"]) { return; }
+
+    customBadgeData = data2["badges"]
 }
 
 const gqlQueries = {
