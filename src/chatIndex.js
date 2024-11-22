@@ -251,7 +251,7 @@ async function handleMessage(userstate, message, channel) {
 
     if (custom_badge) {
         badges += `<span class="badge-wrapper">
-                        <img style="background-color: ${custom_badge.color || '#ffffff'};" src="${custom_badge.url}" alt="${custom_badge.title}" class="badge">
+                        <img src="${custom_badge.url}" alt="${custom_badge.title}" class="badge">
                     </span>`;
     }
 
