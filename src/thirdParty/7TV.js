@@ -192,7 +192,7 @@ async function detect7TVEmoteSetChange() {
                         original_name: body.pushed[0].value.data?.name,
                         creator,
                         site: '7TV',
-                        user: body.actor["display_name"],
+                        user: body.actor["display_name"] || "UNKNOWN",
                         action: 'add'
                     };
 
@@ -202,7 +202,7 @@ async function detect7TVEmoteSetChange() {
                     tableData = {
                         name: body.pulled[0]["old_value"].name,
                         url: `https://cdn.7tv.app/emote/${body.pulled[0]["old_value"].id}/4x.avif`,
-                        user: body.actor["display_name"],
+                        user: body.actor["display_name"] || "UNKNOWN",
                         action: 'remove'
                     };
 
@@ -218,17 +218,19 @@ async function detect7TVEmoteSetChange() {
                             newSetId: body.updated[0]["value"][0]["value"].id,
                             oldSetName: body.updated[0]["value"][0]["old_value"].name,
                             oldSetId: body.updated[0]["value"][0]["old_value"].id,
-                            user: body.actor["display_name"],
+                            user: body.actor["display_name"] || "UNKNOWN",
                             site: '7TV',
                             action: 'emote_set.change'
                         };
 
                         canProceed = true;
                     } else {
+                        if (!body.updated[0]["value"] || !body.updated[0]["old_value"]) { return; }
+                        
                         tableData = {
                             newName: body.updated[0]["value"].name,
                             oldName: body.updated[0]["old_value"].name,
-                            user: body.actor["display_name"],
+                            user: body.actor["display_name"] || "UNKNOWN",
                             site: '7TV',
                             action: 'update'
                         };

@@ -27,7 +27,9 @@ async function updateCosmetics(body) {
                     url: `${data.host.url}/${data.host.files[data.host.files.length - 1].name}`
                 })
             }
-        } else if (body.object.kind === "PAINT") {
+        }
+
+        if (body.object.kind === "PAINT") {
             const object = body.object
 
             if (!object.user) {
@@ -45,19 +47,18 @@ async function updateCosmetics(body) {
                 let push = {};
 
                 if (data.stops.length > 0) {
-                    const colors = data.stops.map(stop => ({
-                        at: stop.at,
-                        color: stop.color
-                    }));
-
-                    const normalizedColors = colors.map((stop, index) => ({
-                        at: (100 / (colors.length - 1)) * index,
+                    const normalizedColors = data.stops.map((stop) => ({
+                        at: stop.at * 100,
                         color: stop.color
                     }));
 
                     const gradient = normalizedColors.map(stop =>
                         `${argbToRgba(stop.color)} ${stop.at}%`
                     ).join(', ');
+
+                    if (data.repeat) {
+                        data.function = `repeating-${data.function}`;
+                    }
 
                     data.function = data.function.toLowerCase().replace('_', '-')
 
@@ -119,25 +120,25 @@ async function updateCosmetics(body) {
     } else {
         if (body.id || body.object.ref_id) {
             const userId = body.id === "00000000000000000000000000" ? body.object.ref_id || "default_id" : body.id;
-        
+
             if (userId) {
                 const foundUser = cosmetics.user_info.find(user => user["personal_set_id"] === userId);
-        
+
                 if (foundUser && body["pushed"]) {
                     try {
                         const mappedEmotes = await mapPersonalEmotes(body.pushed);
-        
+
                         foundUser["personal_emotes"] = foundUser["personal_emotes"] || [];
-        
+
                         const uniqueEmotes = mappedEmotes.filter(emote =>
                             !foundUser.personal_emotes.some(existingEmote => existingEmote.url === emote.url)
                         );
-        
+
                         foundUser["personal_emotes"].push(...uniqueEmotes);
-        
+
                         if (foundUser["ttv_user_id"]) {
                             const foundTwitchUser = TTVUsersData.find(user => user.userId === foundUser["ttv_user_id"]);
-        
+
                             if (foundTwitchUser && foundTwitchUser.cosmetics) {
                                 foundTwitchUser.cosmetics["personal_emotes"] = foundTwitchUser.cosmetics["personal_emotes"] || [];
                                 foundTwitchUser.cosmetics["personal_emotes"].push(...uniqueEmotes);
@@ -148,7 +149,7 @@ async function updateCosmetics(body) {
                     }
                 }
             }
-        }        
+        }
     }
 }
 
@@ -305,6 +306,6 @@ async function getPaintName(user_id) {
             return null
         }
     }
-    
+
     return null
 }

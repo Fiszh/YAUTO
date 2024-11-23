@@ -418,12 +418,13 @@ async function handleMessage(userstate, message, channel) {
                     if (foundUser.cosmetics) {
                         await displayCosmeticPaint(foundUser.userId, foundUser.color, strongElement);
                     } else {
-                        const randomColor = getRandomTwitchColor(userstate.username)
-                        strongElement.style.color = userstate.color || randomColor;
+                        const randomColor = getRandomTwitchColor(foundUser.name.replace("@", ""));
+                        strongElement.style.color = foundUser.color || randomColor;
                     }
                 } else {
-                    const randomColor = getRandomTwitchColor(userstate.username)
-                    strongElement.style.color = userstate.color || randomColor;
+                    const randomColor = getRandomTwitchColor(name.replace("@", ""));
+
+                    strongElement.style.color = randomColor;
                 }
             }
         });
@@ -902,22 +903,6 @@ async function getBadges() {
             return [];
         }
     });
-
-    //CUSTOM BADGES
-
-    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pastebin.com/raw/ubxa3f5h')}`)
-
-    if (!custom_response.ok) { return; }
-
-    let data2 = await custom_response.json()
-
-    if (!data2["contents"]) { return; }
-
-    data2 = JSON.parse(data2.contents);
-
-    if (!data2 || !data2["badges"]) { return; }
-
-    customBadgeData = data2["badges"]
 }
 
 const gqlQueries = {
@@ -1063,6 +1048,10 @@ async function loadFFZ() {
 }
 
 async function loadChat() {
+    // OVERLAY
+
+    loadCustomBadges();
+
     // TTV
 
     const get_user = await getTwitchUser(settings.channel)
@@ -1086,6 +1075,22 @@ async function loadChat() {
     // FFZ
 
     loadFFZ();
+}
+
+async function loadCustomBadges() {
+    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pastebin.com/raw/ubxa3f5h')}`)
+
+    if (!custom_response.ok) { return; }
+
+    let data2 = await custom_response.json()
+
+    if (!data2["contents"]) { return; }
+
+    data2 = JSON.parse(data2.contents);
+
+    if (!data2 || !data2["badges"]) { return; }
+
+    customBadgeData = data2["badges"]
 }
 
 async function getVersion() {
@@ -1166,3 +1171,4 @@ client.on("clearchat", (channel) => {
 
 loadChat()
 setInterval(removeInvisibleElements, 500);
+setInterval(loadCustomBadges, 5000);

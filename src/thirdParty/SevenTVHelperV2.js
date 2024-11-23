@@ -6,13 +6,13 @@ async function pushStyle(object) {
 
         const foundBadge = cosmetics.badges.find(badge => badge.id === data.id);
 
-        if (foundBadge) { return; }
-
-        cosmetics.badges.push({
-            id: data.id,
-            title: data.tooltip,
-            url: `https://cdn.7tv.app/badge/${data.id}/4x.webp`
-        })
+        if (!foundBadge) {
+            cosmetics.badges.push({
+                id: data.id,
+                title: data.tooltip,
+                url: `https://cdn.7tv.app/badge/${data.id}/4x.webp`
+            })
+        }
     }
 
     if (object["paint"] && Object.keys(object["paint"]).length > 0) {
@@ -20,76 +20,79 @@ async function pushStyle(object) {
 
         const foundPaint = cosmetics.paints.find(paint => paint.id === data.id)
 
-        if (foundPaint) { return; }
+        let push;
 
-        const randomColor = getRandomTwitchColor()
+        if (!foundPaint) {
+            push = {};
 
-        let push = {};
+            const randomColor = getRandomTwitchColor()
 
-        if (data.stops.length > 0) {
-            const colors = data.stops.map(stop => ({
-                at: stop.at,
-                color: stop.color
-            }));
+            if (data.stops.length > 0) {
+                const normalizedColors = data.stops.map((stop) => ({
+                    at: stop.at * 100,
+                    color: stop.color
+                }));
 
-            const normalizedColors = colors.map((stop, index) => ({
-                at: (100 / (colors.length - 1)) * index,
-                color: stop.color
-            }));
+                const gradient = normalizedColors.map(stop =>
+                    `${argbToRgba(stop.color)} ${stop.at}%`
+                ).join(', ');
 
-            const gradient = normalizedColors.map(stop =>
-                `${argbToRgba(stop.color)} ${stop.at}%`
-            ).join(', ');
+                if (data.repeat) {
+                    data.function = `repeating-${data.function}`;
+                }
 
-            data.function = data.function.toLowerCase().replace('_', '-')
+                data.function = data.function.toLowerCase().replace('_', '-')
 
-            let isDeg_or_Shape = `${data.angle}deg`
+                let isDeg_or_Shape = `${data.angle}deg`
 
-            if (data.function !== "linear-gradient" && data.function !== "repeating-linear-gradient") {
-                isDeg_or_Shape = data.shape
+                if (data.function !== "linear-gradient" && data.function !== "repeating-linear-gradient") {
+                    isDeg_or_Shape = data.shape
+                }
+
+                push = {
+                    id: data.id,
+                    name: data.name,
+                    style: data.function,
+                    shape: data.shape,
+                    backgroundImage: `${data.function || "linear-gradient"}(${isDeg_or_Shape}, ${gradient})` || `${data.style || "linear-gradient"}(${data.shape || ""} 0deg, ${randomColor}, ${randomColor})`,
+                    shadows: null,
+                    KIND: 'non-animated',
+                    url: data.image_url
+                }
+            } else {
+                push = {
+                    id: data.id,
+                    name: data.name,
+                    style: data.function,
+                    shape: data.shape,
+                    backgroundImage: `url('${[data.image_url]}')` || `${data.style || "linear-gradient"}(${data.shape || ""} 0deg, ${randomColor}, ${randomColor})`,
+                    shadows: null,
+                    KIND: 'animated',
+                    url: data.image_url
+                }
             }
 
-            push = {
-                id: data.id,
-                name: data.name,
-                style: data.function,
-                shape: data.shape,
-                backgroundImage: `${data.function || "linear-gradient"}(${isDeg_or_Shape}, ${gradient})` || `${data.style || "linear-gradient"}(${data.shape || ""} 0deg, ${randomColor}, ${randomColor})`,
-                shadows: null,
-                KIND: 'non-animated',
-                url: data.image_url
-            }
-        } else {
-            push = {
-                id: data.id,
-                name: data.name,
-                style: data.function,
-                shape: data.shape,
-                backgroundImage: `url('${[data.image_url]}')` || `${data.style || "linear-gradient"}(${data.shape || ""} 0deg, ${randomColor}, ${randomColor})`,
-                shadows: null,
-                KIND: 'animated',
-                url: data.image_url
+            // SHADOWS
+            let shadow = null;
+
+            if (data.shadows.length > 0) {
+                const shadows = data.shadows;
+
+                shadow = await shadows.map(shadow => {
+                    let rgbaColor = argbToRgba(shadow.color);
+
+                    rgbaColor = rgbaColor.replace(/rgba\((\d+), (\d+), (\d+), (\d+(\.\d+)?)\)/, `rgba($1, $2, $3)`);
+
+                    return `drop-shadow(${rgbaColor} ${shadow.x_offset}px ${shadow.y_offset}px ${shadow.radius}px)`;
+                }).join(' ');
+
+                push["shadows"] = shadow
             }
         }
 
-        // SHADOWS
-        let shadow = null;
-
-        if (data.shadows.length > 0) {
-            const shadows = data.shadows;
-
-            shadow = await shadows.map(shadow => {
-                let rgbaColor = argbToRgba(shadow.color);
-
-                rgbaColor = rgbaColor.replace(/rgba\((\d+), (\d+), (\d+), (\d+(\.\d+)?)\)/, `rgba($1, $2, $3)`);
-
-                return `drop-shadow(${rgbaColor} ${shadow.x_offset}px ${shadow.y_offset}px ${shadow.radius}px)`;
-            }).join(' ');
-
-            push["shadows"] = shadow
+        if (push) {
+            cosmetics.paints.push(push)
         }
-
-        cosmetics.paints.push(push)
     }
 }
 
@@ -127,7 +130,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
     if (twitchConnection && twitchConnection["id"]) {
         user_id = String(twitchConnection["id"])
     }
-    
+
     const userStyle = userData["style"]
 
     if (userStyle && Object.keys(userStyle).length > 0) {
@@ -149,7 +152,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         if (userStyle["paint"]) {
             infoTable.paint_id = userStyle["paint"]["id"]
         }
-    
+
         if (userStyle["badge"]) {
             infoTable.badge_id = userStyle["badge"]["id"]
         }
