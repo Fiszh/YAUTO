@@ -10,22 +10,30 @@ body {
     font-family: "Inter";
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.05) rgba(255, 255, 255, 0);
+    line-height: 1.2;
 }
 
 .logo-container {
     display: flex;
-    align-items: center;
-    height: 125px; 
+    align-items: flex-end; 
+    height: 75px; 
     position: sticky;
     margin-left: 20px;
+    text-align: center;
+}
+
+.logo-container strong {
+    font-size: 25px;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 .logo {
     width: 5%;
-    height: 125px; 
-    transition: opacity 0.5s;
+    height: 75px; 
     object-fit: contain;
     display: block;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .container {
@@ -34,7 +42,7 @@ body {
     place-items: center;
     width: 100%;
     height: calc(100vh - 60px);
-    padding-top: 60px;
+    margin-top: 30px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -60,7 +68,7 @@ body {
     font-family: "Inter";
 }
 
-footer {
+#footer {
     font-size: 20px;
     font-family: "Inter";
     text-align: center;
@@ -85,18 +93,18 @@ input {
     display: inline-block;
 }
 
-footer {
+#footer {
     z-index: 2;
 }
 
-footer a {
+#footer a {
     text-decoration: none;
     color: white;
 }
 
-footer a:hover {
+#footer a:hover {
     text-decoration: none;
-    color:rgb(88, 88, 88);
+    color:rgb(158, 158, 158);
 }
 
 .configuration {
@@ -218,13 +226,20 @@ footer a:hover {
     border-radius: 4px;
     text-align: center;
     font-size: 25px;
-    height: auto;
     width: auto;
     min-width: 50%;
     cursor: pointer;
     user-select: none;
+    background-color: #0e0f0f;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
-footer img {
+#footer img {
     height: 17px;
+}
+
+#commit-message {
+    text-align: center;
 }

@@ -24,13 +24,13 @@ const configuration = {
         param: 'msgCaps'
     },
     font: {
-        name: 'Custom chat font',
+        name: 'Custom chat font (any font on your pc)',
         type: 'text',
         value: "inter",
         param: 'font'
     },
     font_size: {
-        name: 'Font size',
+        name: 'Font size (px)',
         type: 'number',
         param: 'fontSize',
         max: 500,
@@ -44,7 +44,7 @@ const configuration = {
         param: 'fontStroke'
     },
     emote_size: {
-        name: 'Emote size',
+        name: 'Emote size (px)',
         type: 'number',
         param: 'emoteSize',
         max: 500,
@@ -52,7 +52,7 @@ const configuration = {
         value: 36
     },
     fade_out: {
-        name: 'Text fade out',
+        name: 'Text fade out (seconds)',
         type: 'number',
         param: 'fadeOut',
         max: 600,
@@ -180,7 +180,7 @@ function displaySettings() {
                 if (value < min) {
                     input.value = min;
                 } else if (value > max) {
-                    input.value = max;
+                    //input.value = max;
                 }
 
                 if (Number(input.value) === defaultValue || !input.value) {
@@ -304,7 +304,7 @@ function validateInput(event) {
     if (value < min) {
         input.value = min;
     } else if (value > max) {
-        input.value = max;
+        //input.value = max;
     }
 }
 

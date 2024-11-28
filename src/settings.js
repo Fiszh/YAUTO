@@ -127,4 +127,5 @@ if (load === "chat") {
     document.head.appendChild(link);
 
     appendScript('src/landingPage/settngs.js')
+    appendScript('src/landingPage/index.js')
 }
