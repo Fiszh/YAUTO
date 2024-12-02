@@ -230,19 +230,22 @@ async function handleMessage(userstate, message, channel) {
 
     let TTVMessageEmoteData = [];
 
-    if (userstate.emotes && userstate.emotes !== "" && Object.keys(userstate.emotes).length > 0) {
+    if (userstate.emotes) {
         TTVMessageEmoteData = Object.entries(userstate.emotes).flatMap(([emoteId, positions]) =>
             positions.map(position => {
                 const [start, end] = position.split('-').map(Number);
+                
+                const name = Array.from(message).slice(start, end + 1).join('');
+                
                 return {
-                    name: message.substring(start, end + 1),
+                    name,
                     url: `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/3.0`,
                     site: 'TTV'
                 };
             })
         );
     }
-
+    
     let badges = '';
 
     // CUSTOM BADGES
@@ -492,10 +495,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
     updateAllEmoteData()
 
     try {
-        const ttvEmoteData = [
-            ...TTVGlobalBadgeData,
-            ...TTVMessageEmoteData,
-        ];
+        const ttvEmoteData = TTVMessageEmoteData
 
         const nonGlobalEmoteData = [
             ...SevenTVEmoteData,
@@ -677,6 +677,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 }
 
                 lastEmote = true;
+                
                 if (willReturn) {
                     replacedParts.push(emoteHTML);
                 }
@@ -690,6 +691,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 const userHTML = `<span class="name-wrapper">
                             <strong style="color: ${foundUser.color}">${part}</strong>
                         </span>`;
+
                 replacedParts.push(userHTML);
             } else {
                 lastEmote = false;
@@ -1078,7 +1080,7 @@ async function loadChat() {
 }
 
 async function loadCustomBadges() {
-    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pastebin.com/raw/ubxa3f5h')}`)
+    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://gist.githubusercontent.com/Fiszh/7f360e3e1d6457f843899055a6210fd6/raw/9d426b9ff86899688e1388382f4d5025216d5bed/badges.json')}`)
 
     if (!custom_response.ok) { return; }
 
