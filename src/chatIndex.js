@@ -1177,4 +1177,4 @@ client.on("clearchat", (channel) => {
 
 loadChat()
 setInterval(removeInvisibleElements, 500);
-setInterval(loadCustomBadges, 60000);
+setInterval(loadCustomBadges, 300000);
