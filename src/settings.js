@@ -84,6 +84,9 @@ if (load === "chat") {
     // MAIN INDEX
     appendScript('src/chatIndex.js')
 
+    //UPDATE DETECTOR
+    appendScript('src/detectUpdate.js')
+
     if (settings.font) {
         document.body.style.fontFamily = `"${settings.font}", "Inter"`;
     }

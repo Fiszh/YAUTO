@@ -1,4 +1,4 @@
-console.log("chat index.js hooked up!")
+console.log("chatIndex.js hooked up!")
 
 const FgBlack = "\x1b[30m";
 const FgRed = "\x1b[31m";
@@ -75,7 +75,7 @@ client.on("message", async (channel, userstate, message, self) => {
             if (message.toLowerCase() === "!reloadoverlay") {
                 window.location.reload(true);
             } else if (message.toLowerCase() === "!refreshoverlay") {
-                window.location.reload();
+                loadChat();
             } else if (message.toLowerCase() === "!reloadwebsockets") {
                 try {
                     SevenTVWebsocket.close();
@@ -234,9 +234,9 @@ async function handleMessage(userstate, message, channel) {
         TTVMessageEmoteData = Object.entries(userstate.emotes).flatMap(([emoteId, positions]) =>
             positions.map(position => {
                 const [start, end] = position.split('-').map(Number);
-                
+
                 const name = Array.from(message).slice(start, end + 1).join('');
-                
+
                 return {
                     name,
                     url: `https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/3.0`,
@@ -245,7 +245,7 @@ async function handleMessage(userstate, message, channel) {
             })
         );
     }
-    
+
     let badges = '';
 
     // CUSTOM BADGES
@@ -264,50 +264,60 @@ async function handleMessage(userstate, message, channel) {
 
         for (const Badge of badgesSplit) {
             let badgeSplit = Badge.split("/");
-            if (badgeSplit[0] === 'subscriber') continue;
-            const badge = TTVGlobalBadgeData.find(badge => badge.id === `${badgeSplit[0]}_${badgeSplit[1]}`);
 
-            if (badgeSplit[0] === 'bits' && userstate.badges && userstate.badges.bits) {
-                const BitBadge = TTVBitBadgeData.find(badge => badge.id === userstate.badges.bits);
-                if (BitBadge) continue;
+            if (badgeSplit[0] === 'subscriber') {
+                if (userstate.badges) {
+                    if (userstate.badges.subscriber) {
+                        const badge = TTVSubBadgeData.find(badge => badge.id === userstate.badges.subscriber);
+
+                        if (badge) {
+                            badges += `<span class="badge-wrapper">
+                                            <img src="${badge.url}" alt="${badge.title}" class="badge">
+                                        </span>`;
+
+                            continue;
+                        }
+                    }
+                }
+            } else if (badgeSplit[0] === "bits") {
+                if (userstate.badges.bits) {
+                    const badge = TTVBitBadgeData.find(badge => badge.id === userstate.badges.bits);
+
+                    if (badge) {
+                        badges += `<span class="badge-wrapper">
+                                        <img src="${badge.url}" alt="${badge.title}" class="badge">
+                                    </span>`;
+
+                        continue;
+                    }
+
+                }
             }
+
+            const badge = TTVGlobalBadgeData.find(badge => badge.id === `${badgeSplit[0]}_${badgeSplit[1]}`);
 
             if (badge && badge.id) {
                 if (badge.id === "moderator_1" && FFZUserBadgeData["mod_badge"]) {
+                    badges += `<span class="badge-wrapper" tooltip-name="Moderator" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["mod_badge"]}">
+                                <img style="background-color: #00ad03;" src="${FFZUserBadgeData["mod_badge"]}" alt="Moderator" class="badge">
+                            </span>`;
+
                     continue;
                 }
 
                 if (badge.id === "vip_1" && FFZUserBadgeData["vip_badge"]) {
+                    badges += `<span class="badge-wrapper" tooltip-name="VIP" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["vip_badge"]}">
+                                <img style="background-color: #e005b9;" src="${FFZUserBadgeData["vip_badge"]}" alt="VIP" class="badge">
+                            </span>`;
+
                     continue;
                 }
             }
 
             if (badge) {
                 badges += `<span class="badge-wrapper">
-                            <img src="${badge.url}" alt="${badge.title}" class="badge">
-                        </span>`;
-            }
-        }
-
-        if (userstate.badges) {
-            if (userstate.badges.subscriber) {
-                const badge = TTVSubBadgeData.find(badge => badge.id === userstate.badges.subscriber);
-
-                if (badge) {
-                    badges += `<span class="badge-wrapper">
                                 <img src="${badge.url}" alt="${badge.title}" class="badge">
                             </span>`;
-                }
-            }
-
-            if (userstate.badges.bits) {
-                const badge = TTVBitBadgeData.find(badge => badge.id === userstate.badges.bits);
-
-                if (badge) {
-                    badges += `<span class="badge-wrapper">
-                                <img src="${badge.url}" alt="${badge.title}" class="badge">
-                            </span>`;
-                }
             }
         }
     }
@@ -321,18 +331,6 @@ async function handleMessage(userstate, message, channel) {
     if (foundFFZBadge) {
         badges += `<span class="badge-wrapper">
                                 <img style="background-color: ${foundFFZBadge.color};" src="${foundFFZBadge.url}" alt="${foundFFZBadge.title}" class="badge">
-                            </span>`;
-    }
-
-    if (userstate['badges-raw'] && userstate['badges-raw'].includes('moderator/1') && FFZUserBadgeData["mod_badge"]) {
-        badges += `<span class="badge-wrapper" tooltip-name="Moderator" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["mod_badge"]}">
-                                <img style="background-color: #00ad03;" src="${FFZUserBadgeData["mod_badge"]}" alt="Moderator" class="badge">
-                            </span>`;
-    }
-
-    if (userstate['badges-raw'] && userstate['badges-raw'].includes('vip/1') && FFZUserBadgeData["vip_badge"]) {
-        badges += `<span class="badge-wrapper" tooltip-name="VIP" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["vip_badge"]}">
-                                <img style="background-color: #e005b9;" src="${FFZUserBadgeData["vip_badge"]}" alt="VIP" class="badge">
                             </span>`;
     }
 
@@ -677,7 +675,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 }
 
                 lastEmote = true;
-                
+
                 if (willReturn) {
                     replacedParts.push(emoteHTML);
                 }
@@ -1080,32 +1078,38 @@ async function loadChat() {
 }
 
 async function loadCustomBadges() {
-    const custom_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://gist.githubusercontent.com/Fiszh/7f360e3e1d6457f843899055a6210fd6/raw/9d426b9ff86899688e1388382f4d5025216d5bed/badges.json')}`)
+    const response = await fetch('https://api.github.com/gists/7f360e3e1d6457f843899055a6210fd6');
 
-    if (!custom_response.ok) { return; }
+    if (!response.ok) { return; }
 
-    let data2 = await custom_response.json()
+    let data = await response.json()
 
-    if (!data2["contents"]) { return; }
+    if (!data["files"] || !data["files"]["badges.json"] || !data["files"]["badges.json"]["content"]) { return; }
 
-    data2 = JSON.parse(data2.contents);
+    data = JSON.parse(data["files"]["badges.json"]["content"])
 
-    if (!data2 || !data2["badges"]) { return; }
+    if (!data || !data["YAUTO"]) { return; }
 
-    customBadgeData = data2["badges"]
+    customBadgeData = data["YAUTO"]
 }
 
 async function getVersion() {
-    const version_response = await fetch("https://api.spanix.team/proxy/https://static.twitchcdn.net/config/manifest.json?v=1")
+    const version_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://static.twitchcdn.net/config/manifest.json?v=1')}`)
 
     if (!version_response.ok) {
         console.log(version_response)
         return false
     }
 
-    const version_data = await version_response.json()
+    let version_data = await version_response.json()
+
+    if (!version_data["contents"]) { return; }
+
+    version_data = JSON.parse(version_data["contents"])
 
     version = version_data.channels[0].releases[0].buildId
+
+    console.log(`Build version: ${version}`)
 }
 
 function removeInvisibleElements() {
@@ -1173,4 +1177,4 @@ client.on("clearchat", (channel) => {
 
 loadChat()
 setInterval(removeInvisibleElements, 500);
-setInterval(loadCustomBadges, 5000);
+setInterval(loadCustomBadges, 60000);
