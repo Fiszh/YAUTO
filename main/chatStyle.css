@@ -30,6 +30,8 @@ body::-webkit-scrollbar,
 .emote-wrapper {
     position: relative;
     display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
 }
 
 .badge {
