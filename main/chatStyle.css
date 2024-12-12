@@ -37,7 +37,7 @@ body::-webkit-scrollbar,
 .badge {
     width: 1em;
     height: 1em;
-    margin: 5px;
+    margin: 2.5px;
     vertical-align: middle;
 }
 
