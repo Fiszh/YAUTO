@@ -29,6 +29,6 @@ const checkForUpdate = async () => {
     }
 };
 
-setInterval(checkForUpdate, 300000);
+setInterval(checkForUpdate, 3600000);
 
 checkForUpdate();
