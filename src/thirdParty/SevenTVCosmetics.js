@@ -110,19 +110,21 @@ async function updateCosmetics(body) {
 
                 cosmetics.paints.push(push)
             }
-        } else if (body.object.name == "Personal Emotes" || body.object.user || body.object.id === "00000000000000000000000000") {
+        } else if (body.object.name == "Personal Emotes" || body.object.user || body.object.id === "00000000000000000000000000" || (body.object.flags && body.object.flags === 11)) {
             if (body.object.id === "00000000000000000000000000" && body.object.ref_id) {
                 body.object.id = body.object.ref_id
             }
 
             createCosmetic7TVProfile(body)
+        } else {
+            console.log("Didn't process", body)
         }
     } else {
         if (body.id || body.object.ref_id) {
             const userId = body.id === "00000000000000000000000000" ? body.object.ref_id || "default_id" : body.id;
 
             if (userId) {
-                const foundUser = cosmetics.user_info.find(user => user["personal_set_id"] === userId);
+                const foundUser = cosmetics.user_info.find(user => user["personal_set_id"].includes(userId));
 
                 if (foundUser && body["pushed"]) {
                     try {
@@ -168,6 +170,7 @@ async function createCosmetic7TVProfile(body) {
         badge_id: null,
         avatar_url: null,
         personal_emotes: [],
+        personal_set_id: [],
     };
 
     if (owner.connections) {
@@ -190,9 +193,9 @@ async function createCosmetic7TVProfile(body) {
     if (owner.avatar_url) {
         infoTable["avatar_url"] = owner.avatar_url;
     }
-
-    if (body.object.flags === 4) {
-        infoTable["personal_set_id"] = String(body.object.id);
+    
+    if (body.object.flags === 4 || body.object.flags === 11) {
+        infoTable["personal_set_id"].push(String(body.object.id));
     }
 
     if (cosmetics && Array.isArray(cosmetics.user_info)) {

@@ -144,8 +144,8 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         "paint_id": null,
         "badge_id": null,
         "avatar_url": null,
-        "personal_set_id": null,
         "personal_emotes": [],
+        "personal_set_id": [],
     }
 
     if (userStyle && Object.keys(userStyle).length > 0) {
@@ -164,8 +164,8 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
 
     if (userData["emote_sets"] && userData["emote_sets"].length > 0) {
         for (let set of userData["emote_sets"]) {
-            if (set && set["flags"] && set["flags"] === 4) {
-                infoTable["personal_set_id"] = set["id"]
+            if (set && set["flags"] && (set["flags"] === 4 || set["flags"] === 11)) {
+                infoTable["personal_set_id"].push(set["id"])
 
                 if (set["emotes"] && set["emotes"].length > 0) {
                     const emotes = await mapPersonalEmotes(set["emotes"]);
