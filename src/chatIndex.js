@@ -298,7 +298,7 @@ async function handleMessage(userstate, message, channel) {
 
             if (badge && badge.id) {
                 if (badge.id === "moderator_1" && FFZUserBadgeData["mod_badge"]) {
-                    badges += `<span class="badge-wrapper" tooltip-name="Moderator" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["mod_badge"]}">
+                    badges += `<span class="badge-wrapper">
                                 <img style="background-color: #00ad03;" src="${FFZUserBadgeData["mod_badge"]}" alt="Moderator" class="badge">
                             </span>`;
 
@@ -306,7 +306,7 @@ async function handleMessage(userstate, message, channel) {
                 }
 
                 if (badge.id === "vip_1" && FFZUserBadgeData["vip_badge"]) {
-                    badges += `<span class="badge-wrapper" tooltip-name="VIP" tooltip-type="Badge" tooltip-creator="" tooltip-image="${FFZUserBadgeData["vip_badge"]}">
+                    badges += `<span class="badge-wrapper">
                                 <img style="background-color: #e005b9;" src="${FFZUserBadgeData["vip_badge"]}" alt="VIP" class="badge">
                             </span>`;
 
@@ -338,7 +338,7 @@ async function handleMessage(userstate, message, channel) {
         const foundBadge = FFZBadgeData.find(badge => badge.url === `https://cdn.frankerfacez.com/badge/${FFZUserBadgeData["user_badges"][userstate.username]}/4`)
 
         if (foundBadge) {
-            badges += `<span class="badge-wrapper" tooltip-name="${foundBadge.title}" tooltip-type="Badge" tooltip-creator="" tooltip-image="${foundBadge.url}">
+            badges += `<span class="badge-wrapper">
                                     <img style="background-color: ${foundBadge.color};" src="${foundBadge.url}" alt="${foundBadge.title}" class="badge">
                                 </span>`;
         }
@@ -350,7 +350,7 @@ async function handleMessage(userstate, message, channel) {
         const foundBadge = cosmetics.badges.find(Badge => Badge.id === foundUser.cosmetics["badge_id"]);
 
         if (foundBadge) {
-            badges += `<span class="badge-wrapper" tooltip-name="${foundBadge.title}" tooltip-type="Badge" tooltip-creator="" tooltip-image="${foundBadge.url}">
+            badges += `<span class="badge-wrapper">
                                 <img src="${foundBadge.url}" alt="${foundBadge.title}" class="badge">
                             </span>`;
         }
@@ -362,9 +362,9 @@ async function handleMessage(userstate, message, channel) {
 
     let rendererMessage = tagsReplaced
 
-    if (settings && settings.msgBold && settings.msgBold === '1') {
+    if (settings && (!settings.msgBold || settings.msgBold === '1')) {
         rendererMessage = `<strong>${tagsReplaced}</strong>`;
-    }
+    }       
 
     let messageHTML = `<div class="message-text">
                             ${badges}
@@ -390,7 +390,7 @@ async function handleMessage(userstate, message, channel) {
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
 
-    if (settings && settings.msgBold && settings.msgBold === '1') {
+    if (settings && (!settings.msgBold || settings.msgBold === '1')) {
         results = `<strong>${results}</strong>`;
     }
 
@@ -451,7 +451,7 @@ async function fadeOut(element) {
 }
 
 async function checkPart(part, string) {
-    if (settings && settings.mentionColor && settings.mentionColor === '0') { return false; }
+    if (settings && (!settings.mentionColor || settings.mentionColor === '0')) { return false; }
 
     return (part.toLowerCase() === string)
 }
@@ -648,17 +648,17 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 let willReturn = true;
 
                 if (!lastEmoteWrapper || !lastEmote || !foundEmote.flags || foundEmote.flags !== 256) {
-                    emoteHTML = `<span class="emote-wrapper" tooltip-name="${foundEmote.name}${additionalInfo}" tooltip-type="${emoteType}" tooltip-creator="${creator}" tooltip-image="${foundEmote.url}" style="color:${foundEmote.color || 'white'}">
-                            <a href="${foundEmote.emote_link || foundEmote.url}" target="_blank;" style="display: inline-flex; justify-content: center">
+                    emoteHTML = `<span class="emote-wrapper" style="color:${foundEmote.color || 'white'}">
+                            <div style="display: inline-flex; justify-content: center">
                                 <img src="https://femboy.beauty/zN7uA" alt="ignore" class="emote" style="height: ${desiredHeight}px; width: ${foundEmote.width}px; position: relative; visibility: hidden;">
                                 <img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>
-                            </a>
+                            </div>
                             ${foundEmote.bits || ''}
                         </span>`;
                 } else if (lastEmoteWrapper && lastEmote && foundEmote.flags && foundEmote.flags === 256) {
                     willReturn = false;
                     emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
-                    const aTag = lastEmoteWrapper.querySelector('a');
+                    const aTag = lastEmoteWrapper.querySelector('div');
                     aTag.innerHTML += `<img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>`;
 
                     const targetImg = lastEmoteWrapper.querySelector('img[src="https://femboy.beauty/zN7uA"]');

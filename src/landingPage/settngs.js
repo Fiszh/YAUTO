@@ -14,7 +14,7 @@ const configuration = {
     message_bold: {
         name: 'Message are in <strong>bold</strong> text',
         type: 'boolean',
-        value: false,
+        value: true,
         param: 'msgBold'
     },
     message_caps: {
@@ -92,7 +92,7 @@ const configuration = {
     mentions_color: {
         name: 'Mentions are <div id="rainbow-text">Colored</div>',
         type: 'boolean',
-        value: true,
+        value: false,
         param: 'mentionColor'
     },
     seventv_Paints: {
