@@ -525,7 +525,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             let foundUser;
             let emoteType = '';
 
-            if (userstate && userstate['bits']) {
+            if (userstate) {
                 let match = part.match(/^([a-zA-Z]+)(\d+)$/);
 
                 if (match) {
@@ -534,13 +534,13 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
 
                     let result = findEntryAndTier(prefix, bits);
 
-                    if (result) {
+                    if (result && userstate['bits']) {
                         foundEmote = {
                             name: result.name,
                             url: result.tier.url,
                             site: 'TTV',
                             color: result.tier.color,
-                            bits: bits
+                            bits: `<div class="bits-number">${bits}</div>`
                         };
 
                         emoteType = 'Bits';
@@ -620,7 +620,6 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                     additionalInfo += `, Alias of: ${foundEmote.original_name}`;
                 }
 
-                let creator = foundEmote.creator ? `Created by: ${foundEmote.cfreator}` : '';
                 let emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
 
                 let { width, height } = foundEmote.width && foundEmote.height

@@ -21,17 +21,26 @@ body::-webkit-scrollbar,
     display: none;
 }
 
-.emote-wrapper .emote {
-    vertical-align: middle;
-}
-
 .name-wrapper,
 .badge-wrapper,
 .emote-wrapper {
     position: relative;
     display: inline-block;
-    vertical-align: middle;
     line-height: normal;
+}
+
+.bits-number {
+    position: relative;
+    display: inline-block;
+    line-height: normal;
+    vertical-align: middle;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.emote-wrapper {
+    vertical-align: middle;
 }
 
 .badge {
@@ -42,8 +51,6 @@ body::-webkit-scrollbar,
 }
 
 .paint {
-    display: block;
-    text-align: center;
     -webkit-text-fill-color: transparent;
     background-clip: text !important;
     -webkit-background-clip: text !important;

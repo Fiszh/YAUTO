@@ -118,6 +118,10 @@ if (load === "chat") {
             width: ${desiredHeight}px !important;
             height: ${desiredHeight}px !important;
             max-width: ${desiredHeight}px;
+            max-height: ${desiredHeight}px;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: normal;
         }
     `;
 
