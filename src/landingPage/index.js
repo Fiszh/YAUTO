@@ -1,3 +1,9 @@
+const urlDiv = document.getElementById("url-results");
+let lastUrl = urlDiv.textContent.trim();
+
+const button = document.getElementById("colorToggleButton");
+let isWhite = false;
+
 let images = [
     "https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp",
     "https://cdn.7tv.app/emote/6356194e5cc38d00a55f4015/4x.webp",
@@ -22,6 +28,72 @@ let images = [
     "https://cdn.7tv.app/emote/6592122fdbf474d8368df037/4x.webp",
     "https://cdn.7tv.app/emote/64e773690b36851cbc32b4c8/4x.webp"
 ];
+
+const PreviewMessages = [
+    {
+        userstate: {
+            "username": 'OhMunchy_:',
+            "badges-raw": null,
+            "badges": {},
+            "color": "#ff0000"
+        },
+        message: "when are we playing furry simulator ????"
+    },
+    {
+        userstate: {
+            "username": 'uni_k4:',
+            "badges-raw": "broadcaster/1,twitch-recap-2024/1",
+            "badges": {},
+            "color": "#ffb3ff"
+        },
+        message: "Alright"
+    },
+    {
+        userstate: {
+            "username": 'de_palace:',
+            "badges-raw": "subscriber/3,chatter-cs-go-2022/1",
+            "badges": {},
+            "color": "#1dee8b"
+        },
+        message: "!vanish"
+    },
+    {
+        userstate: {
+            "username": 'ScotterTV:',
+            "badges-raw": null,
+            "badges": {},
+            "color": "#fce803"
+        },
+        message: "Thats a real jammer ShoulderDance RaveTime"
+    },
+    {
+        userstate: {
+            "username": 'strayyzz:',
+            "badges-raw": "moderator/1,subscriber/3003",
+            "badges": {},
+            "color": "#00FF7F"
+        },
+        message: "Piss is not boobs or butt Wisdom"
+    },
+    {
+        userstate: {
+            "username": 'jolong66:',
+            "badges-raw": "vip/1,subscriber/0,sub-gift-leader/3",
+            "badges": {},
+            "color": "#FF69B4"
+        },
+        message: "aga life is like a box of chocolate, you never know when im gonna eat them all catEat"
+    },
+    {
+        userstate: {
+            "username": 'ddelmun:',
+            "badges-raw": "subscriber/2,bits/100",
+            "badges": {},
+            "color": undefined
+        },
+        message: "Pog chat overlay with better zero width emotes catJAM WideRaveTime ALERT"
+    }
+]
 
 const logoElements = document.getElementsByClassName('logo');
 if (logoElements) {
@@ -70,4 +142,135 @@ async function getImages() {
     }
 }
 
+async function displayPreview() {
+    if (!urlDiv) { return; }
+
+    const url = urlDiv.textContent.trim();
+    const current_url_split = url.split('/');
+
+    settings = {
+        channel: "twitch"
+    };
+
+    let settings_url = current_url_split[current_url_split.length - 1].split("?")
+
+    settings_url.forEach(item => {
+        const parts = item.split('=');
+
+        if (parts.length === 2) {
+            const key = parts[0].trim();
+            const value = decodeURIComponent(parts[1].trim());
+
+            if (["userBL", "prefixBL"].includes(String(key))) {
+                const parts = String(value).split(' ');
+
+                settings[key] = parts;
+            } else {
+                settings[key] = value;
+            }
+        }
+    });
+
+    console.log(settings)
+
+    chatDisplay.innerHTML = '';
+
+    PreviewMessages.forEach(message => {
+        if (handleMessage) {
+            handleMessage(message.userstate, message.message)
+        }
+    });
+}
+
+async function fixChatPreview() {
+    if (settings.font) {
+        chatDisplay.style.fontFamily = `"${settings.font}", "Inter"`;
+    } else {
+        chatDisplay.style.fontFamily = "Inter";
+    }
+
+    if (settings.fontShadow) {
+        chatDisplay.style.filter = `drop-shadow(${settings.fontStroke} ${settings.fontStroke} 0.2rem black)`;
+    } else {
+        chatDisplay.style.filter = '';
+    }
+
+    if (settings.fontSize) {
+        chatDisplay.style.fontSize = `${settings.fontSize}px`;
+        desiredHeight = Number(settings.fontSize)
+    } else {
+        chatDisplay.style.fontSize = `36px`;
+        desiredHeight = 36;
+    }
+
+    if (settings.emoteSize) {
+        desiredHeight = Number(settings.emoteSize)
+    } else {
+        desiredHeight = 36;
+    }
+
+    if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
+        chatDisplay.style.textShadow =
+            '-1px -1px 0 black, ' +
+            '1px -1px 0 black, ' +
+            '-1px 1px 0 black, ' +
+            '1px 1px 0 black';
+    } else {
+        chatDisplay.style.textShadow = "";
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .twemoji {
+            width: ${desiredHeight}px !important;
+            height: ${desiredHeight}px !important;
+            max-width: ${desiredHeight}px;
+            max-height: ${desiredHeight}px;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: normal;
+        }
+    `;
+}
+
+async function waitForFunction(funcName) {
+    while (typeof window[funcName] !== 'function') {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+}
+
+function checkUrlChange() {
+    const currentUrl = urlDiv.textContent.trim();
+    if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        displayPreview();
+        fixChatPreview();
+    }
+}
+
+async function setUpPreview() {
+    settings = {
+        channel: "twitch"
+    };
+
+    await waitForFunction('fetch7TVEmoteData');
+
+    SevenTVEmoteData = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
+
+    await getBadges();
+
+    displayPreview();
+    setInterval(checkUrlChange, 100);
+}
+
+button.addEventListener("click", () => {
+    if (isWhite) {
+        chatDisplay.style.backgroundColor = "rgba(255, 255, 255, 0.027)";
+    } else {
+        chatDisplay.style.backgroundColor = "white";
+    }
+    isWhite = !isWhite;
+});
+
+setUpPreview();
 getImages();

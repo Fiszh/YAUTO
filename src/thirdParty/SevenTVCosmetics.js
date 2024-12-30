@@ -116,6 +116,22 @@ async function updateCosmetics(body) {
             }
 
             createCosmetic7TVProfile(body)
+        } else if (body?.object?.kind == "BADGE") {
+            const object = body.object
+            const data = object.data
+
+            const foundBadge = cosmetics.badges.find(badge =>
+                badge &&
+                badge.id === (data && data.id === "00000000000000000000000000" ? data.ref_id : data.id)
+            );
+
+            if (foundBadge) { return; }
+
+            cosmetics.badges.push({
+                id: data.id === "00000000000000000000000000" ? data.ref_id || "default_id" : data.id,
+                title: data.tooltip,
+                url: `${data.host.url}/${data.host.files[data.host.files.length - 1].name}`
+            });
         } else {
             console.log("Didn't process", body)
         }

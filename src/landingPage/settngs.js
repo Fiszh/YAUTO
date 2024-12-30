@@ -59,6 +59,12 @@ const configuration = {
         min: 0,
         value: 0
     },
+    chat_badges: {
+        name: 'Display badges',
+        type: 'boolean',
+        value: true,
+        param: 'badges'
+    },
     msg_redeem: {
         name: 'Display channel points redeem messages',
         type: 'boolean',

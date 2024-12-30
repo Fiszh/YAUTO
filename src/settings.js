@@ -1,6 +1,7 @@
 const url = window.location.href;
 const current_url_split = url.split('/')
 let load = 'main'
+let settings = {};
 
 let desiredHeight = 36;
 
@@ -21,9 +22,14 @@ function appendScript(src) {
     document.body.appendChild(script);
 }
 
-let settings = {}
-
 if (load === "chat") {
+    var chatDiv = document.createElement('div');
+    
+    chatDiv.id = 'ChatDisplay';
+    chatDiv.className = 'chat-messages';
+    
+    document.body.appendChild(chatDiv);
+
     let settings_url = current_url_split[current_url_split.length - 1].split("?")
 
     settings_url.forEach(item => {
@@ -133,6 +139,19 @@ if (load === "chat") {
 
     document.head.appendChild(link);
 
+    const link1 = document.createElement('link');
+    link1.rel = 'stylesheet';
+    link1.href = 'main/chatStyle.css';
+
+    document.head.appendChild(link1);
+
     appendScript('src/landingPage/settngs.js')
     appendScript('src/landingPage/index.js')
+
+    // NEEDED FOR CHAT PREVIEW
+
+    // CHAT INDEX
+    appendScript('src/chatIndex.js')
+
+    appendScript('src/thirdParty/7TV.js')
 }

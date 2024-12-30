@@ -107,11 +107,43 @@ input {
     color:rgb(158, 158, 158);
 }
 
+.config_container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px; 
+    width: 95%;
+    height: auto;
+    position: relative;
+}
+
 .configuration {
     background-color: rgba(255, 255, 255, 0.027);
-    border-radius: 4px;
-    width: 50%;
-    height: auto;
+    border-radius: 15px;
+    width: 100%;
+    font-size: 20px;
+}
+
+.chat_preview {
+    width: 65%;
+    height: 65vh;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.027);
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#ChatDisplay {
+    width: 100%;
+    height: 70vh;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    word-wrap: break-word;
+    transition: background-color 0.5s ease;
+    box-sizing: border-box;
 }
 
 .configuration input[type="text"] {
@@ -242,4 +274,19 @@ input {
 
 #commit-message {
     text-align: center;
+}
+
+.transition-button {
+    background-color: rgba(255, 255, 255, 0.057);
+    border: 0px;
+    color: white;
+    font-size: 26px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.13s ease;
+}
+
+.transition-button:hover {
+    background-color: rgba(255, 255, 255, 0.089);
 }

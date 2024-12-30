@@ -26,10 +26,6 @@
 </head>
 
 <body>
-    <div id="ChatDisplay" class="chat-messages"></div>
-
-    </div>
-
     <div class="logo-container">
         <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another
             Useless Twitch Overlay)</strong>
@@ -78,6 +74,8 @@
 
         <div class="information">Configuration</div>
 
+        <div class="information">! Some parts of the settings might not react with the chat preview !</div>
+
         <br>
 
         <div class="information">Channel</div>
@@ -85,7 +83,13 @@
 
         <br>
 
-        <div class="configuration"></div>
+        <div class="config_container">
+            <div class="configuration"></div>
+            <div class="chat_preview">
+                <button id="colorToggleButton" class="transition-button">Change chat background</button>
+                <div id="ChatDisplay" class="chat-messages"></div>
+            </div>
+        </div>
 
         <br>
 

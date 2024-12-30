@@ -9,65 +9,41 @@ const FgMagenta = "\x1b[35m";
 const FgCyan = "\x1b[36m";
 const FgWhite = "\x1b[37m";
 
-const client = new tmi.Client({
-    options: {
-        debug: false,
-        skipUpdatingEmotesets: true
-    },
-    channels: [settings.channel]
-});
+let client;
 
-const connecting = document.createElement('div');
-connecting.classList.add('connecting-text');
-connecting.textContent = `Connecting to ${settings.channel} chat`;
+if (document.location.href.includes("?channel=")) {
+    client = new tmi.Client({
+        options: {
+            debug: false,
+            skipUpdatingEmotesets: true
+        },
+        channels: [settings.channel]
+    });
 
-if (document.getElementById('ChatDisplay')) {
-    document.getElementById('ChatDisplay').appendChild(connecting);
+    const connecting = document.createElement('div');
+    connecting.classList.add('connecting-text');
+    connecting.textContent = `Connecting to ${settings.channel} chat`;
+
+    if (document.getElementById('ChatDisplay')) {
+        document.getElementById('ChatDisplay').appendChild(connecting);
+    }
+
+    client.connect()
+
+    client.on('connected', async (address, port) => {
+        const connecting = document.getElementsByClassName('connecting-text');
+
+        if (connecting) {
+            connecting[0].remove();
+        }
+
+        console.log("connected!")
+    });
+
+    client.on("message", onMessage);
 }
 
-client.connect()
-
-client.on('connected', async (address, port) => {
-    const connecting = document.getElementsByClassName('connecting-text');
-
-    if (connecting) {
-        connecting[0].remove();
-    }
-
-    console.log("connected!")
-});
-
-client.on("message", async (channel, userstate, message, self) => {
-    const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username)
-
-    // BLOCK BOTS
-
-    if (FFZBadge && FFZBadge.id && FFZBadge.id == "bot") {
-        if (settings && settings.bots && settings.bots == "0") {
-            return
-        }
-    }
-
-    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username] && FFZUserBadgeData["user_badges"][userstate.username] === "2") {
-        if (settings && settings.bots && settings.bots == "0") {
-            return
-        }
-    }
-
-    // BLOCK PREFIX
-
-    const messagePrefix = message.charAt(0);
-
-    if (settings && settings.prefixBL && settings.prefixBL.includes(messagePrefix)) {
-        return
-    }
-
-    // BLOCK USERS
-
-    if (settings && settings.userBL && settings.userBL.includes(userstate.username)) {
-        return
-    }
-
+async function onMessage(channel, userstate, message, self) {
     // MOD RELOAD COMMAND
 
     if (userstate['badges-raw'] || String(userstate["user-id"]) === "528761326") {
@@ -94,6 +70,28 @@ client.on("message", async (channel, userstate, message, self) => {
             }
         }
     }
+
+    // BLOCK BOTS
+    const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username)
+
+    if (FFZBadge && FFZBadge.id && FFZBadge.id == "bot") {
+        if (settings && settings.bots && settings.bots == "0") {
+            return
+        }
+    }
+
+    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username] && FFZUserBadgeData["user_badges"][userstate.username] === "2") {
+        if (settings && settings.bots && settings.bots == "0") {
+            return
+        }
+    }
+
+    // BLOCK USERS
+
+    if (settings && settings.userBL && settings.userBL.includes(userstate.username)) {
+        return
+    }
+
 
     const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
 
@@ -123,7 +121,7 @@ client.on("message", async (channel, userstate, message, self) => {
     }
 
     handleMessage(userstate, message, channel);
-});
+}
 
 let chatDisplay = document.getElementById("ChatDisplay");
 
@@ -195,6 +193,16 @@ async function trimPart(text) {
 
 async function handleMessage(userstate, message, channel) {
     if (!message) { return; }
+
+    // BLOCK PREFIX
+
+    const messagePrefix = message.charAt(0);
+
+    if (settings && settings.prefixBL && settings.prefixBL.includes(messagePrefix)) {
+        return
+    }
+
+    // BLOCK REDEEMS
 
     if (settings && settings.redeem && settings.redeem === '0') {
         if (TTVUserRedeems[userstate.username]) {
@@ -356,6 +364,10 @@ async function handleMessage(userstate, message, channel) {
         }
     }
 
+    if (settings && settings.badges && settings.badges === '0') {
+        badges = '';
+    }
+
     if (settings && settings.msgCaps && settings.msgCaps === '1') {
         finalUsername = finalUsername.toUpperCase()
     }
@@ -364,7 +376,7 @@ async function handleMessage(userstate, message, channel) {
 
     if (settings && (!settings.msgBold || settings.msgBold === '1')) {
         rendererMessage = `<strong>${tagsReplaced}</strong>`;
-    }       
+    }
 
     let messageHTML = `<div class="message-text">
                             ${badges}
@@ -423,7 +435,11 @@ async function handleMessage(userstate, message, channel) {
                         strongElement.style.color = foundUser.color || randomColor;
                     }
                 } else {
-                    const randomColor = getRandomTwitchColor(name.replace("@", ""));
+                    let randomColor = getRandomTwitchColor(name.replace("@", ""));
+
+                    if (userstate && name.toLowerCase().replace('@', '').replace(',', '').replace(':', '') == userstate.username.toLowerCase().replace('@', '').replace(',', '').replace(':', '') && userstate.color) {
+                        randomColor = userstate.color
+                    }
 
                     strongElement.style.color = randomColor;
                 }
@@ -1142,38 +1158,40 @@ function deleteMessages(attribute, value) {
     }
 }
 
-client.on("redeem", (channel, userstate, message) => {
-    TTVUserRedeems[`${userstate}`] = userstate;
+if (document.location.href.includes("?channel=")) {
+    client.on("redeem", (channel, userstate, message) => {
+        TTVUserRedeems[`${userstate}`] = userstate;
 
-    setTimeout(() => {
-        delete TTVUserRedeems[`${userstate}`];
-    }, 5000);
-});
+        setTimeout(() => {
+            delete TTVUserRedeems[`${userstate}`];
+        }, 5000);
+    });
 
-// CHEER
+    // CHEER
 
-client.on("cheer", (channel, userstate, message) => {
-    handleMessage(userstate, message, channel)
-});
+    client.on("cheer", (channel, userstate, message) => {
+        handleMessage(userstate, message, channel)
+    });
 
-// MODERATION ACTIONS
+    // MODERATION ACTIONS
 
-client.on("timeout", (channel, username, reason, duration, userstate) => {
-    deleteMessages("sender", String(username))
-});
+    client.on("timeout", (channel, username, reason, duration, userstate) => {
+        deleteMessages("sender", String(username))
+    });
 
-client.on("ban", (channel, username, reason, userstate) => {
-    deleteMessages("sender", String(username))
-});
+    client.on("ban", (channel, username, reason, userstate) => {
+        deleteMessages("sender", String(username))
+    });
 
-client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
-    deleteMessages("message_id", String(userstate["target-msg-id"]))
-});
+    client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
+        deleteMessages("message_id", String(userstate["target-msg-id"]))
+    });
 
-client.on("clearchat", (channel) => {
-    deleteMessages()
-});
+    client.on("clearchat", (channel) => {
+        deleteMessages()
+    });
 
-loadChat()
-setInterval(removeInvisibleElements, 500);
-setInterval(loadCustomBadges, 300000);
+    loadChat()
+    setInterval(removeInvisibleElements, 500);
+    setInterval(loadCustomBadges, 300000);
+}
