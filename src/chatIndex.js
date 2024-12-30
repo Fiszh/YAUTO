@@ -9,6 +9,8 @@ const FgMagenta = "\x1b[35m";
 const FgCyan = "\x1b[36m";
 const FgWhite = "\x1b[37m";
 
+const BTTVZeroWidth = ['cvHazmat', 'cvMask'];
+
 let client;
 
 if (document.location.href.includes("?channel=")) {
