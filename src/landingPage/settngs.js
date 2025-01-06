@@ -43,6 +43,14 @@ const configuration = {
         value: false,
         param: 'fontStroke'
     },
+    font_shadow: {
+        name: 'Font shadow',
+        type: 'number',
+        param: 'fontShadow',
+        max: 10,
+        min: 0,
+        value: 4
+    },
     emote_size: {
         name: 'Emote size (px)',
         type: 'number',

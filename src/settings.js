@@ -24,10 +24,10 @@ function appendScript(src) {
 
 if (load === "chat") {
     var chatDiv = document.createElement('div');
-    
+
     chatDiv.id = 'ChatDisplay';
     chatDiv.className = 'chat-messages';
-    
+
     document.body.appendChild(chatDiv);
 
     let settings_url = current_url_split[current_url_split.length - 1].split("?")
@@ -97,8 +97,15 @@ if (load === "chat") {
         document.body.style.fontFamily = `"${settings.font}", "Inter"`;
     }
 
-    if (settings.fontShadow) {
-        document.body.style.filter = `drop-shadow(${settings.fontStroke} ${settings.fontStroke} 0.2rem black)`;
+    if (!settings.fontShadow || String(settings.fontShadow) !== "0") {
+        var shadow_style = document.createElement('style');
+
+        var shadow_css = `#ChatDisplay > * {
+                        filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, ${ Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))})); 
+                    }`;
+
+        shadow_style.appendChild(document.createTextNode(shadow_css));
+        document.head.appendChild(shadow_style);
     }
 
     if (settings.fontSize) {
