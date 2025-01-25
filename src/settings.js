@@ -101,7 +101,7 @@ if (load === "chat") {
         var shadow_style = document.createElement('style');
 
         var shadow_css = `#ChatDisplay > * {
-                        filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, ${ Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))})); 
+                        filter: drop-shadow(2px 2px 1.5px rgba(0, 0, 0, ${ Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))})); 
                     }`;
 
         shadow_style.appendChild(document.createTextNode(shadow_css));
