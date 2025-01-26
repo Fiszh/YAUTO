@@ -67,7 +67,8 @@ async function onMessage(channel, userstate, message, self) {
     const validMessages = [
         "dudewhereismy7tvpaint",
         "dudewhereismy7tvbadge",
-        "dudewhydoes7tvnotupdatemycosmetics"
+        "dudewhydoes7tvnotupdatemycosmetics",
+        "dudewherearemy7tvcosmetics"
     ];
 
     if (validMessages.includes(message.toLowerCase()) && userstate["user-id"]) {
@@ -76,7 +77,7 @@ async function onMessage(channel, userstate, message, self) {
         if (user_sevenTV_id) {
             try {
                 const body = {
-                    "kind": "1",
+                    "kind": 1,
                     "passive": true,
                     "session_id": "",
                     "data": {
