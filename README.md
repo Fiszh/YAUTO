@@ -14,6 +14,10 @@ https://fiszh.github.io/YAUTO/
 - User blacklist
 - Prefix blacklist
 - Text stroke
+- Font shadow
+- Emote size
+- Text fade out
+- Display badges
 
 ### TTV
 - Moderation actions

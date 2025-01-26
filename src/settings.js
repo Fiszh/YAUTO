@@ -49,24 +49,22 @@ if (load === "chat") {
         }
     });
 
-    console.log(settings)
+    console.log(settings);
 
     const container = document.querySelector('.container');
     const logo = document.querySelector('.logo-container');
     const footer = document.querySelector('footer');
 
-    if (container) {
-        container.remove()
-    }
-
-    if (logo) {
-        logo.remove()
-    }
-
-    if (footer) {
-        footer.remove()
-    }
-
+    const removeElement = (element) => {
+        if (element) {
+            element.remove();
+        }
+    };
+    
+    removeElement(container);
+    removeElement(logo);
+    removeElement(footer);
+    
     const scripts = document.querySelectorAll('script');
 
     scripts.forEach(script => {
@@ -111,6 +109,9 @@ if (load === "chat") {
     if (settings.fontSize) {
         document.body.style.fontSize = `${settings.fontSize}px`;
         desiredHeight = Number(settings.fontSize)
+    } else {
+        document.body.style.fontSize = `36px`;
+        desiredHeight = 36
     }
 
     if (settings.emoteSize) {
@@ -152,7 +153,7 @@ if (load === "chat") {
 
     document.head.appendChild(link1);
 
-    appendScript('src/landingPage/settngs.js')
+    appendScript('src/landingPage/settings.js')
     appendScript('src/landingPage/index.js')
 
     // NEEDED FOR CHAT PREVIEW

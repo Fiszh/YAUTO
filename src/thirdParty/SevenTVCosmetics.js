@@ -25,7 +25,7 @@ async function updateCosmetics(body) {
                     id: data.id === "00000000000000000000000000" ? data.ref_id || "default_id" : data.id,
                     title: data.tooltip,
                     url: `${data.host.url}/${data.host.files[data.host.files.length - 1].name}`
-                })
+                });
             }
         }
 
@@ -42,7 +42,7 @@ async function updateCosmetics(body) {
 
                 if (foundPaint) { return; }
 
-                const randomColor = getRandomTwitchColor()
+                const randomColor = getRandomTwitchColor();
 
                 let push = {};
 
@@ -108,14 +108,14 @@ async function updateCosmetics(body) {
                     push["shadows"] = shadow
                 }
 
-                cosmetics.paints.push(push)
+                cosmetics.paints.push(push);
             }
-        } else if (body.object.name == "Personal Emotes" || body.object.user || body.object.id === "00000000000000000000000000" || (body.object.flags && body.object.flags === 11)) {
-            if (body.object.id === "00000000000000000000000000" && body.object.ref_id) {
-                body.object.id = body.object.ref_id
+        } else if (body.object?.name === "Personal Emotes" || body.object?.name === "Personal Emotes Set" || body.object?.user || body.object?.id === "00000000000000000000000000" || (body.object?.flags && (body.object.flags === 11 || body.object.flags === 4))) {
+            if (body.object?.id === "00000000000000000000000000" && body.object?.ref_id) {
+                body.object.id = body.object.ref_id;
             }
-
-            createCosmetic7TVProfile(body)
+        
+            createCosmetic7TVProfile(body);
         } else if (body?.object?.kind == "BADGE") {
             const object = body.object
             const data = object.data
@@ -133,7 +133,7 @@ async function updateCosmetics(body) {
                 url: `${data.host.url}/${data.host.files[data.host.files.length - 1].name}`
             });
         } else {
-            console.log("Didn't process", body)
+            console.log("Didn't process", body);
         }
     } else {
         if (body.id || body.object.ref_id) {
@@ -299,11 +299,11 @@ async function displayCosmeticPaint(user_id, color, textElement) {
         if (foundPaint) {
             let style = `background-image: ${foundPaint.backgroundImage};`
 
-            if (settings && (!settings.paintShadows || settings.paintShadows == "1")) {
+            if (await getSetting("paintShadows")) {
                 style += ` filter: ${foundPaint.shadows};`;
             }
 
-            if (settings && (!settings.paints || settings.paints == "1")) {
+            if (await getSetting("paints")) {
                 textElement.style.cssText = style;
             }
         }

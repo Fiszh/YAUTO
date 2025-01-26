@@ -243,11 +243,11 @@ async function loadPaint(user_id, textElement, userstate, sevenTVData) {
 
         let style = `background-image: ${paintInfo.backgroundImage};`
 
-        if (settings && settings.paintShadows && settings.paintShadows == "0") {
+        if (!await getSetting("paintShadows")) {
             canDisplayShadows = false
         }
 
-        if (settings && settings.paints && settings.paints == "0") {
+        if (!await getSetting("paints")) {
             canDisplayPaints = false
         }
 

@@ -4,6 +4,10 @@ let lastUrl = urlDiv.textContent.trim();
 const button = document.getElementById("colorToggleButton");
 let isWhite = false;
 
+// APPEND SHADOW STYLE TO MAKE IT VISIBLE IN PREVIEW
+var shadow_style = document.createElement('style');
+document.head.appendChild(shadow_style);
+
 let images = [
     "https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp",
     "https://cdn.7tv.app/emote/6356194e5cc38d00a55f4015/4x.webp",
@@ -32,7 +36,8 @@ let images = [
 const PreviewMessages = [
     {
         userstate: {
-            "username": 'OhMunchy_:',
+            "username": 'OhMunchy_',
+            "display-name": 'OhMunchy_',
             "badges-raw": null,
             "badges": {},
             "color": "#ff0000"
@@ -41,7 +46,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'uni_k4:',
+            "username": 'uni_k4',
+            "display-name": 'uni_k4',
             "badges-raw": "broadcaster/1,twitch-recap-2024/1",
             "badges": {},
             "color": "#ffb3ff"
@@ -50,7 +56,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'de_palace:',
+            "username": 'de_palace',
+            "display-name": 'de_palace',
             "badges-raw": "subscriber/3,chatter-cs-go-2022/1",
             "badges": {},
             "color": "#1dee8b"
@@ -59,7 +66,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'ScotterTV:',
+            "username": 'ScotterTV',
+            "display-name": 'ScotterTV',
             "badges-raw": null,
             "badges": {},
             "color": "#fce803"
@@ -68,7 +76,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'strayyzz:',
+            "username": 'strayyzz',
+            "display-name": 'strayyzz',
             "badges-raw": "moderator/1,subscriber/3003",
             "badges": {},
             "color": "#00FF7F"
@@ -77,7 +86,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'jolong66:',
+            "username": 'jolong66',
+            "display-name": 'jolong66',
             "badges-raw": "vip/1,subscriber/0,sub-gift-leader/3",
             "badges": {},
             "color": "#FF69B4"
@@ -86,7 +96,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'ddelmun:',
+            "username": 'ddelmun',
+            "display-name": 'ddelmun',
             "badges-raw": "subscriber/2,bits/100",
             "badges": {},
             "color": undefined
@@ -218,6 +229,10 @@ async function fixChatPreview() {
     } else {
         chatDisplay.style.textShadow = "";
     }
+    
+    shadow_style.textContent = `#ChatDisplay > * {
+        filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
+    }`;
 
     const style = document.createElement('style');
     style.textContent = `
@@ -260,6 +275,7 @@ async function setUpPreview() {
     await getBadges();
 
     displayPreview();
+    fixChatPreview();
     setInterval(checkUrlChange, 100);
 }
 

@@ -2,6 +2,8 @@ const settingsDiv = document.getElementsByClassName("configuration")[0];
 const url_results = document.getElementById('url-results');
 const channel_input = document.getElementById('channel-input');
 
+let configuration_path = 'src/landingPage/configuration.json';
+
 let currentUrl = document.location.href;
 
 if (!currentUrl.endsWith('/')) {
@@ -10,118 +12,7 @@ if (!currentUrl.endsWith('/')) {
 
 url_results.textContent = currentUrl;
 
-const configuration = {
-    message_bold: {
-        name: 'Message are in <strong>bold</strong> text',
-        type: 'boolean',
-        value: true,
-        param: 'msgBold'
-    },
-    message_caps: {
-        name: 'Message are in UPPERCASE',
-        type: 'boolean',
-        value: false,
-        param: 'msgCaps'
-    },
-    font: {
-        name: 'Custom chat font (any font on your pc)',
-        type: 'text',
-        value: "inter",
-        param: 'font'
-    },
-    font_size: {
-        name: 'Font size (px)',
-        type: 'number',
-        param: 'fontSize',
-        max: 500,
-        min: 0,
-        value: 36
-    },
-    font_stroke: {
-        name: 'Font stroke',
-        type: 'boolean',
-        value: false,
-        param: 'fontStroke'
-    },
-    font_shadow: {
-        name: 'Font shadow',
-        type: 'number',
-        param: 'fontShadow',
-        max: 10,
-        min: 0,
-        value: 4
-    },
-    emote_size: {
-        name: 'Emote size (px)',
-        type: 'number',
-        param: 'emoteSize',
-        max: 500,
-        min: 0,
-        value: 36
-    },
-    fade_out: {
-        name: 'Text fade out (seconds)',
-        type: 'number',
-        param: 'fadeOut',
-        max: 600,
-        min: 0,
-        value: 0
-    },
-    chat_badges: {
-        name: 'Display badges',
-        type: 'boolean',
-        value: true,
-        param: 'badges'
-    },
-    msg_redeem: {
-        name: 'Display channel points redeem messages',
-        type: 'boolean',
-        value: true,
-        param: 'redeem'
-    },
-    bot_display: {
-        name: 'Display bots in chat (Based on FFZ bot badges)',
-        type: 'boolean',
-        value: true,
-        param: 'bots'
-    },
-    user_blacklist: {
-        name: 'Custom user blacklist (seperate using " ")',
-        type: 'text',
-        value: "",
-        param: 'userBL'
-    },
-    prefix_blacklist: {
-        name: 'Custom prefix blacklist (seperate using " ")',
-        type: 'text',
-        value: "",
-        param: 'prefixBL'
-    },
-    moderation_actions: {
-        name: 'Moderation actions (message deletion) effect displayed chat messages',
-        type: 'boolean',
-        value: true,
-        param: 'modAction'
-    },
-    mentions_color: {
-        name: 'Mentions are <div id="rainbow-text">Colored</div>',
-        type: 'boolean',
-        value: false,
-        param: 'mentionColor'
-    },
-    seventv_Paints: {
-        name: 'Display 7TV Paints',
-        type: 'boolean',
-        value: true,
-        param: 'paints'
-    },
-    seventv_Paints_Shadows: {
-        name: 'Display 7TV Paint Shadows (may cause drops in performance)',
-        type: 'boolean',
-        value: true,
-        param: 'paintShadows'
-    }
-};
+let configuration = {};
 
 const templates = {
     boolean: {
@@ -148,8 +39,31 @@ const templates = {
 
 let defaultSettings = [];
 
-function displaySettings() {
+async function displaySettings() {
     if (!settingsDiv) { return; }
+
+    try {
+        const response = await fetch(configuration_path);
+    
+        if (!response.ok) {
+            throw new Error("Failed to load in configuration.json");
+        }
+    
+        const data = await response.json();
+    
+        if (Object.keys(data).length < 1) {
+            throw new Error("configuration.json was loaded but it seems to be empty");
+        }
+    
+        configuration = data;
+    } catch (err) {
+        settingsDiv.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
+
+        return;
+    };
+
+    // PROCEED WITH LOADING THE SETTINGS DISPLAY
+
     let i = 0;
 
     defaultSettings = Object.values(configuration).map(setting => {

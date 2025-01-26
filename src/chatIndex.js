@@ -1,16 +1,5 @@
 console.log("chatIndex.js hooked up!")
 
-const FgBlack = "\x1b[30m";
-const FgRed = "\x1b[31m";
-const FgGreen = "\x1b[32m";
-const FgYellow = "\x1b[33m";
-const FgBlue = "\x1b[34m";
-const FgMagenta = "\x1b[35m";
-const FgCyan = "\x1b[36m";
-const FgWhite = "\x1b[37m";
-
-const BTTVZeroWidth = ['cvHazmat', 'cvMask'];
-
 let client;
 
 if (document.location.href.includes("?channel=")) {
@@ -73,27 +62,60 @@ async function onMessage(channel, userstate, message, self) {
         }
     }
 
+    // COMMAND TO PING THE WEBSOCKET
+
+    const validMessages = [
+        "dudewhereismy7tvpaint",
+        "dudewhereismy7tvbadge",
+        "dudewhydoes7tvnotupdatemycosmetics"
+    ];
+
+    if (validMessages.includes(message.toLowerCase()) && userstate["user-id"]) {
+        user_sevenTV_id = await get7TVUserID(userstate["user-id"]);
+
+        if (user_sevenTV_id) {
+            try {
+                const body = {
+                    "kind": "1",
+                    "passive": true,
+                    "session_id": "",
+                    "data": {
+                        "platform": "TWITCH",
+                        "id": channelTwitchID
+                    }
+                };
+    
+                fetch(`https://7tv.io/v3/users/${user_sevenTV_id}/presences`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+            } catch (err) {}
+        }
+    }
+
     // BLOCK BOTS
     const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username)
 
     if (FFZBadge && FFZBadge.id && FFZBadge.id == "bot") {
-        if (settings && settings.bots && settings.bots == "0") {
-            return
+        if (!await getSetting("bots")) {
+            return;
         }
     }
 
     if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username] && FFZUserBadgeData["user_badges"][userstate.username] === "2") {
-        if (settings && settings.bots && settings.bots == "0") {
-            return
+        if (!await getSetting("bots")) {
+            return;
         }
     }
 
     // BLOCK USERS
 
-    if (settings && settings.userBL && settings.userBL.includes(userstate.username)) {
-        return
+    if (await getSetting("userBL", { action: "includes", include: userstate.username })) {
+        return;
     }
-
 
     const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
 
@@ -129,6 +151,19 @@ let chatDisplay = document.getElementById("ChatDisplay");
 
 //CUSTOM 
 let customBadgeData = [];
+
+let config_path = 'src/landingPage/configuration.json';
+let config = {};
+
+//CONSOLE COLORS
+const FgBlack = "\x1b[30m";
+const FgRed = "\x1b[31m";
+const FgGreen = "\x1b[32m";
+const FgYellow = "\x1b[33m";
+const FgBlue = "\x1b[34m";
+const FgMagenta = "\x1b[35m";
+const FgCyan = "\x1b[36m";
+const FgWhite = "\x1b[37m";
 
 //TWITCH
 let channelTwitchID = '0';
@@ -185,11 +220,51 @@ let BTTVEmoteData = [];
 
 let allEmoteData = [];
 
+const BTTVZeroWidth = ['cvHazmat', 'cvMask'];
+
 async function trimPart(text) {
     if (text) {
         return text.trim()
     } else {
         return text
+    }
+}
+
+async function getSetting(setting_name, action) {
+    if (settings[setting_name]) {
+        if (action) {
+            if (action.action == "includes") {
+                if (settings[setting_name].includes(action.include)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if (settings[setting_name] == "0") { return false; }
+
+        return settings[setting_name];
+    } else {
+        let found_in_config = Object.keys(config).find(key => config[key].param === setting_name);
+
+        if (!found_in_config && configuration) {
+            found_in_config = Object.keys(configuration).find(key => configuration[key].param === setting_name);
+        }
+
+        if (found_in_config) {
+            let sourceConfig = config[found_in_config] ? config : configuration;
+
+            if (sourceConfig[found_in_config].value == "0") {
+                return false;
+            }
+
+            return sourceConfig[found_in_config].value;
+        } else {
+            console.log(setting_name, "not found");
+            return false;
+        }
+
     }
 }
 
@@ -200,17 +275,23 @@ async function handleMessage(userstate, message, channel) {
 
     const messagePrefix = message.charAt(0);
 
-    if (settings && settings.prefixBL && settings.prefixBL.includes(messagePrefix)) {
-        return
+    if (await getSetting("prefixBL", { action: "includes", include: messagePrefix })) {
+        return;
     }
 
     // BLOCK REDEEMS
 
-    if (settings && settings.redeem && settings.redeem === '0') {
+    if (!await getSetting("redeem")) {
         if (TTVUserRedeems[userstate.username]) {
             delete TTVUserRedeems[userstate.username];
             return;
         }
+    }
+
+    // BLOCK USERS NEEDED HERE FOR PREVIEW
+
+    if (await getSetting("userBL", { action: "includes", include: userstate.username })) {
+        return;
     }
 
     message = String(message).trimStart();
@@ -394,7 +475,7 @@ async function handleMessage(userstate, message, channel) {
         }
     }
 
-    const badges_html = badges
+    let badges_html = badges
         .map(badge =>
             `<span class="badge-wrapper">
                 <img style="background-color: ${badge.background_color || 'transparent'};" src="${badge.badge_url}" alt="${badge.alt}" class="badge" loading="lazy">
@@ -402,15 +483,15 @@ async function handleMessage(userstate, message, channel) {
         )
         .join("");
 
-    if (settings && settings.badges && settings.badges === '0') {
-        badges = '';
+    if (!await getSetting("badges")) {
+        badges_html = '';
     }
 
-    if (settings && settings.msgCaps && settings.msgCaps === '1') {
+    if (await getSetting("msgCaps")) {
         finalUsername = finalUsername.toUpperCase()
     }
 
-    if (settings && (!settings.msgBold || settings.msgBold === '1')) {
+    if (await getSetting("msgBold")) {
         rendererMessage = `<strong>${tagsReplaced}</strong>`;
     }
 
@@ -428,7 +509,7 @@ async function handleMessage(userstate, message, channel) {
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
 
-    if (settings && (!settings.msgBold || settings.msgBold === '1')) {
+    if (await getSetting("msgBold")) {
         results = `<strong>${results}</strong>`;
     }
 
@@ -475,10 +556,10 @@ async function handleMessage(userstate, message, channel) {
 }
 
 async function fadeOut(element) {
-    if (!settings || !settings.fadeOut) { return; }
+    if (!await getSetting("fadeOut")) { return; }
 
     try {
-        const fadeOutTime = settings.fadeOut * 1000
+        const fadeOutTime = await getSetting("fadeOut") * 1000
 
         setTimeout(() => {
             element.style.transition = 'opacity 1s ease';
@@ -493,7 +574,7 @@ async function fadeOut(element) {
 }
 
 async function checkPart(part, string) {
-    if (settings && (!settings.mentionColor || settings.mentionColor === '0')) { return false; }
+    if (!await getSetting("mentionColor")) { return; }
 
     return (part.toLowerCase() === string)
 }
@@ -781,7 +862,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             } else if (foundUser) {
                 lastEmote = false;
 
-                if (settings && settings.msgCaps && settings.msgCaps === '1') {
+                if (await getSetting("msgCaps")) {
                     part = part.toUpperCase()
                 }
 
@@ -793,7 +874,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             } else {
                 lastEmote = false;
 
-                if (settings && settings.msgCaps && settings.msgCaps === '1') {
+                if (await getSetting("msgCaps")) {
                     part = part.toUpperCase()
                 }
 
@@ -1155,6 +1236,40 @@ async function loadFFZ() {
 }
 
 async function loadChat() {
+    try {
+        const response = await fetch(config_path);
+
+        if (!response.ok) {
+            throw new Error("Failed to load in configuration.json");
+        }
+
+        const data = await response.json();
+
+        if (Object.keys(data).length < 1) {
+            throw new Error("configuration.json was loaded but it seems to be empty");
+        }
+
+        config = data;
+
+        config = Object.keys(data).reduce((acc, key) => {
+            acc[key] = {
+                value: data[key].value,
+                param: data[key].param
+            };
+            return acc;
+        }, {});
+    } catch (err) {
+        chatDisplay.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
+
+        chatDisplay.style.textShadow =
+            '-1px -1px 0 black, ' +
+            '1px -1px 0 black, ' +
+            '-1px 1px 0 black, ' +
+            '1px 1px 0 black';
+
+        return;
+    };
+
     // OVERLAY
 
     loadCustomBadges();
@@ -1236,8 +1351,8 @@ function removeInvisibleElements() {
     }
 }
 
-function deleteMessages(attribute, value) {
-    if (settings && settings.modAction && settings.modAction === '0') { return; }
+async function deleteMessages(attribute, value) {
+    if (!await getSetting("modAction")) { return; }
 
     if (attribute) {
         const elementsToDelete = chatDisplay.querySelectorAll(`[${attribute}="${value}"]`);
