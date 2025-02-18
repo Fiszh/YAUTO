@@ -165,6 +165,7 @@ input {
     margin: 0;
 }
 
+.setting_select,
 .setting_text,
 .setting_boolean,
 .setting_button,
@@ -289,4 +290,36 @@ input {
 
 .transition-button:hover {
     background-color: rgba(255, 255, 255, 0.089);
+}
+
+select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 0px;
+    color: white;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.057);
+    width: 200px; 
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+option {
+    padding: 8px;
+    font-size: 16px;
+    background-color: rgba(255, 0, 0, 0.057);
+}
+
+option:checked {
+    background-color: rgba(255, 255, 255, 0.212);
+    color: white;
+}
+
+select:hover {
+    background-color: rgba(255, 0, 0, 0.329);
+}
+
+select:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.329);
 }

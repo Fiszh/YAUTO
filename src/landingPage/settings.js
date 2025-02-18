@@ -44,17 +44,17 @@ async function displaySettings() {
 
     try {
         const response = await fetch(configuration_path);
-    
+
         if (!response.ok) {
             throw new Error("Failed to load in configuration.json");
         }
-    
+
         const data = await response.json();
-    
+
         if (Object.keys(data).length < 1) {
             throw new Error("configuration.json was loaded but it seems to be empty");
         }
-    
+
         configuration = data;
     } catch (err) {
         settingsDiv.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
@@ -216,6 +216,25 @@ async function displaySettings() {
             }
 
             i++;
+        } else if (setting.type === "select") {
+            const textSetting = document.createElement('div');
+            textSetting.className = 'setting_select';
+
+            let buttons_html = setting.options
+                .map(option => {
+                    i++;
+                    return `<option value="${option}">${option}</option>`;
+                })
+                .join("");
+
+            textSetting.innerHTML = `
+                <div class="setting_name">${setting.name}</div>
+                <select id="quantity-${i}" name="quantity">
+                    ${buttons_html}
+                </select>
+            `;
+
+            settingsDiv.append(textSetting);
         }
     }
 }

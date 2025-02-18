@@ -74,7 +74,7 @@ async function onMessage(channel, userstate, message, self) {
     if (validMessages.includes(message.toLowerCase()) && userstate["user-id"]) {
         user_sevenTV_id = await get7TVUserID(userstate["user-id"]);
 
-        if (user_sevenTV_id) {
+        if (user_sevenTV_id && false) {
             try {
                 const body = {
                     "kind": 1,
@@ -558,20 +558,18 @@ async function handleMessage(userstate, message, channel) {
 
 async function fadeOut(element) {
     if (!await getSetting("fadeOut")) { return; }
+    
+    const fadeOutTime = await getSetting("fadeOut") * 1000
 
-    try {
-        const fadeOutTime = await getSetting("fadeOut") * 1000
+    setTimeout(() => {
+        element.style.transition = 'opacity 1s ease';
+        element.classList.add('fade');
 
         setTimeout(() => {
-            element.style.transition = 'opacity 1s ease';
-            element.classList.add('fade');
+            element.remove();
+        }, 1000);
 
-            setTimeout(() => {
-                element.remove();
-            }, 1000);
-
-        }, fadeOutTime || 30000);
-    } catch (err) { }
+    }, fadeOutTime || 30000);
 }
 
 async function checkPart(part, string) {
