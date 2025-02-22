@@ -74,13 +74,13 @@ async function fetchFFZUserData() {
             }
             if (data.room["user_badge_ids"] && Object.keys(data.room["user_badge_ids"]).length > 0) {
                 const transformedBadges = {};
-
-                Object.entries(data.room["user_badges"]).forEach(([badge, users]) => {
+        
+                Object.entries(data.room["user_badge_ids"]).forEach(([badge, users]) => {
                     users.forEach(user => {
                         transformedBadges[user] = badge;
                     });
                 });
-
+        
                 FFZUserBadgeData['user_badges'] = transformedBadges;
             }
         }
