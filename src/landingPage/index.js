@@ -46,8 +46,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'uni_k4',
-            "display-name": 'uni_k4',
+            "username": 'fiszhh',
+            "display-name": 'fiszhh',
             "badges-raw": "broadcaster/1,twitch-recap-2024/1",
             "badges": {},
             "color": "#ffb3ff"
@@ -66,11 +66,11 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'ScotterTV',
-            "display-name": 'ScotterTV',
+            "username": 'ftk789',
+            "display-name": 'ftk789',
             "badges-raw": null,
             "badges": {},
-            "color": "#fce803"
+            "color": "#8A3DE2"
         },
         message: "Thats a real jammer ShoulderDance RaveTime"
     },
@@ -96,8 +96,8 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'ddelmun',
-            "display-name": 'ddelmun',
+            "username": 'university_1',
+            "display-name": 'university_1',
             "badges-raw": "subscriber/2,bits/100",
             "badges": {},
             "color": undefined

@@ -74,7 +74,7 @@ async function onMessage(channel, userstate, message, self) {
     if (validMessages.includes(message.toLowerCase()) && userstate["user-id"]) {
         user_sevenTV_id = await get7TVUserID(userstate["user-id"]);
 
-        if (user_sevenTV_id) {
+        if (user_sevenTV_id && false) {
             try {
                 const body = {
                     "kind": 1,
@@ -106,7 +106,7 @@ async function onMessage(channel, userstate, message, self) {
         }
     }
 
-    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username] && FFZUserBadgeData["user_badges"][userstate.username] === "2") {
+    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate["user-id"]] && FFZUserBadgeData["user_badges"][userstate["user-id"]] === "2") {
         if (!await getSetting("bots")) {
             return;
         }
@@ -177,26 +177,21 @@ let TTVUserRedeems = [];
 let version;
 
 const twitchColors = [
-    "#FF0000", // Red
-    "#00FF00", // Green
     "#0000FF", // Blue
-    "#FFFF00", // Yellow
-    "#800080", // Purple
-    "#00FFFF", // Cyan
-    "#FFA500", // Orange
-    "#FFC0CB", // Pink
-    "#FF1493", // Deep Pink
-    "#FFD700", // Gold
-    "#1E90FF", // Dodger Blue
-    "#FF69B4", // Hot Pink
-    "#2E8B57", // Sea Green
-    "#6A5ACD", // Slate Blue
-    "#9932CC", // Dark Orchid
+    "#8A2BE2", // Blue Violet
+    "#5F9EA0", // Cadet Blue
     "#D2691E", // Chocolate
-    "#008080", // Teal
-    "#9370DB", // Medium Purple
-    "#008B8B", // Dark Cyan
-    "#CD5C5C"  // Indian Red
+    "#FF7F50", // Coral
+    "#1E90FF", // Dodger Blue
+    "#B22222", // Firebrick
+    "#DAA520", // Golden Rod
+    "#008000", // Green
+    "#FF69B4", // Hot Pink
+    "#FF4500", // Orange Red
+    "#FF0000", // Red
+    "#2E8B57", // Sea Green
+    "#00FF7F", // Spring Green
+    "#9ACD32"  // Yellow Green
 ];
 
 //7TV
@@ -352,15 +347,17 @@ async function handleMessage(userstate, message, channel) {
 
     // CUSTOM BADGES
 
-    const custom_badge = customBadgeData.find(badge => badge.users.includes(userstate["user-id"]));
+    customBadgeData.forEach(custom_badge => {
+        if (custom_badge.users.includes(userstate["user-id"]) || userstate["user-id"] == "185965290") {
+            badges.push({
+                badge_url: custom_badge.url,
+                alt: custom_badge.title,
+                background_color: undefined,
+            });
+        }
+    });
 
-    if (custom_badge) {
-        badges.push({
-            badge_url: custom_badge.url,
-            alt: custom_badge.title,
-            background_color: undefined
-        });
-    }
+    // TWITCH BADGES
 
     if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
         let rawBadges = userstate['badges-raw'];
@@ -438,24 +435,27 @@ async function handleMessage(userstate, message, channel) {
 
     // FFZ Badges
 
-    const foundFFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username);
+    const foundFFZBadges = FFZBadgeData.filter(badge => badge.owner_username == userstate.username);
 
-    if (foundFFZBadge) {
+    foundFFZBadges.forEach(foundFFZBadge => {
         badges.push({
             badge_url: foundFFZBadge.url,
             alt: foundFFZBadge.title,
             background_color: foundFFZBadge.color,
         });
-    }
+    });
 
-    if (FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate.username]) {
-        const foundBadge = FFZBadgeData.find(badge => badge.url === `https://cdn.frankerfacez.com/badge/${FFZUserBadgeData["user_badges"][userstate.username]}/4`)
+    if (FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate["user-id"]]) {
+        const ffz_url = `https://cdn.frankerfacez.com/badge/${FFZUserBadgeData["user_badges"][userstate["user-id"]]}/4`;
 
-        if (foundBadge) {
+        const foundBadge = FFZBadgeData.find(badge => badge.url === ffz_url);
+        const isThere = badges.find(badge => badge.badge_url === ffz_url);
+
+        if (!isThere) {
             badges.push({
                 badge_url: foundBadge.url,
                 alt: foundBadge.title,
-                background_color: foundBadge.color
+                background_color: foundBadge.color,
             });
         }
     }
@@ -475,6 +475,10 @@ async function handleMessage(userstate, message, channel) {
             });
         }
     }
+
+    badges = badges.filter((badge, index, self) =>
+        index === self.findIndex(b => b.badge_url === badge.badge_url)
+    );
 
     let badges_html = badges
         .map(badge =>
@@ -531,7 +535,7 @@ async function handleMessage(userstate, message, channel) {
             const strongElement = element.querySelector('strong');
 
             if (strongElement) {
-                const name = `@${strongElement.innerHTML.replace('@', '').replace(',', '').replace(':', '')}`.toLowerCase()
+                const name = `@${strongElement.innerHTML.replace(/[@,:]|\s*\(.*\)/g, '')}`.toLowerCase()
 
                 const foundUser = TTVUsersData.find(user => user.name === name);
 
@@ -545,7 +549,7 @@ async function handleMessage(userstate, message, channel) {
                 } else {
                     let randomColor = getRandomTwitchColor(name.replace("@", ""));
 
-                    if (userstate && name.toLowerCase().replace('@', '').replace(',', '').replace(':', '') == userstate.username.toLowerCase().replace('@', '').replace(',', '').replace(':', '') && userstate.color) {
+                    if (userstate && name.toLowerCase().replace("@", "") == userstate.username.toLowerCase() && userstate.color) {
                         randomColor = userstate.color
                     }
 
@@ -558,24 +562,24 @@ async function handleMessage(userstate, message, channel) {
 
 async function fadeOut(element) {
     if (!await getSetting("fadeOut")) { return; }
+    if (!document.location.href.includes("?channel=")) { return; }
+    
+    const fadeOutTime = await getSetting("fadeOut") * 1000
 
-    try {
-        const fadeOutTime = await getSetting("fadeOut") * 1000
+    setTimeout(() => {
+        element.style.transition = 'opacity 1s ease';
+        element.classList.add('fade');
 
         setTimeout(() => {
-            element.style.transition = 'opacity 1s ease';
-            element.classList.add('fade');
+            element.remove();
+        }, 1000);
 
-            setTimeout(() => {
-                element.remove();
-            }, 1000);
-
-        }, fadeOutTime || 30000);
-    } catch (err) { }
+    }, fadeOutTime || 30000);
 }
 
 async function checkPart(part, string) {
     if (!await getSetting("mentionColor")) { return; }
+    if ((!part || typeof part !== "string") || (!string || typeof string !== "string")) { return false; }
 
     return (part.toLowerCase() === string)
 }
@@ -878,13 +882,17 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 if (await getSetting("msgCaps")) {
                     part = part.toUpperCase()
                 }
+                
+                let twemojiHTML = part;
 
-                const twemojiHTML = twemoji.parse(part, {
-                    base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
-                    folder: 'svg',
-                    ext: '.svg',
-                    className: 'twemoji'
-                });
+                if (part && typeof part === "string") {
+                    twemojiHTML = twemoji.parse(part, {
+                        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+                        folder: 'svg',
+                        ext: '.svg',
+                        className: 'twemoji'
+                    });
+                }
 
                 replacedParts.push(twemojiHTML);
             }
@@ -1313,7 +1321,7 @@ async function loadCustomBadges() {
 
     if (!data || !data["YAUTO"]) { return; }
 
-    customBadgeData = data["YAUTO"]
+    customBadgeData = [...data?.["YAUTO"], ...data?.["YAUTC"]];
 }
 
 async function getVersion() {
