@@ -3,7 +3,7 @@ const current_url_split = url.split('/')
 let load = 'main'
 let settings = {};
 
-let desiredHeight = 36;
+let desiredHeight = 25;
 
 if (current_url_split.length > 0 && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
     const settings = current_url_split[current_url_split.length - 1].split("?")
@@ -110,8 +110,8 @@ if (load === "chat") {
         document.body.style.fontSize = `${settings.fontSize}px`;
         desiredHeight = Number(settings.fontSize)
     } else {
-        document.body.style.fontSize = `36px`;
-        desiredHeight = 36
+        document.body.style.fontSize = `20px`;
+        desiredHeight = 25
     }
 
     if (settings.emoteSize) {

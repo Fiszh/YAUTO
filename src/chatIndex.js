@@ -361,7 +361,7 @@ async function handleMessage(userstate, message, channel) {
 
     // APRIL FIRST
     // FREE STAFF BADGE
-    if (settings["april"] != "0") {
+    if (settings["april"] == "1") {
         userstate['badges-raw'] = `staff/1,${userstate['badges-raw']}`
     }
 
@@ -484,7 +484,7 @@ async function handleMessage(userstate, message, channel) {
 
     // APRIL FIRST
     // FAKE ADMIN BADGE
-    if (settings["april"] != "0") {
+    if (settings["april"] == "1") {
         badges.push({
             badge_url: "https://cdn.7tv.app/badge/01GAFAKCYG000E8VNG1S1RMTBH/4x.avif",
             alt: "7TV Admin",
@@ -528,8 +528,8 @@ async function handleMessage(userstate, message, channel) {
 
     // APRIL FIRST
     // RANDOM SIZE, FONT AND FLIPPED OVER
-    if (settings["april"] != "0") {
-        messageElement.style.fontSize = Math.round(Math.random() * 35 + 15) + 'px';
+    if (settings["april"] == "1") {
+        messageElement.style.fontSize = Math.round(Math.random() * 20 + 15) + 'px';
 
         let scaleX = Math.round(Math.random() + 0.7);
         let scaleY = Math.round(Math.random() + 0.7);

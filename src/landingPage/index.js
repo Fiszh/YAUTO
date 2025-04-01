@@ -210,14 +210,14 @@ async function fixChatPreview() {
         chatDisplay.style.fontSize = `${settings.fontSize}px`;
         desiredHeight = Number(settings.fontSize)
     } else {
-        chatDisplay.style.fontSize = `36px`;
-        desiredHeight = 36;
+        chatDisplay.style.fontSize = `20px`;
+        desiredHeight = 25;
     }
 
     if (settings.emoteSize) {
         desiredHeight = Number(settings.emoteSize)
     } else {
-        desiredHeight = 36;
+        desiredHeight = 25;
     }
 
     if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {

@@ -23,7 +23,7 @@
         "param": "fontSize",
         "max": 500,
         "min": 0,
-        "value": 36
+        "value": 20
     },
     "font_stroke": {
         "name": "Font stroke",
@@ -45,7 +45,7 @@
         "param": "emoteSize",
         "max": 500,
         "min": 0,
-        "value": 36
+        "value": 25
     },
     "fade_out": {
         "name": "Text fade out (seconds)",
