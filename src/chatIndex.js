@@ -85,15 +85,15 @@ async function onMessage(channel, userstate, message, self) {
                         "id": channelTwitchID
                     }
                 };
-    
+
                 fetch(`https://7tv.io/v3/users/${user_sevenTV_id}/presences`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(body)
                 });
-            } catch (err) {}
+            } catch (err) { }
         }
     }
 
@@ -359,6 +359,10 @@ async function handleMessage(userstate, message, channel) {
 
     // TWITCH BADGES
 
+    // APRIL FIRST
+    // FREE STAFF BADGE
+    userstate['badges-raw'] = `staff/1,${userstate['badges-raw']}`
+
     if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
         let rawBadges = userstate['badges-raw'];
         let badgesSplit = rawBadges.split(',');
@@ -476,6 +480,14 @@ async function handleMessage(userstate, message, channel) {
         }
     }
 
+    // APRIL FIRST
+    // FAKE ADMIN BADGE
+    badges.push({
+        badge_url: "https://cdn.7tv.app/badge/01GAFAKCYG000E8VNG1S1RMTBH/4x.avif",
+        alt: "7TV Admin",
+        background_color: undefined
+    });
+
     badges = badges.filter((badge, index, self) =>
         index === self.findIndex(b => b.badge_url === badge.badge_url)
     );
@@ -509,6 +521,43 @@ async function handleMessage(userstate, message, channel) {
                         </div>`;
 
     messageElement.innerHTML = messageHTML;
+
+    // APRIL FIRST
+    // RANDOM SIZE, FONT AND FLIPPED OVER
+    messageElement.style.fontSize = Math.round(Math.random() * 35 + 15) + 'px';
+
+    let scaleX = Math.round(Math.random() + 0.7);
+    let scaleY = Math.round(Math.random() + 0.7);
+    let rotation = '';
+
+    if (Math.random() < (1 / 8)) {
+        rotation = 'rotate(180deg)';
+    }
+
+    messageElement.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) ${rotation}`;
+
+    const random_fonts = [
+        "Arial",
+        "Times New Roman",
+        "Courier New",
+        "Verdana",
+        "Georgia",
+        "Comic Sans MS",
+        "Trebuchet MS",
+        "Impact",
+        "Wingdings",
+        "Symbol",
+        "MS Sans Serif",
+        "Tahoma",
+        "Calibri",
+        "Segoe UI",
+        "Consolas",
+        "Inter"
+    ];
+
+    const randomIndex = Math.floor(Math.random() * random_fonts.length);
+    const random_font = random_fonts[randomIndex];
+    messageElement.style.fontFamily = random_font;
 
     fadeOut(messageElement);
 
@@ -563,7 +612,7 @@ async function handleMessage(userstate, message, channel) {
 async function fadeOut(element) {
     if (!await getSetting("fadeOut")) { return; }
     if (!document.location.href.includes("?channel=")) { return; }
-    
+
     const fadeOutTime = await getSetting("fadeOut") * 1000
 
     setTimeout(() => {
@@ -882,7 +931,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                 if (await getSetting("msgCaps")) {
                     part = part.toUpperCase()
                 }
-                
+
                 let twemojiHTML = part;
 
                 if (part && typeof part === "string") {
