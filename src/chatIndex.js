@@ -11,21 +11,27 @@ if (document.location.href.includes("?channel=")) {
         channels: [settings.channel]
     });
 
-    const connecting = document.createElement('div');
-    connecting.classList.add('connecting-text');
-    connecting.textContent = `Connecting to ${settings.channel} chat`;
+    const loadingUI = document.createElement('div');
+    loadingUI.id = 'loadingUI';
 
-    if (document.getElementById('ChatDisplay')) {
-        document.getElementById('ChatDisplay').appendChild(connecting);
-    }
+    const img = document.createElement('img');
+    img.src = 'imgs/loading.gif';
+    img.alt = 'loading';
+
+    loadingUI.appendChild(img);
+    loadingUI.appendChild(document.createTextNode(`Connecting to ${settings.channel} chat...`));
+
+    document.body.appendChild(loadingUI);
 
     client.connect()
 
     client.on('connected', async (address, port) => {
-        const connecting = document.getElementsByClassName('connecting-text');
 
-        if (connecting) {
-            connecting[0].remove();
+        if (loadingUI) {
+            loadingUI.lastChild.textContent = "Connected";
+            loadingUI.style.opacity = '0';
+        
+            setTimeout(() => loadingUI.remove(), 300);
         }
 
         console.log("connected!")
@@ -671,7 +677,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             }
 
             // Search for user if no emote is found
-            if (!foundEmote && (!await getSetting("mentionColor"))) { // check if mention color is enabled
+            if (!foundEmote && (await getSetting("mentionColor"))) { // check if mention color is enabled
                 foundUser = TTVUsersData.find(user => {
                     const userName = user.name.toLowerCase();
                     return [userName, userName.slice(1), `${userName},`, `${userName.slice(1)},`].some(val => part.toLowerCase() == val);
