@@ -1,7 +1,7 @@
 async function pushStyle(object) {
     if (!object) { return; }
 
-    if (object["badge"] && Object.keys(object["badge"]).length > 0) {
+    if (object["badge"] && Object.keys(object["badge"]).length) {
         const data = object["badge"]
 
         const foundBadge = cosmetics.badges.find(badge => badge.id === data.id);
@@ -15,7 +15,7 @@ async function pushStyle(object) {
         }
     }
 
-    if (object["paint"] && Object.keys(object["paint"]).length > 0) {
+    if (object["paint"] && Object.keys(object["paint"]).length) {
         const data = object["paint"]
 
         const foundPaint = cosmetics.paints.find(paint => paint.id === data.id)
@@ -27,7 +27,7 @@ async function pushStyle(object) {
 
             const randomColor = getRandomTwitchColor()
 
-            if (data.stops.length > 0) {
+            if (data.stops.length) {
                 const normalizedColors = data.stops.map((stop) => ({
                     at: stop.at * 100,
                     color: stop.color
@@ -75,7 +75,7 @@ async function pushStyle(object) {
             // SHADOWS
             let shadow = null;
 
-            if (data.shadows.length > 0) {
+            if (data.shadows.length) {
                 const shadows = data.shadows;
 
                 shadow = await shadows.map(shadow => {
@@ -133,7 +133,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
 
     const userStyle = userData["style"]
 
-    if (userStyle && Object.keys(userStyle).length > 0) {
+    if (userStyle && Object.keys(userStyle).length) {
         pushStyle(userStyle)
     }
 
@@ -148,7 +148,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         "personal_set_id": [],
     }
 
-    if (userStyle && Object.keys(userStyle).length > 0) {
+    if (userStyle && Object.keys(userStyle).length) {
         if (userStyle["paint"]) {
             infoTable.paint_id = userStyle["paint"]["id"]
         }
@@ -162,12 +162,12 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         infoTable.avatar_url = userData.avatar_url
     }
 
-    if (userData["emote_sets"] && userData["emote_sets"].length > 0) {
+    if (userData["emote_sets"] && userData["emote_sets"].length) {
         for (let set of userData["emote_sets"]) {
             if (set && set["flags"] && (set["flags"] === 4 || set["flags"] === 11)) {
                 infoTable["personal_set_id"].push(set["id"])
 
-                if (set["emotes"] && set["emotes"].length > 0) {
+                if (set["emotes"] && set["emotes"].length) {
                     const emotes = await mapPersonalEmotes(set["emotes"]);
                     infoTable["personal_emotes"].push(...emotes);
                 }

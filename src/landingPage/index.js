@@ -4,10 +4,6 @@ let lastUrl = urlDiv.textContent.trim();
 const button = document.getElementById("colorToggleButton");
 let isWhite = false;
 
-// APPEND SHADOW STYLE TO MAKE IT VISIBLE IN PREVIEW
-var shadow_style = document.createElement('style');
-document.head.appendChild(shadow_style);
-
 let images = [
     "https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp",
     "https://cdn.7tv.app/emote/6356194e5cc38d00a55f4015/4x.webp",
@@ -193,61 +189,6 @@ async function displayPreview() {
     });
 }
 
-async function fixChatPreview() {
-    if (settings.font) {
-        chatDisplay.style.fontFamily = `"${settings.font}", "Inter"`;
-    } else {
-        chatDisplay.style.fontFamily = "Inter";
-    }
-
-    if (settings.fontShadow) {
-        chatDisplay.style.filter = `drop-shadow(${settings.fontStroke} ${settings.fontStroke} 0.2rem black)`;
-    } else {
-        chatDisplay.style.filter = '';
-    }
-
-    if (settings.fontSize) {
-        chatDisplay.style.fontSize = `${settings.fontSize}px`;
-        desiredHeight = Number(settings.fontSize)
-    } else {
-        chatDisplay.style.fontSize = `36px`;
-        desiredHeight = 36;
-    }
-
-    if (settings.emoteSize) {
-        desiredHeight = Number(settings.emoteSize)
-    } else {
-        desiredHeight = 36;
-    }
-
-    if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
-        chatDisplay.style.textShadow =
-            '-1px -1px 0 black, ' +
-            '1px -1px 0 black, ' +
-            '-1px 1px 0 black, ' +
-            '1px 1px 0 black';
-    } else {
-        chatDisplay.style.textShadow = "";
-    }
-    
-    shadow_style.textContent = `#ChatDisplay > * {
-        filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
-    }`;
-
-    const style = document.createElement('style');
-    style.textContent = `
-        .twemoji {
-            width: ${desiredHeight}px !important;
-            height: ${desiredHeight}px !important;
-            max-width: ${desiredHeight}px;
-            max-height: ${desiredHeight}px;
-            display: inline-block;
-            vertical-align: middle;
-            line-height: normal;
-        }
-    `;
-}
-
 async function waitForFunction(funcName) {
     while (typeof window[funcName] !== 'function') {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -259,7 +200,7 @@ function checkUrlChange() {
     if (currentUrl !== lastUrl) {
         lastUrl = currentUrl;
         displayPreview();
-        fixChatPreview();
+        appendSettings(chatDisplay);
     }
 }
 
@@ -275,7 +216,7 @@ async function setUpPreview() {
     await getBadges();
 
     displayPreview();
-    fixChatPreview();
+    appendSettings(chatDisplay);
     setInterval(checkUrlChange, 100);
 }
 

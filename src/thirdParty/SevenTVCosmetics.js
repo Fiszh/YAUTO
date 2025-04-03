@@ -46,7 +46,7 @@ async function updateCosmetics(body) {
 
                 let push = {};
 
-                if (data.stops.length > 0) {
+                if (data.stops.length) {
                     const normalizedColors = data.stops.map((stop) => ({
                         at: stop.at * 100,
                         color: stop.color
@@ -94,7 +94,7 @@ async function updateCosmetics(body) {
                 // SHADOWS
                 let shadow = null;
 
-                if (data.shadows.length > 0) {
+                if (data.shadows.length) {
                     const shadows = data.shadows;
 
                     shadow = await shadows.map(shadow => {
