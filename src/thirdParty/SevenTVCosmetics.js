@@ -250,14 +250,13 @@ async function createCosmetic7TVProfile(body) {
 }
 
 async function mapPersonalEmotes(body) {
-    console.log(body)
     return body.pushed.map(emoteData => {
-        if (!emoteData) { return; }
+        if (!emoteData) { return; };
 
-        let emote = emoteData.value
+        let emote = emoteData.value;
 
         if (!emoteData["value"]) {
-            emote = emoteData
+            emote = emoteData;
         }
 
         const owner = emote.data?.owner;
@@ -288,7 +287,7 @@ async function mapPersonalEmotes(body) {
 
 async function displayCosmeticPaint(user_id, color, textElement) {
     const foundUser = cosmetics.user_info.find(user => user["ttv_user_id"] === user_id);
-    const randomColor = getRandomTwitchColor()
+    const randomColor = getRandomTwitchColor();
 
     if (foundUser && (foundUser["paint_id"] || await getSetting("paints"))) {
         const foundPaint = cosmetics.paints.find(paint => paint.id === foundUser["paint_id"]);
