@@ -3,9 +3,9 @@ const current_url_split = url.split('/')
 let load = 'main'
 let settings = {};
 
-let desiredHeight = 25;
+let desiredHeight = 36;
 
-if (current_url_split.length > 0 && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
+if (current_url_split.length && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
     const settings = current_url_split[current_url_split.length - 1].split("?")
 
     console.log(settings)
@@ -60,11 +60,11 @@ if (load === "chat") {
             element.remove();
         }
     };
-    
+
     removeElement(container);
     removeElement(logo);
     removeElement(footer);
-    
+
     const scripts = document.querySelectorAll('script');
 
     scripts.forEach(script => {
@@ -79,67 +79,20 @@ if (load === "chat") {
 
     document.head.appendChild(link);
 
-    appendScript('src/thirdParty/7TV.js')
-    appendScript('src/thirdParty/SevenTVCosmetics.js')
-    appendScript('src/thirdParty/SevenTVHelperV2.js')
-    appendScript('src/thirdParty/BTTV.js')
-    appendScript('src/thirdParty/FFZ.js')
+    appendScript('src/thirdParty/7TV.js');
+    appendScript('src/thirdParty/SevenTVCosmetics.js');
+    appendScript('src/thirdParty/SevenTVHelperV2.js');
+    appendScript('src/thirdParty/BTTV.js');
+    appendScript('src/thirdParty/FFZ.js');
 
     // MAIN INDEX
-    appendScript('src/chatIndex.js')
+    appendScript('src/chatIndex.js');
 
     //UPDATE DETECTOR
-    appendScript('src/detectUpdate.js')
+    appendScript('src/detectUpdate.js');
 
-    if (settings.font) {
-        document.body.style.fontFamily = `"${settings.font}", "Inter"`;
-    }
-
-    if (!settings.fontShadow || String(settings.fontShadow) !== "0") {
-        var shadow_style = document.createElement('style');
-
-        var shadow_css = `#ChatDisplay > * {
-                        filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
-                    }`;
-
-        shadow_style.appendChild(document.createTextNode(shadow_css));
-        document.head.appendChild(shadow_style);
-    }
-
-    if (settings.fontSize) {
-        document.body.style.fontSize = `${settings.fontSize}px`;
-        desiredHeight = Number(settings.fontSize)
-    } else {
-        document.body.style.fontSize = `20px`;
-        desiredHeight = 25
-    }
-
-    if (settings.emoteSize) {
-        desiredHeight = Number(settings.emoteSize)
-    }
-
-    if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
-        document.body.style.textShadow =
-            '-1px -1px 0 black, ' +
-            '1px -1px 0 black, ' +
-            '-1px 1px 0 black, ' +
-            '1px 1px 0 black';
-    }
-
-    const style = document.createElement('style');
-    style.textContent = `
-        .twemoji {
-            width: ${desiredHeight}px !important;
-            height: ${desiredHeight}px !important;
-            max-width: ${desiredHeight}px;
-            max-height: ${desiredHeight}px;
-            display: inline-block;
-            vertical-align: middle;
-            line-height: normal;
-        }
-    `;
-
-    document.head.appendChild(style);
+    // SETTINGS 
+    appendSettings(document.getElementById("ChatDisplay"));
 } else {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -162,4 +115,7 @@ if (load === "chat") {
     appendScript('src/chatIndex.js')
 
     appendScript('src/thirdParty/7TV.js')
+
+    // SETTINGS 
+    appendSettings(document.getElementById("ChatDisplay"));
 }

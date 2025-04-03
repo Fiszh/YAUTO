@@ -16,6 +16,8 @@ body {
     justify-content: flex-end;
     overflow: hidden;
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 body::-webkit-scrollbar,
@@ -25,20 +27,17 @@ body::-webkit-scrollbar,
 
 .name-wrapper,
 .badge-wrapper,
-.emote-wrapper {
+.bits-wrapper {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
     line-height: normal;
 }
 
 .bits-number {
-    position: relative;
-    display: inline-block;
-    line-height: normal;
-    vertical-align: middle;
-    text-align: center;
-    top: 50%;
-    transform: translateY(-50%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 5px;
 }
 
 .emote-wrapper {
@@ -61,4 +60,43 @@ body::-webkit-scrollbar,
 
 .fade {
     opacity: 0;
+}
+
+.emote-wrapper {
+    display: inline-grid;
+    position: relative;
+    grid-auto-rows: 0px;
+    line-height: normal;
+    justify-content: center;
+}
+
+.emote {
+    justify-self: center;
+}
+
+.emote.emoji {
+    height: 100vh;
+}
+
+#loadingUI {
+    padding: 15px 15px;
+    height: auto;
+    width: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bolder;
+    transition: all 0.3s;
+}
+
+#loadingUI img {
+    max-height: 25vh;
+    object-fit: contain;
 }

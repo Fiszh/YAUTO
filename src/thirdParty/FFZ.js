@@ -9,7 +9,7 @@ async function fetchFFZGlobalEmotes() {
         FFZGlobalEmoteData = data.sets[data.default_sets[0]].emoticons.map(emote => {
             const owner = emote.owner;
 
-            const creator = owner && Object.keys(owner).length > 0
+            const creator = owner && Object.keys(owner).length
                 ? owner.display_name || owner.name || "UNKNOWN"
                 : "NONE";
 
@@ -43,7 +43,7 @@ async function fetchFFZUserData() {
         FFZEmoteData = data.sets[data.room.set].emoticons.map(emote => {
             const owner = emote.owner;
 
-            const creator = owner && Object.keys(owner).length > 0
+            const creator = owner && Object.keys(owner).length
                 ? owner.display_name || owner.name || "UNKNOWN"
                 : "NONE";
 
@@ -60,19 +60,19 @@ async function fetchFFZUserData() {
         // BADGES 
 
         if (data.room) {
-            if (data.room["vip_badge"] && Object.keys(data.room["vip_badge"]).length > 0) {
+            if (data.room["vip_badge"] && Object.keys(data.room["vip_badge"]).length) {
                 const maxKey = Math.max(...Object.keys(data.room["vip_badge"]).map(Number));
                 const maxUrl = data.room["vip_badge"][maxKey.toString()];
 
                 FFZUserBadgeData['vip_badge'] = maxUrl
             }
-            if (data.room["mod_urls"] && Object.keys(data.room["mod_urls"]).length > 0) {
+            if (data.room["mod_urls"] && Object.keys(data.room["mod_urls"]).length) {
                 const maxKey = Math.max(...Object.keys(data.room["mod_urls"]).map(Number));
                 const maxUrl = data.room["mod_urls"][maxKey.toString()];
 
                 FFZUserBadgeData['mod_badge'] = maxUrl
             }
-            if (data.room["user_badge_ids"] && Object.keys(data.room["user_badge_ids"]).length > 0) {
+            if (data.room["user_badge_ids"] && Object.keys(data.room["user_badge_ids"]).length) {
                 const transformedBadges = {};
         
                 Object.entries(data.room["user_badge_ids"]).forEach(([badge, users]) => {

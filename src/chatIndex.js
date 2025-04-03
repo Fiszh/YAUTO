@@ -11,21 +11,27 @@ if (document.location.href.includes("?channel=")) {
         channels: [settings.channel]
     });
 
-    const connecting = document.createElement('div');
-    connecting.classList.add('connecting-text');
-    connecting.textContent = `Connecting to ${settings.channel} chat`;
+    const loadingUI = document.createElement('div');
+    loadingUI.id = 'loadingUI';
 
-    if (document.getElementById('ChatDisplay')) {
-        document.getElementById('ChatDisplay').appendChild(connecting);
-    }
+    const img = document.createElement('img');
+    img.src = 'imgs/loading.gif';
+    img.alt = 'loading';
+
+    loadingUI.appendChild(img);
+    loadingUI.appendChild(document.createTextNode(`Connecting to ${settings.channel} chat...`));
+
+    document.body.appendChild(loadingUI);
 
     client.connect()
 
     client.on('connected', async (address, port) => {
-        const connecting = document.getElementsByClassName('connecting-text');
 
-        if (connecting) {
-            connecting[0].remove();
+        if (loadingUI) {
+            loadingUI.lastChild.textContent = "Connected";
+            loadingUI.style.opacity = '0';
+        
+            setTimeout(() => loadingUI.remove(), 300);
         }
 
         console.log("connected!")
@@ -35,20 +41,24 @@ if (document.location.href.includes("?channel=")) {
 }
 
 async function onMessage(channel, userstate, message, self) {
-    // MOD RELOAD COMMAND
+    // MOD COMMANDS
 
-    if (userstate['badges-raw'] || String(userstate["user-id"]) === "528761326") {
-        if (String(userstate["user-id"]) === "528761326" || userstate.mod || userstate['badges-raw'].includes('broadcaster/1')) {
-            if (message.toLowerCase() === "!reloadoverlay") {
+    if (String(userstate["user-id"]) == "528761326" || userstate?.mod || userstate?.['badges-raw']?.includes('broadcaster/1')) {
+        switch (message.toLowerCase()) {
+            case "!reloadoverlay":
                 window.location.reload(true);
-            } else if (message.toLowerCase() === "!refreshoverlay") {
+                break;
+            case "!refreshoverlay":
                 loadChat();
-            } else if (message.toLowerCase() === "!reloadwebsockets") {
+                break;
+            case "!reloadwebsockets":
                 try {
                     SevenTVWebsocket.close();
                     BTTVWebsocket.close();
                 } catch (err) { }
-            }
+                break;
+            default:
+                break;
         }
     }
 
@@ -62,51 +72,16 @@ async function onMessage(channel, userstate, message, self) {
         }
     }
 
-    // COMMAND TO PING THE WEBSOCKET
-
-    const validMessages = [
-        "dudewhereismy7tvpaint",
-        "dudewhereismy7tvbadge",
-        "dudewhydoes7tvnotupdatemycosmetics",
-        "dudewherearemy7tvcosmetics"
-    ];
-
-    if (validMessages.includes(message.toLowerCase()) && userstate["user-id"]) {
-        user_sevenTV_id = await get7TVUserID(userstate["user-id"]);
-
-        if (user_sevenTV_id && false) {
-            try {
-                const body = {
-                    "kind": 1,
-                    "passive": true,
-                    "session_id": "",
-                    "data": {
-                        "platform": "TWITCH",
-                        "id": channelTwitchID
-                    }
-                };
-
-                fetch(`https://7tv.io/v3/users/${user_sevenTV_id}/presences`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body)
-                });
-            } catch (err) { }
-        }
-    }
-
     // BLOCK BOTS
-    const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username)
+    const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username);
 
-    if (FFZBadge && FFZBadge.id && FFZBadge.id == "bot") {
+    if (FFZBadge?.id == "bot") {
         if (!await getSetting("bots")) {
             return;
         }
     }
 
-    if (FFZUserBadgeData && FFZUserBadgeData["user_badges"] && FFZUserBadgeData["user_badges"][userstate["user-id"]] && FFZUserBadgeData["user_badges"][userstate["user-id"]] === "2") {
+    if (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2") {
         if (!await getSetting("bots")) {
             return;
         }
@@ -133,7 +108,6 @@ async function onMessage(channel, userstate, message, self) {
             name: `@${userstate.username}`,
             color: userColor,
             cosmetics: foundUserCosmetics,
-            avatar: null,
             userId: userstate["user-id"]
         };
 
@@ -277,11 +251,9 @@ async function handleMessage(userstate, message, channel) {
 
     // BLOCK REDEEMS
 
-    if (!await getSetting("redeem")) {
-        if (TTVUserRedeems[userstate.username]) {
-            delete TTVUserRedeems[userstate.username];
-            return;
-        }
+    if ((!await getSetting("redeem")) && TTVUserRedeems?.[userstate.username]) {
+        delete TTVUserRedeems[userstate.username];
+        return;
     }
 
     // BLOCK USERS NEEDED HERE FOR PREVIEW
@@ -359,13 +331,7 @@ async function handleMessage(userstate, message, channel) {
 
     // TWITCH BADGES
 
-    // APRIL FIRST
-    // FREE STAFF BADGE
-    if (settings["april"] == "1") {
-        userstate['badges-raw'] = `staff/1,${userstate['badges-raw']}`
-    }
-
-    if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length > 0) {
+    if (userstate['badges-raw'] && Object.keys(userstate['badges-raw']).length) {
         let rawBadges = userstate['badges-raw'];
         let badgesSplit = rawBadges.split(',');
 
@@ -455,9 +421,8 @@ async function handleMessage(userstate, message, channel) {
         const ffz_url = `https://cdn.frankerfacez.com/badge/${FFZUserBadgeData["user_badges"][userstate["user-id"]]}/4`;
 
         const foundBadge = FFZBadgeData.find(badge => badge.url === ffz_url);
-        const isThere = badges.find(badge => badge.badge_url === ffz_url);
 
-        if (!isThere) {
+        if (foundBadge) {
             badges.push({
                 badge_url: foundBadge.url,
                 alt: foundBadge.title,
@@ -482,16 +447,6 @@ async function handleMessage(userstate, message, channel) {
         }
     }
 
-    // APRIL FIRST
-    // FAKE ADMIN BADGE
-    if (settings["april"] == "1") {
-        badges.push({
-            badge_url: "https://cdn.7tv.app/badge/01GAFAKCYG000E8VNG1S1RMTBH/4x.avif",
-            alt: "7TV Admin",
-            background_color: undefined
-        });
-    }
-
     badges = badges.filter((badge, index, self) =>
         index === self.findIndex(b => b.badge_url === badge.badge_url)
     );
@@ -509,7 +464,7 @@ async function handleMessage(userstate, message, channel) {
     }
 
     if (await getSetting("msgCaps")) {
-        finalUsername = finalUsername.toUpperCase()
+        finalUsername = finalUsername.toUpperCase();
     }
 
     if (await getSetting("msgBold")) {
@@ -518,52 +473,13 @@ async function handleMessage(userstate, message, channel) {
 
     messageHTML = `<div class="message-text">
                             ${badges_html}
-                                <span class="name-wrapper">
-                                    <strong id="username-strong">${finalUsername}</strong>
-                                </span>
+                            <span class="name-wrapper">
+                                <strong id="username-strong">${finalUsername}</strong>
+                            </span>
                             ${rendererMessage}
                         </div>`;
 
     messageElement.innerHTML = messageHTML;
-
-    // APRIL FIRST
-    // RANDOM SIZE, FONT AND FLIPPED OVER
-    if (settings["april"] == "1") {
-        messageElement.style.fontSize = Math.round(Math.random() * 20 + 15) + 'px';
-
-        let scaleX = Math.round(Math.random() + 0.7);
-        let scaleY = Math.round(Math.random() + 0.7);
-        let rotation = '';
-
-        if (Math.random() < (1 / 8)) {
-            rotation = 'rotate(180deg)';
-        }
-
-        messageElement.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) ${rotation}`;
-
-        const random_fonts = [
-            "Arial",
-            "Times New Roman",
-            "Courier New",
-            "Verdana",
-            "Georgia",
-            "Comic Sans MS",
-            "Trebuchet MS",
-            "Impact",
-            "Wingdings",
-            "Symbol",
-            "MS Sans Serif",
-            "Tahoma",
-            "Calibri",
-            "Segoe UI",
-            "Consolas",
-            "Inter"
-        ];
-
-        const randomIndex = Math.floor(Math.random() * random_fonts.length);
-        const random_font = random_fonts[randomIndex];
-        messageElement.style.fontFamily = random_font;
-    }
 
     fadeOut(messageElement);
 
@@ -575,50 +491,39 @@ async function handleMessage(userstate, message, channel) {
 
     let finalMessageHTML = `<div class="message-text">
                             ${badges_html}
-                                <span class="name-wrapper">
-                                    <strong id="username-strong">${finalUsername}</strong>
-                                </span>
+                            <span class="name-wrapper">
+                                <strong id="username-strong">${finalUsername}</strong>
+                            </span>
                             ${results}
                         </div>`;
 
     messageElement.innerHTML = finalMessageHTML;
 
-    var usernames = messageElement.querySelectorAll('.name-wrapper');
+    messageElement.querySelectorAll('.name-wrapper')?.forEach(async el => {
+        const strong = el.querySelector('strong');
+        if (!strong) return;
 
-    if (usernames) {
-        usernames.forEach(async function (element) {
-            const strongElement = element.querySelector('strong');
+        const name = `@${strong.innerHTML.replace(/[@,:]|\s*\(.*\)/g, '')}`.toLowerCase();
+        const user = TTVUsersData.find(u => u.name === name);
 
-            if (strongElement) {
-                const name = `@${strongElement.innerHTML.replace(/[@,:]|\s*\(.*\)/g, '')}`.toLowerCase()
-
-                const foundUser = TTVUsersData.find(user => user.name === name);
-
-                if (foundUser) {
-                    if (foundUser.cosmetics) {
-                        await displayCosmeticPaint(foundUser.userId, foundUser.color, strongElement);
-                    } else {
-                        const randomColor = getRandomTwitchColor(foundUser.name.replace("@", ""));
-                        strongElement.style.color = foundUser.color || randomColor;
-                    }
-                } else {
-                    let randomColor = getRandomTwitchColor(name.replace("@", ""));
-
-                    if (userstate && name.toLowerCase().replace("@", "") == userstate.username.toLowerCase() && userstate.color) {
-                        randomColor = userstate.color
-                    }
-
-                    strongElement.style.color = randomColor;
-                }
+        if (user) {
+            user.cosmetics
+                ? await displayCosmeticPaint(user.userId, user.color, strong)
+                : (strong.style.color = user.color || getRandomTwitchColor(user.name.slice(1)));
+        } else {
+            let color = getRandomTwitchColor(name.slice(1));
+            if (userstate?.username?.toLowerCase() === name.slice(1) && userstate.color) {
+                color = userstate.color;
             }
-        });
-    }
+            strong.style.color = color;
+        }
+    });
 }
 
 async function fadeOut(element) {
     if (!await getSetting("fadeOut")) { return; }
     if (!document.location.href.includes("?channel=")) { return; }
-
+    
     const fadeOutTime = await getSetting("fadeOut") * 1000
 
     setTimeout(() => {
@@ -630,13 +535,6 @@ async function fadeOut(element) {
         }, 1000);
 
     }, fadeOutTime || 30000);
-}
-
-async function checkPart(part, string) {
-    if (!await getSetting("mentionColor")) { return; }
-    if ((!part || typeof part !== "string") || (!string || typeof string !== "string")) { return false; }
-
-    return (part.toLowerCase() === string)
 }
 
 function getRandomTwitchColor(name) {
@@ -706,9 +604,8 @@ function sanitizeInput(input) {
 
 async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
     if (!inputString) { return inputString }
-    let lastEmote = false;
 
-    updateAllEmoteData()
+    updateAllEmoteData();
 
     inputString = sanitizeInput(inputString);
 
@@ -731,232 +628,157 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
 
         let EmoteSplit = await splitTextWithTwemoji(inputString);
 
-        let foundMessageSender = null
+        let foundMessageSender = TTVUsersData.find(user => user.name === `@${userstate?.username}`);
 
-        if (userstate) {
-            foundMessageSender = TTVUsersData.find(user => user.name === `@${userstate.username}`);
-        }
-
+        let foundParts = [];
         const replacedParts = [];
 
-        for (let i = 0; i < EmoteSplit.length; i++) {
-            let part = EmoteSplit[i];
+        for (const part of EmoteSplit) {
             let foundEmote;
             let foundUser;
-            let emoteType = '';
 
             // Detect emoji
             if (!foundEmote && part.emoji) {
-                foundEmote = {};
-                foundEmote.name = part.emoji;
-                emoteType = "site";
-                foundEmote.url = part.image;
-                foundEmote.emote_link = part.image;
+                foundEmote = {
+                    name: part.emoji,
+                    url: part.image,
+                    emote_link: part.image,
+                    emoji: true
+                };
             }
 
-            if (!foundEmote) {
-                if (userstate && userstate['bits']) {
-                    let match = part.match(/^([a-zA-Z]+)(\d+)$/);
+            // Detect bits
+            if (!foundEmote && (userstate && userstate['bits'])) {
+                let match = part.match(/^([a-zA-Z]+)(\d+)$/);
 
-                    if (match) {
-                        let prefix = match[1]; // Prefix
-                        let bits = match[2]; // Amount
+                if (match) {
+                    let prefix = match[1]; // Prefix
+                    let bits = match[2]; // Amount
 
-                        let result = findEntryAndTier(prefix, bits);
+                    let result = findEntryAndTier(prefix, bits);
 
-                        if (result) {
-                            foundEmote = {
-                                name: result.name,
-                                url: result.tier.url,
-                                site: 'TTV',
-                                color: result.tier.color,
-                                bits: `<div class="bits-number">${bits}</div>`
-                            };
-
-                            emoteType = 'Bits';
-                        }
+                    if (result) {
+                        foundEmote = {
+                            name: result.name,
+                            url: result.tier.url,
+                            site: 'TTV',
+                            color: result.tier.color,
+                            bits: `<div class="bits-number">${bits}</div>`
+                        };
                     }
                 }
             }
 
-            // Prioritize ttvEmoteData
+            // Other emotes
             if (!foundEmote) {
-                for (const emote of ttvEmoteData) {
-                    if (emote.name && part === sanitizeInput(emote.name)) {
-                        foundEmote = emote;
-                        emoteType = emote.site;
-                        break;
-                    }
-                }
-            }
-
-            // Prioritize personalEmotes
-            if (!foundEmote) {
-                if (foundMessageSender && foundMessageSender.cosmetics) {
-                    if (foundMessageSender.cosmetics.personal_emotes && foundMessageSender.cosmetics.personal_emotes.length > 0) {
-                        for (const emote of foundMessageSender.cosmetics.personal_emotes) {
-                            if (emote.name && part === sanitizeInput(emote.name)) {
-                                foundEmote = emote;
-                                emoteType = 'Personal';
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Prioritize nonGlobalEmoteData
-            if (!foundEmote) {
-                for (const emote of nonGlobalEmoteData) {
-                    if (emote.name && part === sanitizeInput(emote.name)) {
-                        foundEmote = emote;
-                        emoteType = emote.site;
-                        break;
-                    }
-                }
-            }
-
-            // Search in allEmoteData
-            if (!foundEmote) {
-                for (const emote of allEmoteData) {
-                    if (emote.name && part === sanitizeInput(emote.name)) {
-                        foundEmote = emote;
-                        emoteType = emote.site;
-                        break;
-                    }
-                }
+                foundEmote = ttvEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name)) ||
+                    foundMessageSender?.cosmetics?.personal_emotes?.find(emote => emote.name && part === emote.name) ||
+                    [...nonGlobalEmoteData, ...allEmoteData].find(emote => emote.name && part === sanitizeInput(emote.name));
             }
 
             // Search for user if no emote is found
-            if (!foundEmote) {
-                for (const user of TTVUsersData) {
+            if (!foundEmote && (await getSetting("mentionColor"))) { // check if mention color is enabled
+                foundUser = TTVUsersData.find(user => {
                     const userName = user.name.toLowerCase();
-                    const checks = await Promise.all([
-                        checkPart(part, userName),
-                        checkPart(part, userName.slice(1)),
-                        checkPart(part, `${userName},`),
-                        checkPart(part, `${userName.slice(1)},`)
-                    ]);
-
-                    if (checks.some(value => value === true)) {
-                        foundUser = user;
-                        break;
-                    }
-                }
+                    return [userName, userName.slice(1), `${userName},`, `${userName.slice(1)},`].some(val => part.toLowerCase() == val);
+                });
             }
 
             if (foundEmote) {
-                let emoteHTML = '';
-
-                if (emoteType != "Bits") {
-                    for (const key in foundEmote) {
-                        if (typeof foundEmote[key] === 'string') {
-                            foundEmote[key] = sanitizeInput(foundEmote[key]);
-                        }
-                    };
-                }
-
-                let additionalInfo = '';
-                if (foundEmote.original_name && foundEmote.name !== foundEmote.original_name) {
-                    additionalInfo += `, Alias of: ${foundEmote.original_name}`;
-                }
-
-                let emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
-
-                let { width, height } = foundEmote.width && foundEmote.height
-                    ? { width: foundEmote.width, height: foundEmote.height }
-                    : await getImageSize(foundEmote.url);
-
-                // Calculate the aspect ratio if height and width are already present
-                if (width && height) {
-                    const aspectRatio = calculateAspectRatio(width, height, desiredHeight);
-                    foundEmote.width = aspectRatio.width;
-                    foundEmote.height = desiredHeight;
+                if (foundEmote?.bits) {
+                    foundParts.push({
+                        "type": "bits",
+                        "bits": foundEmote,
+                    });
                 } else {
-                    foundEmote.height = desiredHeight;
-                }
-
-                let lastEmoteWrapper;
-                let tempElement;
-                if (replacedParts.length > 0) {
-                    const lastHtml = replacedParts[replacedParts.length - 1];
-                    tempElement = document.createElement('div');
-                    tempElement.innerHTML = lastHtml;
-                    lastEmoteWrapper = tempElement.querySelector('.emote-wrapper');
-                }
-
-                let willReturn = true;
-
-                if (!lastEmoteWrapper || !lastEmote || !foundEmote.flags || foundEmote.flags !== 256) {
-                    emoteHTML = `<span class="emote-wrapper" style="color:${foundEmote.color || 'white'}">
-                            <div style="display: inline-flex; justify-content: center">
-                                <img src="https://femboy.beauty/zN7uA" alt="ignore" class="emote" style="height: ${desiredHeight}px; width: ${foundEmote.width}px; position: relative; visibility: hidden;">
-                                <img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>
-                            </div>
-                            ${foundEmote.bits || ''}
-                        </span>`;
-                } else if (lastEmoteWrapper && lastEmote && foundEmote.flags && foundEmote.flags === 256) {
-                    willReturn = false;
-                    emoteStyle = `style="height: ${desiredHeight}px; position: absolute;"`;
-                    const aTag = lastEmoteWrapper.querySelector('div');
-                    aTag.innerHTML += `<img src="${foundEmote.url}" alt="${foundEmote.name}" class="emote" ${emoteStyle}>`;
-
-                    const targetImg = lastEmoteWrapper.querySelector('img[src="https://femboy.beauty/zN7uA"]');
-                    if (targetImg) {
-                        const targetWidth = parseInt(targetImg.style.width);
-                        const foundWidth = parseInt(foundEmote.width);
-
-                        if (targetWidth < foundWidth) {
-                            targetImg.style.width = `${foundEmote.width}px`;
-                        }
+                    if (!foundParts.length || foundParts[foundParts.length - 1]?.type !== "emote" || foundEmote?.flags !== 256) {
+                        foundParts.push({
+                            "type": "emote",
+                            "primary": foundEmote,
+                            "overlapped": []
+                        });
+                    } else {
+                        const overlappedArray = foundParts[foundParts.length - 1].overlapped;
+                        overlappedArray.push({ ...foundEmote, "overlap_index": overlappedArray.length });
                     }
-
-                    replacedParts[replacedParts.length - 1] = tempElement.innerHTML;
-                }
-
-                lastEmote = true;
-
-                if (willReturn) {
-                    replacedParts.push(emoteHTML);
                 }
             } else if (foundUser) {
-                lastEmote = false;
-
-                if (await getSetting("msgCaps")) {
-                    part = part.toUpperCase()
-                }
-
-                const userHTML = `<span class="name-wrapper">
-                            <strong style="color: ${foundUser.color}">${part}</strong>
-                        </span>`;
-
-                replacedParts.push(userHTML);
+                foundParts.push({
+                    "type": "user",
+                    "input": part,
+                    "user": foundUser,
+                });
             } else {
-                lastEmote = false;
-
-                if (await getSetting("msgCaps")) {
-                    part = part.toUpperCase()
-                }
-
-                let twemojiHTML = part;
-
-                if (part && typeof part === "string") {
-                    twemojiHTML = twemoji.parse(part, {
-                        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
-                        folder: 'svg',
-                        ext: '.svg',
-                        className: 'twemoji'
-                    });
-                }
-
-                replacedParts.push(twemojiHTML);
+                foundParts.push({
+                    "type": "other",
+                    "other": part,
+                });
             }
         }
 
-        const resultString = replacedParts.join(' ');
+        for (const part of foundParts) {
+            switch (part["type"]) {
+                case 'emote':
+                    let emoteHTML = "";
 
-        lastEmote = false;
-        return resultString;
+                    const primary = part["primary"];
+
+                    emoteHTML += `<span class="emote-wrapper">
+                        <img src="${primary?.url || ''}" alt="${primary?.name || ''}" class="emote${primary?.emoji ? ' emoji' : ''}">`;
+
+                    if (part["overlapped"].length) {
+                        emoteHTML += part["overlapped"]
+                            .map(overlapped => `<img src="${overlapped?.url || ''}" alt="${overlapped?.name || ''}" class="emote">`)
+                            .join('\n');
+                    }
+
+                    replacedParts.push(`${emoteHTML}\n</span>`);
+
+                    break;
+                case 'bits':
+                    const bitsInfo = part["bits"];
+
+                    const bitsHTML = `<span class="bits-wrapper" style="color:${bitsInfo?.color || 'white'}">
+                                <img src="${bitsInfo?.url || ''}" alt="${bitsInfo?.name || ''}" class="emote">
+                                ${bitsInfo?.bits || ''}
+                        </span>`;
+
+                    replacedParts.push(bitsHTML);
+
+                    break;
+                case 'user':
+                    const userHTML = `<span class="name-wrapper">
+                            <strong style="color: ${part["user"].color}">${part["input"]}</strong>
+                        </span>`;
+
+                    replacedParts.push(userHTML);
+
+                    break;
+                case 'other':
+                    if (await getSetting("msgCaps")) {
+                        part["other"] = part["other"].toUpperCase();
+                    }
+
+                    let otherHTML = part["other"];
+
+                    if (otherHTML && typeof otherHTML === "string") {
+                        otherHTML = twemoji.parse(part["other"], {
+                            base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+                            folder: 'svg',
+                            ext: '.svg',
+                            className: 'twemoji'
+                        });
+                    }
+
+                    replacedParts.push(otherHTML);
+
+                    break;
+                default:
+                    return inputString;
+            }
+        }
+
+        return replacedParts.join(' ');
     } catch (error) {
         console.log('Error replacing words with images:', error);
         return inputString;
@@ -973,57 +795,6 @@ function encodeUnifiedToEmoji(unified) {
     return String.fromCodePoint(
         ...unified.split('-').map(code => parseInt(code, 16))
     );
-}
-
-function calculateAspectRatio(width, height, desiredHeight) {
-    const aspectRatio = width / height;
-    const calculatedWidth = desiredHeight * aspectRatio;
-    return { width: calculatedWidth, height: desiredHeight };
-}
-
-async function getImageSize(urlOrDimensions, retries = 3) {
-    return new Promise((resolve, reject) => {
-        if (typeof urlOrDimensions === 'object' && urlOrDimensions.width && urlOrDimensions.height) {
-            const { width, height } = urlOrDimensions;
-            const dimensions = calculateAspectRatio(width, height, desiredHeight);
-
-            resolve(dimensions);
-        } else if (typeof urlOrDimensions === 'string') {
-            const img = document.createElement('img');
-            img.style.display = 'none';
-
-            const loadImage = (attempt) => {
-                img.onload = function () {
-                    const naturalWidth = this.naturalWidth;
-                    const naturalHeight = this.naturalHeight;
-
-                    const dimensions = calculateAspectRatio(naturalWidth, naturalHeight, desiredHeight);
-
-                    img.remove();
-
-                    resolve(dimensions);
-                };
-
-                img.onerror = function () {
-                    console.error(`Error loading image: ${urlOrDimensions} (Attempt: ${attempt + 1}/${retries})`);
-                    if (attempt < retries - 1) {
-                        console.warn(`Retrying image load (${attempt + 1}/${retries})...`);
-                        loadImage(attempt + 1);
-                    } else {
-                        img.remove();
-                        reject(new Error(`Failed to load the image after ${retries} attempts: ${urlOrDimensions}`));
-                    }
-                };
-
-                img.src = urlOrDimensions;
-            };
-
-            loadImage(0);
-            document.body.appendChild(img);
-        } else {
-            reject(new Error("Invalid input. Expected an object with width and height or a URL string."));
-        }
-    });
 }
 
 function findEntryAndTier(prefix, bits) {
@@ -1091,7 +862,7 @@ async function getBadges() {
     //SUBS
     data.forEach(element => {
         if (element["set_id"] === 'subscriber') {
-            if (element && Object.keys(element).length > 0) {
+            if (element && Object.keys(element).length) {
                 TTVSubBadgeData = Object.entries(element)
                     .flatMap(([set_id, badges]) => {
                         if (set_id !== 'set_id' && Array.isArray(badges)) {
@@ -1111,7 +882,7 @@ async function getBadges() {
     //BITS
     data.forEach(element => {
         if (element["set_id"] === 'bits') {
-            if (element && Object.keys(element).length > 0) {
+            if (element && Object.keys(element).length) {
                 TTVBitBadgeData = Object.entries(element)
                     .flatMap(([set_id, badges]) => {
                         if (set_id !== 'set_id' && Array.isArray(badges)) {
@@ -1143,7 +914,7 @@ async function getBadges() {
 
     data1.forEach(element => {
         if (element["versions"]) {
-            if (element && Object.keys(element).length > 0) {
+            if (element && Object.keys(element).length) {
                 TTVGlobalBadgeData.push(
                     ...element["versions"].map(badge => ({
                         id: element.set_id + "_" + badge.id,

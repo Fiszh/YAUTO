@@ -1,8 +1,8 @@
 async function pushStyle(object) {
-    if (!object) { return; }
+    if (!object) { return; };
 
-    if (object["badge"] && Object.keys(object["badge"]).length > 0) {
-        const data = object["badge"]
+    if (object["badge"] && Object.keys(object["badge"]).length) {
+        const data = object["badge"];
 
         const foundBadge = cosmetics.badges.find(badge => badge.id === data.id);
 
@@ -15,19 +15,19 @@ async function pushStyle(object) {
         }
     }
 
-    if (object["paint"] && Object.keys(object["paint"]).length > 0) {
-        const data = object["paint"]
+    if (object["paint"] && Object.keys(object["paint"]).length) {
+        const data = object["paint"];
 
-        const foundPaint = cosmetics.paints.find(paint => paint.id === data.id)
+        const foundPaint = cosmetics.paints.find(paint => paint.id === data.id);
 
         let push;
 
         if (!foundPaint) {
             push = {};
 
-            const randomColor = getRandomTwitchColor()
+            const randomColor = getRandomTwitchColor();
 
-            if (data.stops.length > 0) {
+            if (data.stops.length) {
                 const normalizedColors = data.stops.map((stop) => ({
                     at: stop.at * 100,
                     color: stop.color
@@ -75,7 +75,7 @@ async function pushStyle(object) {
             // SHADOWS
             let shadow = null;
 
-            if (data.shadows.length > 0) {
+            if (data.shadows.length) {
                 const shadows = data.shadows;
 
                 shadow = await shadows.map(shadow => {
@@ -86,12 +86,12 @@ async function pushStyle(object) {
                     return `drop-shadow(${rgbaColor} ${shadow.x_offset}px ${shadow.y_offset}px ${shadow.radius}px)`;
                 }).join(' ');
 
-                push["shadows"] = shadow
+                push["shadows"] = shadow;
             }
         }
 
         if (push) {
-            cosmetics.paints.push(push)
+            cosmetics.paints.push(push);
         }
     }
 }
@@ -117,24 +117,24 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
     let data = await response.json();
 
     if (data && data["data"]) {
-        data = data["data"]
+        data = data["data"];
     }
 
-    if (!data || !data["user"] || data["user"].length < 1) { return; }
+    if (!data || !data["user"] || data["user"].length < 1) { return; };
 
-    let user_id = null
-    const userData = data["user"]
+    let user_id = null;
+    const userData = data["user"];
 
     const twitchConnection = userData.connections.find(connection => connection.platform === "TWITCH");
 
     if (twitchConnection && twitchConnection["id"]) {
-        user_id = String(twitchConnection["id"])
+        user_id = String(twitchConnection["id"]);
     }
 
-    const userStyle = userData["style"]
+    const userStyle = userData["style"];
 
-    if (userStyle && Object.keys(userStyle).length > 0) {
-        pushStyle(userStyle)
+    if (userStyle && Object.keys(userStyle).length) {
+        pushStyle(userStyle);
     }
 
     let infoTable = {
@@ -148,27 +148,27 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         "personal_set_id": [],
     }
 
-    if (userStyle && Object.keys(userStyle).length > 0) {
+    if (userStyle && Object.keys(userStyle).length) {
         if (userStyle["paint"]) {
-            infoTable.paint_id = userStyle["paint"]["id"]
+            infoTable.paint_id = userStyle["paint"]["id"];
         }
 
         if (userStyle["badge"]) {
-            infoTable.badge_id = userStyle["badge"]["id"]
+            infoTable.badge_id = userStyle["badge"]["id"];
         }
     }
 
     if (userData.avatar_url) {
-        infoTable.avatar_url = userData.avatar_url
+        infoTable.avatar_url = userData.avatar_url;
     }
 
-    if (userData["emote_sets"] && userData["emote_sets"].length > 0) {
+    if (userData["emote_sets"] && userData["emote_sets"].length) {
         for (let set of userData["emote_sets"]) {
             if (set && set["flags"] && (set["flags"] === 4 || set["flags"] === 11)) {
-                infoTable["personal_set_id"].push(set["id"])
+                infoTable["personal_set_id"].push(set["id"]);
 
-                if (set["emotes"] && set["emotes"].length > 0) {
-                    const emotes = await mapPersonalEmotes(set["emotes"]);
+                if (set["emotes"] && set["emotes"].length) {
+                    const emotes = await mapPersonalEmotes({"id": set["id"], "pushed": set["emotes"]});
                     infoTable["personal_emotes"].push(...emotes);
                 }
             }
@@ -181,7 +181,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         if (foundUser) {
             Object.assign(foundUser, infoTable);
         } else {
-            cosmetics.user_info.push(infoTable)
+            cosmetics.user_info.push(infoTable);
         }
     }
 
@@ -189,9 +189,9 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         const foundTwitchUser = TTVUsersData.find(user => user.userId === user_id);
 
         if (foundTwitchUser) {
-            foundTwitchUser.cosmetics = infoTable
+            foundTwitchUser.cosmetics = infoTable;
         } else {
-            return infoTable
+            return infoTable;
         }
     }
 }

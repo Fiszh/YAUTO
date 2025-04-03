@@ -51,7 +51,7 @@ async function fetch7TVEmoteData(emoteSet) {
         return data.emotes.map(emote => {
             const owner = emote.data?.owner;
 
-            const creator = owner && Object.keys(owner).length > 0
+            const creator = owner && Object.keys(owner).length
                 ? owner.display_name || owner.username || "UNKNOWN"
                 : "NONE";
 
@@ -181,7 +181,7 @@ async function detect7TVEmoteSetChange() {
 
                     const owner = body.pushed[0].value.data?.owner;
 
-                    const creator = owner && Object.keys(owner).length > 0
+                    const creator = owner && Object.keys(owner).length
                         ? owner.display_name || owner.username || "UNKNOWN"
                         : "NONE";
 
