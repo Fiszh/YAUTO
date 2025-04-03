@@ -144,22 +144,17 @@ async function updateCosmetics(body) {
 
                 if (foundUser && body["pushed"]) {
                     try {
-                        const mappedEmotes = await mapPersonalEmotes(body.pushed);
+                        const mappedEmotes = await mapPersonalEmotes(body);
 
                         foundUser["personal_emotes"] = foundUser["personal_emotes"] || [];
-
-                        const uniqueEmotes = mappedEmotes.filter(emote =>
-                            !foundUser.personal_emotes.some(existingEmote => existingEmote.url === emote.url)
-                        );
-
-                        foundUser["personal_emotes"].push(...uniqueEmotes);
+                        foundUser["personal_emotes"] = foundUser["personal_emotes"].filter(emote => emote.set_id != body.id);
+                        foundUser["personal_emotes"].push(...mappedEmotes);
 
                         if (foundUser["ttv_user_id"]) {
                             const foundTwitchUser = TTVUsersData.find(user => user.userId === foundUser["ttv_user_id"]);
 
                             if (foundTwitchUser && foundTwitchUser.cosmetics) {
-                                foundTwitchUser.cosmetics["personal_emotes"] = foundTwitchUser.cosmetics["personal_emotes"] || [];
-                                foundTwitchUser.cosmetics["personal_emotes"].push(...uniqueEmotes);
+                                foundTwitchUser.cosmetics["personal_emotes"] = foundTwitchUser.cosmetics["personal_emotes"] || foundUser["personal_emotes"];
                             }
                         }
                     } catch (error) {
@@ -254,8 +249,9 @@ async function createCosmetic7TVProfile(body) {
     }
 }
 
-async function mapPersonalEmotes(emotes) {
-    return emotes.map(emoteData => {
+async function mapPersonalEmotes(body) {
+    console.log(body)
+    return body.pushed.map(emoteData => {
         if (!emoteData) { return; }
 
         let emote = emoteData.value
@@ -284,7 +280,8 @@ async function mapPersonalEmotes(emotes) {
             emote_link: `https://7tv.app/emotes/${emote.id}`,
             site: 'Personal Emotes',
             height: emote4x?.height,
-            width: emote4x?.width
+            width: emote4x?.width,
+            set_id: body.id
         };
     });
 }

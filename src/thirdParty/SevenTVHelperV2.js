@@ -168,7 +168,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
                 infoTable["personal_set_id"].push(set["id"])
 
                 if (set["emotes"] && set["emotes"].length) {
-                    const emotes = await mapPersonalEmotes(set["emotes"]);
+                    const emotes = await mapPersonalEmotes({"id": set["id"], "pushed": set["emotes"]});
                     infoTable["personal_emotes"].push(...emotes);
                 }
             }
@@ -181,7 +181,7 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         if (foundUser) {
             Object.assign(foundUser, infoTable);
         } else {
-            cosmetics.user_info.push(infoTable)
+            cosmetics.user_info.push(infoTable);
         }
     }
 
@@ -189,9 +189,9 @@ async function pushCosmeticUserUsingGQL(cosmetic_id) {
         const foundTwitchUser = TTVUsersData.find(user => user.userId === user_id);
 
         if (foundTwitchUser) {
-            foundTwitchUser.cosmetics = infoTable
+            foundTwitchUser.cosmetics = infoTable;
         } else {
-            return infoTable
+            return infoTable;
         }
     }
 }
