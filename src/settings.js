@@ -3,8 +3,6 @@ const current_url_split = url.split('/')
 let load = 'main'
 let settings = {};
 
-let desiredHeight = 36;
-
 if (current_url_split.length && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
     const settings = current_url_split[current_url_split.length - 1].split("?")
 
@@ -51,20 +49,8 @@ if (load === "chat") {
 
     console.log(settings);
 
-    const container = document.querySelector('.container');
-    const logo = document.querySelector('.logo-container');
-    const footer = document.querySelector('footer');
-
-    const removeElement = (element) => {
-        if (element) {
-            element.remove();
-        }
-    };
-
-    removeElement(container);
-    removeElement(logo);
-    removeElement(footer);
-
+    document.body.innerHTML = `<div id="ChatDisplay" class="chat-messages"></div>`;
+    
     const scripts = document.querySelectorAll('script');
 
     scripts.forEach(script => {
@@ -96,7 +82,7 @@ if (load === "chat") {
 } else {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'main/styles.css';
+    link.href = 'main/homepage.css';
 
     document.head.appendChild(link);
 
@@ -106,15 +92,16 @@ if (load === "chat") {
 
     document.head.appendChild(link1);
 
-    appendScript('src/landingPage/settings.js')
-    appendScript('src/landingPage/index.js')
+    appendScript('src/landingPage/settings.js');
+    appendScript('src/landingPage/index.js');
+    appendScript('src/landingPage/events.js');
 
     // NEEDED FOR CHAT PREVIEW
 
     // CHAT INDEX
-    appendScript('src/chatIndex.js')
+    appendScript('src/chatIndex.js');
 
-    appendScript('src/thirdParty/7TV.js')
+    appendScript('src/thirdParty/7TV.js');
 
     // SETTINGS 
     appendSettings(document.getElementById("ChatDisplay"));
