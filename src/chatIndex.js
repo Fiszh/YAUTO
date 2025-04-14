@@ -1096,11 +1096,7 @@ async function loadChat() {
     } catch (err) {
         chatDisplay.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
 
-        chatDisplay.style.textShadow =
-            '-1px -1px 0 black, ' +
-            '1px -1px 0 black, ' +
-            '-1px 1px 0 black, ' +
-            '1px 1px 0 black';
+        chatDisplay.style.webkitTextStroke = '1.3px black';
 
         return;
     };

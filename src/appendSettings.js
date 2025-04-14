@@ -50,13 +50,9 @@ function appendSettings(applyElement) {
     `;
     
     if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
-        applyElement.style.textShadow =
-            '-1px -1px 0 black, ' +
-            '1px -1px 0 black, ' +
-            '-1px 1px 0 black, ' +
-            '1px 1px 0 black';
+        applyElement.style.webkitTextStroke = '1.3px black';
     } else {
-        applyElement.style.textShadow = "";
+        applyElement.style.webkitTextStroke = '';
     }
 
     tweemojiStyle.textContent = `
