@@ -328,3 +328,9 @@ li img {
     height: 35px;
     vertical-align: middle;
 }
+
+.commit-message {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
