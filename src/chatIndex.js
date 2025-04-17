@@ -1130,39 +1130,59 @@ async function loadChat() {
     loadFFZ();
 }
 
+function getBestImageUrl(badge) {
+    const sizes = ["4x", "3x", "2x", "1x"];
+
+    for (let size of sizes) {
+        if (badge.imgs.animated && badge.imgs.animated[size]) {
+            return badge.imgs.animated[size];
+        }
+        if (badge.imgs.static && badge.imgs.static[size]) {
+            return badge.imgs.static[size];
+        }
+    }
+    return null;
+}
+
 async function loadCustomBadges() {
     const response = await fetch('https://api.github.com/gists/7f360e3e1d6457f843899055a6210fd6');
 
-    if (!response.ok) { return; }
+    if (!response.ok) { return; };
 
-    let data = await response.json()
+    let data = await response.json();
 
-    if (!data["files"] || !data["files"]["badges.json"] || !data["files"]["badges.json"]["content"]) { return; }
+    if (!data["files"] || !data["files"]["badges.json"] || !data["files"]["badges.json"]["content"]) { return; };
 
-    data = JSON.parse(data["files"]["badges.json"]["content"])
+    data = JSON.parse(data["files"]["badges.json"]["content"]);
 
-    if (!data || !data["YAUTO"]) { return; }
+    if (!data || !data["YAUTO"]) { return; };
 
-    customBadgeData = [...data?.["YAUTO"], ...data?.["YAUTC"]];
+    customBadgeData = [
+        ...data["YAUTO"],
+        ...data["YAUTC"]
+    ].map(badge => ({
+        ...badge,
+        url: getBestImageUrl(badge)
+    }));
 }
 
 async function getVersion() {
     const version_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://static.twitchcdn.net/config/manifest.json?v=1')}`)
 
     if (!version_response.ok) {
-        console.log(version_response)
-        return false
-    }
+        console.log(version_response);
+        return false;
+    };
 
-    let version_data = await version_response.json()
+    let version_data = await version_response.json();
 
-    if (!version_data["contents"]) { return; }
+    if (!version_data["contents"]) { return; };
 
-    version_data = JSON.parse(version_data["contents"])
+    version_data = JSON.parse(version_data["contents"]);
 
-    version = version_data.channels[0].releases[0].buildId
+    version = version_data.channels[0].releases[0].buildId;
 
-    console.log(`Build version: ${version}`)
+    console.log(`Build version: ${version}`);
 }
 
 function removeInvisibleElements() {

@@ -99,6 +99,16 @@ const PreviewMessages = [
             "color": undefined
         },
         message: "Pog chat overlay with better zero width emotes catJAM WideRaveTime ALERT"
+    },
+    {
+        userstate: {
+            "username": 'sonku___',
+            "display-name": 'sonku___',
+            "badges-raw": "bits/1250000,sub-gift-leader/1",
+            "badges": {},
+            "color": "#433E43"
+        },
+        message: "Who the hell is FISzhh wtf 🤔"
     }
 ]
 
@@ -221,6 +231,8 @@ async function setUpPreview() {
 }
 
 button.addEventListener("click", () => {
+    chatDisplay.style.transition = "background-color 0.5s ease";
+
     if (isWhite) {
         chatDisplay.style.backgroundColor = "rgba(255, 255, 255, 0.027)";
     } else {

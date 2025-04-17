@@ -26,9 +26,12 @@
 </head>
 
 <body>
-    <div id="site_blur" class="no-blur"></div>
+    <div class="logo-container">
+        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another
+            Useless Twitch Overlay)</strong>
+    </div>
 
-    <div id="more_info_menu">
+    <div class="container">
         <div class="information">
             <strong>YAUTO (Yet Another Useless Twitch Overlay)</strong> is a custom
             <strong>Twitch</strong> chat overlay for your broadcasting software.
@@ -43,13 +46,17 @@
                     Badges (global/channel)</li>
                 <li> <img src="https://7tv.app/favicon.svg" alt="7TV_ICON" class="icon"> Emotes
                     (global/channel/personal/zero-width),
-                    Badges, Paints, WebSocket (Automatic emote updates/Paints/Badges/Personal emotes)</li>
+                    Badges, Paints, WebSocket (Automatic emote updates/Paints/Badges)</li>
                 <li> <img src="https://betterttv.com/favicon.png" alt="BTTV_ICON" class="icon"> Emotes (global/channel),
                     WebSocket (Automatic emote updates)</li>
                 <li> <img src="https://www.frankerfacez.com/static/images/favicon-32.png" alt="FFZ_ICON" class="icon">
                     Emotes (global/channel), Badges (global/channel)</li>
             </ul>
         </div>
+
+        <br>
+
+        <div id="commit-message"></div>
 
         <br>
 
@@ -65,42 +72,41 @@
 
         <br>
 
-        <div id="commit-message"></div>
-    </div>
+        <div class="information">Configuration</div>
+        <div class="information">! Some parts of the settings might not react with the chat preview !</div>
 
-    <button id="more_info_button">
-        <img src="imgs/more_icon.png" alt="More Info">
-    </button>
+        <br>
 
-    <div id="topbar">
-        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another Useless Twitch Overlay)</strong>
-    </div>
-
-    <div class="left_side">
-        <div class="configuration"> </div>
-        <div id="channel_name">↓ Channel Name ↓</div>
+        <div class="information">Channel</div>
         <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name">
-    </div>
+        
+        <br>
 
-    <div class="right_side">
-        <button id="colorToggleButton" class="transition-button">Change chat background</button>
-        <div class="chat_preview">
-            <div id="ChatDisplay" class="chat-messages"></div>
+        <div class="config_container">
+            <div class="configuration"></div>
+            <div class="chat_preview">
+                <button id="colorToggleButton" class="transition-button">Change chat background</button>
+                <div id="ChatDisplay" class="chat-messages"></div>
+            </div>
         </div>
 
-        <div id="click_to_copy">↓ Click To Copy ↓</div>
-        <div id="url-results">https://fiszh.github.io/YAUTO/</div>
-    </div>
+        <br>
 
-    <div id="footer">
-        Made by: <a href="https://www.twitch.tv/fiszhh" target="_blank">fiszhh</a>,
-        With help of: <a href="https://www.twitch.tv/creepycode" target="_blank">creepycode</a>, <a
-            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a> <br>
-        <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
-            <img
-                src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
-        </a> <br>
-        YetAnotherUselessTwitchOverlay (YAUTO) is not affiliated with Twitch Interactive
+        <div id="footer">
+            <br>
+            <div>Click to copy</div>
+            <div id="url-results">https://fiszh.github.io/YAUTO/</div>
+
+            <br>
+            Made by: <a href="https://www.twitch.tv/fiszhh" target="_blank">fiszhh</a>,
+            With help of: <a href="https://www.twitch.tv/creepycode" target="_blank">creepycode</a>, <a
+                href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a> <br>
+            <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
+                <img
+                    src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
+            </a> <br>
+            YetAnotherUselessTwitchOverlay (YAUTO) is not affiliated with Twitch Interactive
+        </div>
     </div>
 
     <script src="src/appendSettings.js"></script>
