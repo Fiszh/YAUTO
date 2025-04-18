@@ -13,6 +13,10 @@ body {
     line-height: 1.2;
 }
 
+* {
+    transition: all 0.5s;
+}
+
 .logo-container {
     display: flex;
     align-items: flex-end; 

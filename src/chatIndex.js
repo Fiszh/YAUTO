@@ -8,8 +8,58 @@ if (document.location.href.includes("?channel=")) {
             debug: false,
             skipUpdatingEmotesets: true
         },
+        connection: {
+            reconnect: false,
+        },
         channels: [settings.channel]
     });
+
+    //createLoadingUI();
+
+    client.connect();
+
+    client.on('connected', async (address, port) => {
+        const loadingUI = document.getElementById('loadingUI');
+
+        if (loadingUI) {
+            loadingUI.lastChild.textContent = "Connected";
+            loadingUI.style.opacity = '0';
+
+            setTimeout(() => loadingUI.remove(), 300);
+        }
+
+        console.log("Twitch IRC connected!");
+    });
+
+    client.on('connecting', (reason) => {
+        console.log(`Twitch IRC connecting. (${reason})`);
+
+        createLoadingUI();
+    });
+
+    client.on('disconnected', async (reason) => {
+        console.log(`Twitch IRC disconnected, reconnecting. (${reason})`);
+
+        createLoadingUI("Twitch IRC disconnected, reconnecting...");
+
+        setTimeout(async () => {
+            console.log(`Attempting Twitch IRC reconnect.`);
+
+            try {
+                await client.connect();
+                
+                console.log(`Twitch IRC reconnect: SUCCESS.`);
+            } catch (err) {
+                console.error(`Twitch IRC reconnect: FAIL. ${err}`);
+            }
+        }, 1000);
+    });
+
+    client.on("message", onMessage);
+}
+
+function createLoadingUI(custom_message) {
+    if (document.getElementById('loadingUI')) { return; };
 
     const loadingUI = document.createElement('div');
     loadingUI.id = 'loadingUI';
@@ -19,25 +69,9 @@ if (document.location.href.includes("?channel=")) {
     img.alt = 'loading';
 
     loadingUI.appendChild(img);
-    loadingUI.appendChild(document.createTextNode(`Connecting to ${settings.channel} chat...`));
+    loadingUI.appendChild(document.createTextNode(custom_message || `Connecting to ${settings.channel} chat...`));
 
     document.body.appendChild(loadingUI);
-
-    client.connect()
-
-    client.on('connected', async (address, port) => {
-
-        if (loadingUI) {
-            loadingUI.lastChild.textContent = "Connected";
-            loadingUI.style.opacity = '0';
-        
-            setTimeout(() => loadingUI.remove(), 300);
-        }
-
-        console.log("connected!")
-    });
-
-    client.on("message", onMessage);
 }
 
 async function onMessage(channel, userstate, message, self) {
@@ -56,6 +90,9 @@ async function onMessage(channel, userstate, message, self) {
                     SevenTVWebsocket.close();
                     BTTVWebsocket.close();
                 } catch (err) { }
+                break;
+            case "!reconnectchat":
+                client.disconnect();
                 break;
             default:
                 break;
@@ -523,7 +560,7 @@ async function handleMessage(userstate, message, channel) {
 async function fadeOut(element) {
     if (!await getSetting("fadeOut")) { return; }
     if (!document.location.href.includes("?channel=")) { return; }
-    
+
     const fadeOutTime = await getSetting("fadeOut") * 1000
 
     setTimeout(() => {
@@ -1096,11 +1133,7 @@ async function loadChat() {
     } catch (err) {
         chatDisplay.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
 
-        chatDisplay.style.textShadow =
-            '-1px -1px 0 black, ' +
-            '1px -1px 0 black, ' +
-            '-1px 1px 0 black, ' +
-            '1px 1px 0 black';
+        chatDisplay.style.webkitTextStroke = '1.3px black';
 
         return;
     };

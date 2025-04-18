@@ -51,8 +51,6 @@
             </ul>
         </div>
 
-        <br>
-
         <div class="information">commands</div>
 
         <div class="feature-list">
@@ -60,12 +58,26 @@
                 <li> !reloadoverlay - Mod and higher only, reloads the overlay</li>
                 <li> !refreshoverlay - Mod and higher only, refreshes the overlay (loads the chat again)</li>
                 <li> !reloadwebsockets - Mod and higher only, reconnects WebSockets</li>
+                <li> !reconnectchat - Mod and higher only, reconnects Twitch IRC</li>
             </ul>
         </div>
+        
+        <a href="https://discord.com/users/703639905691238490" target="_blank" rel="noopener noreferrer">
+            <img id="discord_button" src="./imgs/discord.png" draggable="false">
+        </a>
 
-        <br>
+        <div class="information">Latest Commits/Updates</div>
 
-        <div id="commit-message"></div>
+        <div id="commits">
+            <div class="commit-pair">
+              <div class="information">Main commit</div>
+              <div id="commit-message-main" class="commit-message"></div>
+            </div>
+            <div class="commit-pair">
+              <div class="information">Dev commit</div>
+              <div id="commit-message-dev" class="commit-message"></div>
+            </div>
+        </div>
     </div>
 
     <button id="more_info_button">
@@ -73,7 +85,8 @@
     </button>
 
     <div id="topbar">
-        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another Useless Twitch Overlay)</strong>
+        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another
+            Useless Twitch Overlay)</strong>
     </div>
 
     <div class="left_side">
@@ -95,11 +108,11 @@
     <div id="footer">
         Made by: <a href="https://www.twitch.tv/fiszhh" target="_blank">fiszhh</a>,
         With help of: <a href="https://www.twitch.tv/creepycode" target="_blank">creepycode</a>, <a
-            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a> <br>
+            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a>
         <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
             <img
                 src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
-        </a> <br>
+        </a>
         YetAnotherUselessTwitchOverlay (YAUTO) is not affiliated with Twitch Interactive
     </div>
 
@@ -110,12 +123,35 @@
 
     <script>
         async function fetchCommit() {
-            const response = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1');
-            const data = await response.json();
-            const commitMessage = data[0].commit.message;
+            const commit_message_main = document.getElementById('commit-message-main');
+            const commit_message_dev = document.getElementById('commit-message-dev');
 
-            if (document.getElementById('commit-message')) {
-                document.getElementById('commit-message').innerHTML = commitMessage.replace(/\n/g, '<br>');
+            if (commit_message_main) {
+                try {
+                    const response_commit_main = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=main');
+                    const data_commit_main = await response_commit_main.json();
+                    const commitMessage_commit_main = data_commit_main[0].commit.message;
+
+                    commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
+                } catch (err) {
+                    commit_message_main.innerHTML = "Error getting main branch commit message";
+
+                    console.error(err);
+                }
+            }
+
+            if (commit_message_dev) {
+                try {
+                    const response_commit_dev = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=dev');
+                    const data_commit_dev = await response_commit_dev.json();
+                    const commitMessage_commit_dev = data_commit_dev[0].commit.message;
+
+                    commit_message_dev.innerHTML = commitMessage_commit_dev.replace(/\n/g, '<br>');
+                } catch (err) {
+                    commit_message_dev.innerHTML = "Error getting dev branch commit message";
+
+                    console.error(err);
+                }
             }
         }
 
