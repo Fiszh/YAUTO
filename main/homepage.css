@@ -41,7 +41,7 @@ body {
     margin-top: 2dvh;
     margin-bottom: 2dvh;
     width: 5%;
-    height: 85%; 
+    height: 85%;
     object-fit: contain;
     transition: opacity 0.5s ease-in-out;
 }
@@ -168,11 +168,11 @@ body {
     transition: transform 0.2s;
 }
 
-.toggle-input:checked + .toggle-label {
+.toggle-input:checked+.toggle-label {
     background-color: rgba(96, 179, 110, 0.67);
 }
 
-.toggle-input:checked + .toggle-label::after {
+.toggle-input:checked+.toggle-label::after {
     transform: translateX(30px);
 }
 
@@ -204,9 +204,11 @@ body {
     0% {
         background-position: 200% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
@@ -312,16 +314,22 @@ body {
     border-radius: 25px;
     position: absolute;
     background-color: rgb(22, 22, 22);
-    width: 90%;
-    max-height: 90%;
+    width: 90dvw;
+    max-height: 90dvh;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 4;
-    padding: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
     display: none;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#more_info_menu>* {
+    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 li img {
@@ -333,4 +341,37 @@ li img {
     margin-top: 15px;
     margin-bottom: 15px;
     text-align: center;
+}
+
+a img {
+    display: flex;
+    justify-self: center;
+}
+
+#discord_button {
+    object-fit: contain;
+    border-radius: 15px;
+    background-color: #5865F2;
+    transition: all 0.5s;
+    max-height: 150px;
+}
+
+#discord_button:hover {
+    border-radius: 10px;
+    background-color: #4049aa;
+}
+
+#commits {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.commit-pair {
+    display: flex;
+    flex-direction: column;
+}
+
+.commit-pair .information {
+    font-weight: bold;
 }

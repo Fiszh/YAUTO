@@ -51,8 +51,6 @@
             </ul>
         </div>
 
-        <br>
-
         <div class="information">commands</div>
 
         <div class="feature-list">
@@ -63,16 +61,23 @@
                 <li> !reconnectchat - Mod and higher only, reconnects Twitch IRC</li>
             </ul>
         </div>
+        
+        <a href="https://discord.com/users/703639905691238490" target="_blank" rel="noopener noreferrer">
+            <img id="discord_button" src="./imgs/discord.png" draggable="false">
+        </a>
 
-        <br>
+        <div class="information">Latest Commits/Updates</div>
 
-        <div class="information">Latest update</div>
-
-        <div id="commit-message-main" class="commit-message"></div>
-
-        <div class="information">Latest dev commit</div>
-
-        <div id="commit-message-dev" class="commit-message"></div>
+        <div id="commits">
+            <div class="commit-pair">
+              <div class="information">Main commit</div>
+              <div id="commit-message-main" class="commit-message"></div>
+            </div>
+            <div class="commit-pair">
+              <div class="information">Dev commit</div>
+              <div id="commit-message-dev" class="commit-message"></div>
+            </div>
+        </div>
     </div>
 
     <button id="more_info_button">
@@ -103,11 +108,11 @@
     <div id="footer">
         Made by: <a href="https://www.twitch.tv/fiszhh" target="_blank">fiszhh</a>,
         With help of: <a href="https://www.twitch.tv/creepycode" target="_blank">creepycode</a>, <a
-            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a> <br>
+            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a>
         <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
             <img
                 src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
-        </a> <br>
+        </a>
         YetAnotherUselessTwitchOverlay (YAUTO) is not affiliated with Twitch Interactive
     </div>
 
@@ -144,7 +149,7 @@
                     commit_message_dev.innerHTML = commitMessage_commit_dev.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_dev.innerHTML = "Error getting dev branch commit message";
-                    
+
                     console.error(err);
                 }
             }

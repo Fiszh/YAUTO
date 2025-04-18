@@ -268,6 +268,7 @@ async function update7TVEmoteSet(table) {
         console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} added ${table.name}`);
     } else if (table.action === 'remove') {
         let foundEmote = SevenTVEmoteData.find(emote => emote.original_name === table.name);
+
         console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} removed ${foundEmote.name}`);
 
         SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.url !== table.url);
