@@ -2,6 +2,8 @@ console.log("chatIndex.js hooked up!")
 
 let client;
 
+let tmiConnected = false;
+
 if (document.location.href.includes("?channel=")) {
     client = new tmi.Client({
         options: {
@@ -16,7 +18,9 @@ if (document.location.href.includes("?channel=")) {
 
     //createLoadingUI();
 
-    client.connect();
+    if (!tmiConnected) {
+        safeConnect();
+    }
 
     client.on('connected', async (address, port) => {
         const loadingUI = document.getElementById('loadingUI');
@@ -28,7 +32,7 @@ if (document.location.href.includes("?channel=")) {
             setTimeout(() => loadingUI.remove(), 300);
         }
 
-        console.log("Twitch IRC connected!");
+        console.log(`Twitch IRC connected! (${address}:${port})`);
     });
 
     client.on('connecting', (reason) => {
@@ -38,6 +42,8 @@ if (document.location.href.includes("?channel=")) {
     });
 
     client.on('disconnected', async (reason) => {
+        tmiConnected = false;
+
         console.log(`Twitch IRC disconnected, reconnecting. (${reason})`);
 
         createLoadingUI("Twitch IRC disconnected, reconnecting...");
@@ -46,8 +52,8 @@ if (document.location.href.includes("?channel=")) {
             console.log(`Attempting Twitch IRC reconnect.`);
 
             try {
-                await client.connect();
-                
+                await safeConnect();
+
                 console.log(`Twitch IRC reconnect: SUCCESS.`);
             } catch (err) {
                 console.error(`Twitch IRC reconnect: FAIL. ${err}`);
@@ -56,6 +62,15 @@ if (document.location.href.includes("?channel=")) {
     });
 
     client.on("message", onMessage);
+}
+
+async function safeConnect() {
+    if (tmiConnected) {
+        console.log('Already connected.');
+        return;
+    }
+    await client.connect();
+    tmiConnected = true;
 }
 
 function createLoadingUI(custom_message) {
@@ -1144,9 +1159,9 @@ async function loadChat() {
 
     // TTV
 
-    const get_user = await getTwitchUser(settings.channel)
+    const get_user = await getTwitchUser(settings.channel);
 
-    channelTwitchID = get_user.id
+    channelTwitchID = get_user.id;
 
     loadInBits()
 
