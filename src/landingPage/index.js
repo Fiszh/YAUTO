@@ -54,7 +54,7 @@ const PreviewMessages = [
         userstate: {
             "username": 'de_palace',
             "display-name": 'de_palace',
-            "badges-raw": "subscriber/3,chatter-cs-go-2022/1",
+            "badges-raw": null,
             "badges": {},
             "color": "#1dee8b"
         },
@@ -64,7 +64,7 @@ const PreviewMessages = [
         userstate: {
             "username": 'ftk789',
             "display-name": 'ftk789',
-            "badges-raw": null,
+            "badges-raw": "subscriber/3,chatter-cs-go-2022/1",
             "badges": {},
             "color": "#8A3DE2"
         },
