@@ -872,31 +872,6 @@ function findEntryAndTier(prefix, bits) {
     return null;
 }
 
-async function getTwitchUser(arg0) {
-    let url;
-
-    if (/^\d+$/.test(arg0)) {
-        url = `https://api.ivr.fi/v2/twitch/user?id=${arg0}`;
-    } else {
-        url = `https://api.ivr.fi/v2/twitch/user?login=${encodeURIComponent(arg0)}`;
-    }
-
-    const response = await fetch(url, {
-        headers: {
-            accept: "application/json"
-        }
-    })
-
-    if (!response.ok) {
-        console.error(response)
-        return
-    }
-
-    const data = await response.json()
-
-    return data[0]
-}
-
 const gqlQueries = {
     url: 'https://gql.twitch.tv/gql',
     headers: {

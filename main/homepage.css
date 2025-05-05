@@ -24,6 +24,10 @@ body {
     background-color: rgb(219, 219, 219);
 }
 
+* {
+    font-variant-ligatures: none;
+}
+
 #topbar {
     width: 100%;
     height: 7dvh;

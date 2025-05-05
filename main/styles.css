@@ -15,6 +15,7 @@ body {
 
 * {
     transition: all 0.5s;
+    font-variant-ligatures: none;
 }
 
 .logo-container {
