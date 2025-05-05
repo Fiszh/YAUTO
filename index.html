@@ -61,7 +61,7 @@
                 <li> !reconnectchat - Mod and higher only, reconnects Twitch IRC</li>
             </ul>
         </div>
-        
+
         <a href="https://discord.com/users/703639905691238490" target="_blank" rel="noopener noreferrer">
             <img id="discord_button" src="./imgs/discord.png" draggable="false">
         </a>
@@ -70,12 +70,16 @@
 
         <div id="commits">
             <div class="commit-pair">
-              <div class="information">Main commit</div>
-              <div id="commit-message-main" class="commit-message"></div>
+                <div class="information">Main commit</div>
+                <div id="commit-message-main" class="commit-message"></div>
             </div>
             <div class="commit-pair">
-              <div class="information">Dev commit</div>
-              <div id="commit-message-dev" class="commit-message"></div>
+                <div class="information">Dev commit</div>
+                <div id="commit-message-dev" class="commit-message"></div>
+            </div>
+            <div class="commit-pair">
+                <div class="information">uniiDev commit</div>
+                <div id="commit-message-uniiDev" class="commit-message"></div>
             </div>
         </div>
     </div>
@@ -106,9 +110,9 @@
     </div>
 
     <div id="footer">
-        Made by: <a href="https://www.twitch.tv/fiszhh" target="_blank">fiszhh</a>,
-        With help of: <a href="https://www.twitch.tv/creepycode" target="_blank">creepycode</a>, <a
-            href="https://www.twitch.tv/ftk789" target="_blank">ftk789</a>
+        Made by: <a href="https://api.unii.dev/twitch/528761326" target="_blank">uniiDev</a>,
+        With help of: <a href="https://api.unii.dev/twitch/404660262" target="_blank">creepycode</a>, <a
+            href="https://api.unii.dev/twitch/166427338" target="_blank">ftk789</a>
         <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
             <img
                 src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
@@ -125,6 +129,7 @@
         async function fetchCommit() {
             const commit_message_main = document.getElementById('commit-message-main');
             const commit_message_dev = document.getElementById('commit-message-dev');
+            const commit_message_uniiDev = document.getElementById('commit-message-uniiDev');
 
             if (commit_message_main) {
                 try {
@@ -149,6 +154,20 @@
                     commit_message_dev.innerHTML = commitMessage_commit_dev.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_dev.innerHTML = "Error getting dev branch commit message";
+
+                    console.error(err);
+                }
+            }
+
+            if (commit_message_uniiDev) {
+                try {
+                    const response_commit_uniiDev = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=uniiDev');
+                    const data_commit_uniiDev = await response_commit_uniiDev.json();
+                    const commitMessage_commit_uniiDev = data_commit_uniiDev[0].commit.message;
+
+                    commit_message_uniiDev.innerHTML = commitMessage_commit_uniiDev.replace(/\n/g, '<br>');
+                } catch (err) {
+                    commit_message_uniiDev.innerHTML = "Error getting uniiDev branch commit message";
 
                     console.error(err);
                 }

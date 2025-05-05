@@ -193,7 +193,7 @@ const FgCyan = "\x1b[36m";
 const FgWhite = "\x1b[37m";
 
 //TWITCH
-let channelTwitchID = '0';
+let channelTwitchID = "0";
 let TTVSubBadgeData = [];
 let TTVGlobalBadgeData = [];
 let TTVBitBadgeData = [];
@@ -897,89 +897,6 @@ async function getTwitchUser(arg0) {
     return data[0]
 }
 
-async function getBadges() {
-    //CHANNEL
-    const response = await fetch(`https://api.ivr.fi/v2/twitch/badges/channel?login=${settings.channel}`, {
-        headers: {
-            accept: "application/json"
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-
-    //SUBS
-    data.forEach(element => {
-        if (element["set_id"] === 'subscriber') {
-            if (element && Object.keys(element).length) {
-                TTVSubBadgeData = Object.entries(element)
-                    .flatMap(([set_id, badges]) => {
-                        if (set_id !== 'set_id' && Array.isArray(badges)) {
-                            return badges.filter(badge => badge !== 'subscriber')
-                                .map(badge => ({
-                                    id: badge.id,
-                                    url: badge["image_url_4x"],
-                                    title: badge.title
-                                }));
-                        }
-                        return [];
-                    });
-            }
-        }
-    });
-
-    //BITS
-    data.forEach(element => {
-        if (element["set_id"] === 'bits') {
-            if (element && Object.keys(element).length) {
-                TTVBitBadgeData = Object.entries(element)
-                    .flatMap(([set_id, badges]) => {
-                        if (set_id !== 'set_id' && Array.isArray(badges)) {
-                            return badges.filter(badge => badge !== 'bits')
-                                .map(badge => ({
-                                    id: badge.id,
-                                    url: badge["image_url_4x"],
-                                    title: badge.title
-                                }));
-                        }
-                        return [];
-                    });
-            }
-        }
-    });
-
-    //GLOBAL
-    const response1 = await fetch(`https://api.ivr.fi/v2/twitch/badges/global`, {
-        headers: {
-            accept: "application/json"
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data1 = await response1.json();
-
-    data1.forEach(element => {
-        if (element["versions"]) {
-            if (element && Object.keys(element).length) {
-                TTVGlobalBadgeData.push(
-                    ...element["versions"].map(badge => ({
-                        id: element.set_id + "_" + badge.id,
-                        url: badge["image_url_4x"],
-                        title: badge.title
-                    }))
-                );
-            }
-            return [];
-        }
-    });
-}
-
 const gqlQueries = {
     url: 'https://gql.twitch.tv/gql',
     headers: {
@@ -989,99 +906,6 @@ const gqlQueries = {
         'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1; Smart Box C1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
         'Content-Type': 'application/json'
     }
-}
-
-async function fetchTTVGlobalBitsData() {
-    try {
-        const body_global = JSON.stringify({
-            "query": "query BitsConfigContext_Global { cheerConfig { displayConfig { backgrounds colors { bits color } order scales types { animation extension } } groups { templateURL nodes { id prefix type campaign { id brandImageURL brandName thresholds { id minimumBits matchedPercent } minimumBitsAmount bitsTotal bitsUsed bitsPercentageRemaining userLimit self { id bitsUsed canBeSponsored } } tiers { id bits canShowInBitsCard } } } } }"
-        });
-
-        const response_global = await fetch(gqlQueries.url, {
-            method: 'POST',
-            headers: gqlQueries.headers,
-            body: body_global
-        });
-
-        if (!response_global.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data_global = await response_global.json();
-
-        const displayConfig = data_global.data.cheerConfig.displayConfig.colors
-
-        TTVBitsData = data_global.data.cheerConfig.groups[0].nodes.map(emote => ({
-            name: emote.prefix,
-            tiers: emote.tiers.map(tier => ({
-                min_bits: tier["bits"],
-                url: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${emote.prefix.toLowerCase()}/dark/animated/${tier["bits"]}/4.gif`,
-                emote_link: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${emote.prefix.toLowerCase()}/dark/animated/${tier["bits"]}/4.gif`,
-                color: displayConfig.find(color => color.bits === tier["bits"]).color
-            })),
-            site: 'TTV'
-        }));
-
-        console.log(FgMagenta + 'Success in getting bits emotes!' + FgWhite)
-    } catch (error) {
-        console.log('Error fetching user ID:', error);
-    }
-}
-
-async function fetchTTVBitsData() {
-    try {
-        const body = JSON.stringify({
-            "query": `query BitsConfigContext_Channel { channel: user(login: \"${settings.channel}\") { cheer { id cheerGroups { templateURL nodes { id prefix type tiers { id bits } } } } } }`
-        });
-
-        const response = await fetch(gqlQueries.url, {
-            method: 'POST',
-            headers: gqlQueries.headers,
-            body: body
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-
-        if (!data || !data.data || !data.data.channel || !data.data.channel.cheer) {
-            console.log("Channel doesn't have any custom bits emotes!")
-            return
-        }
-
-        const parts = data.data.channel.cheer.cheerGroups[0].templateURL.split('/');
-        const action_prefix = parts[5];
-
-        const user_data = await getTwitchUser(settings.channel)
-
-        const color = user_data.chatColor || getRandomTwitchColor(settings.channel)
-
-        const channel_bit_emotes = data.data.channel.cheer.cheerGroups.map(emote => ({
-            name: emote.nodes[0].prefix,
-            tiers: emote.nodes[0].tiers.map(tier => ({
-                min_bits: tier["bits"],
-                url: `https://d3aqoihi2n8ty8.cloudfront.net/partner-actions/${channelTwitchID}/${action_prefix}/${tier["bits"]}/dark/animated/4.gif`,
-                emote_link: `https://d3aqoihi2n8ty8.cloudfront.net/partner-actions/${channelTwitchID}/${action_prefix}/${tier["bits"]}/dark/animated/4.gif`,
-                color: color
-            })),
-            site: 'TTV'
-        }));
-
-        TTVBitsData = [...TTVBitsData, ...channel_bit_emotes];
-
-        console.log(FgMagenta + 'Success in getting bits emotes!' + FgWhite)
-    } catch (error) {
-        console.log('Error fetching user ID:', error);
-    }
-}
-
-async function loadInBits() {
-    await getVersion() // IMPORTANT
-
-    fetchTTVGlobalBitsData()
-    fetchTTVBitsData()
 }
 
 async function load7TV() {
@@ -1157,17 +981,13 @@ async function loadChat() {
 
     loadCustomBadges();
 
-    // TTV
+    // TTV - NEW API
 
-    const get_user = await getTwitchUser(settings.channel);
+    const data_loaded = await loadTTV();
 
-    channelTwitchID = get_user.id;
+    if (!data_loaded && channelTwitchID == "0") { return; };
 
-    loadInBits()
-
-    getBadges()
-
-    //THIRD PARTY
+    // THIRD PARTY
 
     // 7TV
 
@@ -1180,6 +1000,161 @@ async function loadChat() {
     // FFZ
 
     loadFFZ();
+}
+
+async function loadTTV() {
+    try {
+        const response = await fetch(`https://api.unii.dev/channel?name=${settings.channel}`);
+
+        if (!response.ok) {
+            console.error("Fetch error:", response.status, response.statusText);
+            return false;
+        }
+
+        const response_data = await response.json();
+
+        if (!response_data?.channel || !Array.isArray(response_data.channel) || response_data.channel.length < 5) {
+            console.error("Invalid or incomplete data structure:", response_data);
+            return false;
+        }
+
+        const data = {
+            channel_info: response_data.channel?.[0],
+            channel_badges: response_data.channel?.[1],
+            channel_bits: response_data.channel?.[2],
+            global_badges: response_data.channel?.[3],
+            global_bits: response_data.channel?.[4]
+        };
+
+        // CHANNEL INFO LOGIN
+        channelTwitchID = data?.channel_info?.data?.user?.id || null;
+        const channel_color = data?.channel_info?.data?.color || "white";
+
+        // CHANNEL BADGES
+        const broadcastBadges = data?.channel_badges?.data?.user?.broadcastBadges || [];
+        try {
+            const channel_subscriber_badges = broadcastBadges.filter(badge => badge?.setID === "subscriber");
+
+            TTVSubBadgeData = channel_subscriber_badges.map(badge => ({
+                id: badge.version,
+                url: badge.image4x || badge.image3x || badge.image2x || badge.image1x,
+                title: badge.title
+            }));
+        } catch (err) {
+            console.error("Error loading channel badges:", err);
+            TTVSubBadgeData = [];
+        }
+
+        try {
+            const channel_bits_badges = broadcastBadges.filter(badge => badge?.setID === "bits");
+
+            TTVBitBadgeData = channel_bits_badges.map(badge => ({
+                id: badge.version,
+                url: badge.image4x || badge.image3x || badge.image2x || badge.image1x,
+                title: badge.title
+            }));
+        } catch (err) {
+            console.error("Error loading channel bits badges:", err);
+            TTVBitBadgeData = [];
+        }
+
+        // CHANNEL BITS
+        let channel_bit_emotes = [];
+        try {
+            const cheerGroups = data?.channel_bits?.data?.channel?.cheer?.cheerGroups || [];
+            channel_bit_emotes = cheerGroups.map(group => {
+                const node = group.nodes?.[0];
+                const prefix = node?.prefix?.toLowerCase() || "prefix";
+                const templateURL = group.templateURL || "https://d3aqoihi2n8ty8.cloudfront.net/actions/PREFIX/BACKGROUND/ANIMATION/TIER/SCALE.EXTENSION";
+
+                return {
+                    name: prefix,
+                    tiers: node?.tiers?.map(tier => {
+                        const tierURL = templateURL.replace(/PREFIX|BACKGROUND|ANIMATION|TIER|SCALE\.EXTENSION/g, match => {
+                            const replacements = {
+                                PREFIX: prefix,
+                                BACKGROUND: "dark",
+                                ANIMATION: "animated",
+                                TIER: tier?.bits || "TIER",
+                                "SCALE.EXTENSION": "4.gif"
+                            };
+                            return replacements[match];
+                        });
+
+                        return {
+                            min_bits: tier?.bits,
+                            url: tierURL,
+                            emote_link: tierURL,
+                            color: channel_color
+                        };
+                    }) || [],
+                    site: 'TTV'
+                };
+            });
+        } catch (err) {
+            console.error("Error loading channel bit emotes:", err);
+            channel_bit_emotes = [];
+        }
+
+        // GLOBAL BADGES
+        try {
+            TTVGlobalBadgeData = (data?.global_badges?.data?.badges || []).map(badge => ({
+                id: badge.setID + "_" + badge.version,
+                url: badge.image4x || badge.image3x || badge.image2x || badge.image1x,
+                title: badge.title
+            }));
+        } catch (err) {
+            console.error("Error loading global badges:", err);
+            TTVGlobalBadgeData = [];
+        }
+
+        // GLOBAL BITS
+        let global_bit_emotes = [];
+        try {
+            const global_groups = data?.global_bits?.data?.cheerConfig?.groups || [];
+            const displayConfig = data?.global_bits?.data?.cheerConfig?.displayConfig?.colors || [];
+
+            global_bit_emotes = global_groups[0]?.nodes?.map(group => {
+                const prefix = group?.prefix?.toLowerCase() || "prefix";
+                const templateURL = global_groups[0]?.templateURL || "https://d3aqoihi2n8ty8.cloudfront.net/actions/PREFIX/BACKGROUND/ANIMATION/TIER/SCALE.EXTENSION";
+
+                return {
+                    name: prefix,
+                    tiers: group?.tiers?.map(tier => {
+                        const tierURL = templateURL.replace(/PREFIX|BACKGROUND|ANIMATION|TIER|SCALE\.EXTENSION/g, match => {
+                            const replacements = {
+                                PREFIX: prefix,
+                                BACKGROUND: "dark",
+                                ANIMATION: "animated",
+                                TIER: tier?.bits || "TIER",
+                                "SCALE.EXTENSION": "4.gif"
+                            };
+                            return replacements[match];
+                        });
+
+                        return {
+                            min_bits: tier?.bits,
+                            url: tierURL,
+                            emote_link: tierURL,
+                            color: displayConfig.find(color => color.bits === tier?.bits)?.color || "white"
+                        };
+                    }) || [],
+                    site: 'TTV'
+                };
+            }) || [];
+        } catch (err) {
+            console.error("Error loading global bit emotes:", err);
+            global_bit_emotes = [];
+        }
+
+        TTVBitsData = [...global_bit_emotes, ...channel_bit_emotes];
+
+        return true;
+
+    } catch (err) {
+        console.error("Unexpected error in loadTTV:", err);
+        return false;
+    }
 }
 
 function getBestImageUrl(badge) {
@@ -1197,15 +1172,11 @@ function getBestImageUrl(badge) {
 }
 
 async function loadCustomBadges() {
-    const response = await fetch('https://api.github.com/gists/7f360e3e1d6457f843899055a6210fd6');
+    const response = await fetch('https://api.unii.dev/badges');
 
     if (!response.ok) { return; };
 
     let data = await response.json();
-
-    if (!data["files"] || !data["files"]["badges.json"] || !data["files"]["badges.json"]["content"]) { return; };
-
-    data = JSON.parse(data["files"]["badges.json"]["content"]);
 
     if (!data || !data["YAUTO"]) { return; };
 
@@ -1216,25 +1187,6 @@ async function loadCustomBadges() {
         ...badge,
         url: getBestImageUrl(badge)
     }));
-}
-
-async function getVersion() {
-    const version_response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://static.twitchcdn.net/config/manifest.json?v=1')}`)
-
-    if (!version_response.ok) {
-        console.log(version_response);
-        return false;
-    };
-
-    let version_data = await version_response.json();
-
-    if (!version_data["contents"]) { return; };
-
-    version_data = JSON.parse(version_data["contents"]);
-
-    version = version_data.channels[0].releases[0].buildId;
-
-    console.log(`Build version: ${version}`);
 }
 
 function removeInvisibleElements() {

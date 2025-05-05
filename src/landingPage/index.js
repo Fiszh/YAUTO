@@ -230,6 +230,36 @@ async function setUpPreview() {
     setInterval(checkUrlChange, 100);
 }
 
+//NEEDED FOR PREVIEW
+async function getBadges() {
+    const response = await fetch(`https://api.ivr.fi/v2/twitch/badges/global`, {
+        headers: {
+            accept: "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+
+    data.forEach(element => {
+        if (element["versions"]) {
+            if (element && Object.keys(element).length) {
+                TTVGlobalBadgeData.push(
+                    ...element["versions"].map(badge => ({
+                        id: element.set_id + "_" + badge.id,
+                        url: badge["image_url_4x"],
+                        title: badge.title
+                    }))
+                );
+            }
+            return [];
+        }
+    });
+}
+
 button.addEventListener("click", () => {
     chatDisplay.style.transition = "background-color 0.5s ease";
 
