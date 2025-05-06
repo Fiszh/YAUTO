@@ -24,11 +24,20 @@ body {
     background-color: rgb(219, 219, 219);
 }
 
+.no_longer_used {
+    background-color: red;
+    color: white;
+    text-align: center;
+    width: 100%;
+    height: 4%;
+    display: block;
+    font-size: 2rem;
+}
+
 #topbar {
     width: 100%;
-    height: 7dvh;
+    height: 5dvh;
     background-color: #00000066;
-    position: fixed;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -277,7 +286,7 @@ body {
 #more_info_button {
     z-index: 2;
     margin-top: 1dvh;
-    height: 5dvh;
+    height: 3dvh;
     aspect-ratio: 1 / 1;
     position: absolute;
     right: 1dvw;
