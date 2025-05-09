@@ -95,6 +95,7 @@ if (load === "chat") {
     appendScript('src/landingPage/settings.js');
     appendScript('src/landingPage/index.js');
     appendScript('src/landingPage/events.js');
+    appendScript('src/landingPage/twitchLogin.js');
 
     // NEEDED FOR CHAT PREVIEW
 

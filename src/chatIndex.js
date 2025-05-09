@@ -962,6 +962,10 @@ async function loadChat() {
 
     if (!data_loaded && channelTwitchID == "0") { return; };
 
+    // LOAD SAVED SETTINGS 
+
+    await LoadSavedSettings();
+
     // THIRD PARTY
 
     // 7TV
@@ -975,6 +979,22 @@ async function loadChat() {
     // FFZ
 
     loadFFZ();
+}
+
+async function LoadSavedSettings() {
+    const has_settings_saved = await fetch(`https://api.unii.dev/settings/${channelTwitchID}`);
+
+    if (!has_settings_saved.ok) {
+        return;
+    }
+
+    const settings_data = await has_settings_saved.json();
+
+    if (settings_data?.["settings"]) {
+        settings = { ...settings, ...settings_data["settings"] };
+
+        appendSettings(chatDisplay);
+    }
 }
 
 async function loadTTV() {

@@ -4,6 +4,9 @@ let lastUrl = urlDiv.textContent.trim();
 const button = document.getElementById("colorToggleButton");
 let isWhite = false;
 
+const saveButton = document.getElementById("saveSettings-button");
+const deleteButton = document.getElementById("deleteSettings-button");
+
 let images = [
     "https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp",
     "https://cdn.7tv.app/emote/6356194e5cc38d00a55f4015/4x.webp",
@@ -117,8 +120,15 @@ if (logoElements) {
     const intervalTime = 3000;
     let lastImageIndex = -1;
 
+    const preloadedImages = [];
+    for (let i = 0; i < images.length; i++) {
+        const img = new Image();
+        img.src = images[i];
+        preloadedImages.push(img);
+    }
+
     function changeImage() {
-        if (logoElements && logoElements[0]) {
+        if (logoElements[0]) {
             const logo = logoElements[0];
             let randomIndex;
 
@@ -165,11 +175,9 @@ async function displayPreview() {
     const url = urlDiv.textContent.trim();
     const current_url_split = url.split('/');
 
-    settings = {
-        channel: "twitch"
-    };
+    let settings_url = current_url_split[current_url_split.length - 1].split("?");
 
-    let settings_url = current_url_split[current_url_split.length - 1].split("?")
+    settings = {};
 
     settings_url.forEach(item => {
         const parts = item.split('=');
@@ -188,7 +196,7 @@ async function displayPreview() {
         }
     });
 
-    console.log(settings)
+    console.log(settings);
 
     chatDisplay.innerHTML = '';
 
@@ -215,10 +223,6 @@ function checkUrlChange() {
 }
 
 async function setUpPreview() {
-    settings = {
-        channel: "twitch"
-    };
-
     await waitForFunction('fetch7TVEmoteData');
 
     SevenTVEmoteData = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
@@ -273,3 +277,66 @@ button.addEventListener("click", () => {
 
 setUpPreview();
 getImages();
+
+saveButton.addEventListener("click", async () => {
+    if (!userToken) {
+        alert("You are not logged in");
+        return;
+    }
+
+    if (!Object.keys(settings).length) {
+        alert("No settings changed");
+        return;
+    }
+
+    const saveSettings_response = await fetch("https://api.unii.dev/settings", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": userToken
+        },
+        body: JSON.stringify(settings)
+    });
+
+    if (!saveSettings_response.ok) {
+        alert("There was a error saving your settings");
+        return;
+    } else {
+        const saveSettings_data = await saveSettings_response.json();
+
+        if (!saveSettings_data) {
+            alert("No data recived from the server!");
+            return;
+        } else {
+            alert(saveSettings_data["message"] || saveSettings_data["error"]);
+        }
+    }
+})
+
+deleteButton.addEventListener("click", async () => {
+    if (!userToken) {
+        alert("You are not logged in");
+        return;
+    }
+
+    const deleteSettings_response = await fetch("https://api.unii.dev/settings", {
+        method: "DELETE",
+        headers: {
+            "x-auth-token": userToken
+        }
+    });
+
+    if (!deleteSettings_response.ok) {
+        alert("There was a error saving your settings");
+        return;
+    } else {
+        const deleteSettings_data = await deleteSettings_response.json();
+
+        if (!deleteSettings_data) {
+            alert("No data recived from the server!");
+            return;
+        } else {
+            alert(deleteSettings_data["message"] || deleteSettings_data["error"]);
+        }
+    }
+})

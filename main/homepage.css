@@ -39,6 +39,7 @@ body {
     top: 0;
     left: 0;
     font-size: 2rem;
+    gap: 5px;
 }
 
 .logo {
@@ -279,17 +280,14 @@ body {
 /* MORE */
 
 #more_info_button {
-    z-index: 2;
-    margin-top: 1dvh;
     height: 5dvh;
     aspect-ratio: 1 / 1;
-    position: absolute;
-    right: 1dvw;
     background-color: #ffffff0d;
     user-select: none;
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
 #more_info_button img {
@@ -378,4 +376,49 @@ a img {
 
 .commit-pair .information {
     font-weight: bold;
+}
+
+#login-button {
+    background-color: #ffffff0d;
+    margin-left: auto;
+    height: 5dvh;
+    padding: 10px;
+    font-size: 2rem;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#login-button:hover {
+    background-color: #ffffff1c;
+}
+
+#settingsButtons {
+    display: flex;
+    width: 100%;
+}
+
+#deleteSettings-button,
+#saveSettings-button {
+    border: none;
+    width: 100%;
+    color: white;
+    cursor: pointer;
+    padding: 7px;
+    font-size: 1.5rem;
+}
+
+#saveSettings-button {
+    background-color: #02ff0096;
+}
+
+#deleteSettings-button {
+    background-color: #ff00009c;
+}
+
+#deleteSettings-button:hover,
+#saveSettings-button:hover {
+    background-color: #ffffff1c;
 }

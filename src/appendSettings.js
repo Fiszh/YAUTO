@@ -20,10 +20,12 @@ function appendSettings(applyElement) {
 
     if (!settings.fontShadow || String(settings.fontShadow) !== "0") {
         const shadow_css = `#ChatDisplay > * {
-                        filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
-                    }`;
+                                filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
+                            }`;
 
-        ShadowStyle.appendChild(document.createTextNode(shadow_css));
+        ShadowStyle.textContent = shadow_css;
+    } else {
+        ShadowStyle.textContent = "";
     }
 
     if (settings.fontSize) {
@@ -48,7 +50,7 @@ function appendSettings(applyElement) {
             max-height: ${desiredHeight}px;
         }
     `;
-    
+
     if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
         applyElement.style.webkitTextStroke = '1.3px black';
     } else {
