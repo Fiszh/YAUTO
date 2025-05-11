@@ -991,7 +991,7 @@ async function LoadSavedSettings() {
     const settings_data = await has_settings_saved.json();
 
     if (settings_data?.["settings"]) {
-        settings = { ...settings, ...settings_data["settings"] };
+        settings = { ...settings_data["settings"], ...settings };
 
         appendSettings(chatDisplay);
     }
