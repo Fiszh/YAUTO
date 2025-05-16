@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Yet Another Useless Twitch Overlay</title>
+    <title>Chat • uniiDev</title>
     <link rel="icon" href="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" type="image/png">
 
     <style>
@@ -13,7 +13,7 @@
 
     <meta name="darkreader-lock">
 
-    <meta content="(YAUTO) Yet Another Useless Twitch Overlay" property="og:title" />
+    <meta content="(YAUTO) Chat • uniiDev" property="og:title" />
     <meta content="YAUTO is a custom Twitch chat overlay with support for 7TV, BetterTwitchTV, and FrankerFaceZ."
         property="og:description" />
     <meta content="https://fiszh.github.io/YAUTO/" property="og:url" />
@@ -96,25 +96,28 @@
         </button>
     </div>
 
-    <div class="left_side">
-        <div class="configuration"> </div>
-        <div id="channel_name">↓ Channel Name ↓</div>
-        <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name">
-        <div id="settingsButtons">
-            <button id="saveSettings-button">Save settings</button>
-            <button id="deleteSettings-button">Delete settings</button>
-        </div>
-    </div>
-
-    <div class="right_side">
-        <button id="colorToggleButton" class="transition-button">Change chat background</button>
-        <div class="chat_preview">
-            <div id="ChatDisplay" class="chat-messages"></div>
+    <main>
+        <div class="left_side">
+            <div class="configuration"> </div>
+            <div id="information">↓ Channel Name ↓</div>
+            <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name">
+            <div id="information">↓ Testers only ↓</div>
+            <div id="settingsButtons">
+                <button id="saveSettings-button">Save settings</button>
+                <button id="deleteSettings-button">Delete settings</button>
+            </div>
         </div>
 
-        <div id="click_to_copy">↓ Click To Copy ↓</div>
-        <div id="url-results">site_url</div>
-    </div>
+        <div class="right_side">
+            <button id="colorToggleButton" class="transition-button">Change chat background</button>
+            <div class="chat_preview">
+                <div id="ChatDisplay" class="chat-messages"></div>
+            </div>
+
+            <div id="click_to_copy">↓ Click To Copy ↓</div>
+            <div id="url-results">site_url</div>
+        </div>
+    </main>
 
     <div id="footer">
         Made by: <a href="https://api.unii.dev/twitch/528761326" target="_blank">uniiDev</a>,

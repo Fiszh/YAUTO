@@ -964,7 +964,7 @@ async function loadChat() {
 
     // LOAD SAVED SETTINGS 
 
-    await LoadSavedSettings();
+    //await LoadSavedSettings();
 
     // THIRD PARTY
 
@@ -1144,8 +1144,18 @@ async function loadTTV() {
 
         TTVBitsData = [...global_bit_emotes, ...channel_bit_emotes];
 
-        return true;
+        // SETTINGS
+        try {
+            if (response_data?.["user_settings"]) {
+                settings = { ...response_data["user_settings"], ...settings };
 
+                appendSettings(chatDisplay);
+            }
+        } catch (err) {
+            console.error("Error loading saved settings:", err);
+        }
+
+        return true;
     } catch (err) {
         console.error("Unexpected error in loadTTV:", err);
         return false;
