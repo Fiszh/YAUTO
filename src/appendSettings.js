@@ -18,6 +18,18 @@ function appendSettings(applyElement) {
         applyElement.style.fontFamily = "Inter";
     }
 
+    if (settings?.msgCaps == "1") {
+        applyElement.style.textTransform = "uppercase";
+    } else {
+        applyElement.style.textTransform = "none";
+    }
+
+    if (settings?.msgBold == "0") {
+        applyElement.style.fontWeight = "normal";
+    } else {
+        applyElement.style.fontWeight = "bold";
+    }
+
     if (!settings.fontShadow || String(settings.fontShadow) !== "0") {
         const shadow_css = `#ChatDisplay > * {
                                 filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));

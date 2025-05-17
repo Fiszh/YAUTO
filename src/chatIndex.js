@@ -127,13 +127,7 @@ async function onMessage(channel, userstate, message, self) {
     // BLOCK BOTS
     const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username);
 
-    if (FFZBadge?.id == "bot") {
-        if (!await getSetting("bots")) {
-            return;
-        }
-    }
-
-    if (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2") {
+    if ((FFZBadge?.id == "bot") && (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2")) {
         if (!await getSetting("bots")) {
             return;
         }
@@ -240,54 +234,41 @@ let BTTVWebsocket;
 let BTTVGlobalEmoteData = [];
 let BTTVEmoteData = [];
 
-let allEmoteData = [];
-
 const BTTVZeroWidth = ['cvHazmat', 'cvMask'];
+
+let allEmoteData = [];
 
 async function trimPart(text) {
     if (text) {
-        return text.trim()
+        return text.trim();
     } else {
-        return text
+        return text;
     }
 }
 
 async function getSetting(setting_name, action) {
-    if (settings[setting_name]) {
-        if (action) {
-            if (action.action == "includes") {
-                if (settings[setting_name].includes(action.include)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+    const value = settings[setting_name];
+
+    if (value !== undefined) {
+        if (action?.action === "includes") {
+            return value.includes(action.include);
         }
 
-        if (settings[setting_name] == "0") { return false; }
-
-        return settings[setting_name];
-    } else {
-        let found_in_config = Object.keys(config).find(key => config[key].param === setting_name);
-
-        if (!found_in_config && configuration) {
-            found_in_config = Object.keys(configuration).find(key => configuration[key].param === setting_name);
-        }
-
-        if (found_in_config) {
-            let sourceConfig = config[found_in_config] ? config : configuration;
-
-            if (sourceConfig[found_in_config].value == "0") {
-                return false;
-            }
-
-            return sourceConfig[found_in_config].value;
-        } else {
-            console.log(setting_name, "not found");
-            return false;
-        }
-
+        return value === "0" ? false : value;
     }
+
+    const sourceKey = Object.keys(config).find(k => config[k].param === setting_name)
+        || (configuration && Object.keys(configuration).find(k => configuration[k].param === setting_name));
+
+    if (!sourceKey) {
+        console.log(setting_name, "not found");
+        return false;
+    }
+
+    const source = config[sourceKey] ? config : configuration;
+    const sourceValue = source[sourceKey].value;
+
+    return sourceValue === "0" ? false : sourceValue;
 }
 
 async function handleMessage(userstate, message, channel) {
@@ -515,14 +496,6 @@ async function handleMessage(userstate, message, channel) {
         badges_html = '';
     }
 
-    if (await getSetting("msgCaps")) {
-        finalUsername = finalUsername.toUpperCase();
-    }
-
-    if (await getSetting("msgBold")) {
-        rendererMessage = `<strong>${tagsReplaced}</strong>`;
-    }
-
     messageHTML = `<div class="message-text">
                             ${badges_html}
                             <span class="name-wrapper">
@@ -536,10 +509,6 @@ async function handleMessage(userstate, message, channel) {
     fadeOut(messageElement);
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
-
-    if (await getSetting("msgBold")) {
-        results = `<strong>${results}</strong>`;
-    }
 
     let finalMessageHTML = `<div class="message-text">
                             ${badges_html}
@@ -807,10 +776,6 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
 
                     break;
                 case 'other':
-                    if (await getSetting("msgCaps")) {
-                        part["other"] = part["other"].toUpperCase();
-                    }
-
                     let otherHTML = part["other"];
 
                     if (otherHTML && typeof otherHTML === "string") {

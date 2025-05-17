@@ -256,11 +256,15 @@ function validateInput(event) {
 }
 
 url_results.addEventListener('click', function () {
-    navigator.clipboard.writeText(url_results.textContent).then(() => {
-        alert('Copied to clipboard!');
-    }).catch(err => {
-        console.error('Failed to copy text: ', err);
-    });
+    if (settings?.channel) {
+        navigator.clipboard.writeText(url_results.textContent).then(() => {
+            alert('Copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+        });
+    } else {
+        alert('Channel not provided!');
+    }
 });
 
 if (channel_input) {

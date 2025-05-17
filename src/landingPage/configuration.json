@@ -74,13 +74,13 @@
         "param": "bots"
     },
     "user_blacklist": {
-        "name": "Custom user blacklist (separate using \" \")",
+        "name": "Custom user blacklist (separate using spaces)",
         "type": "text",
         "value": "",
         "param": "userBL"
     },
     "prefix_blacklist": {
-        "name": "Custom prefix blacklist (separate using \" \")",
+        "name": "Custom prefix blacklist (separate using spaces)",
         "type": "text",
         "value": "",
         "param": "prefixBL"
