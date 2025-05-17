@@ -1,6 +1,6 @@
 # Custom Twitch Overlay
 
-https://fiszh.github.io/YAUTO/
+https://chat.unii.dev/
 
 ## Configuration
 
