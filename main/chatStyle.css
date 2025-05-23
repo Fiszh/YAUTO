@@ -38,6 +38,15 @@ body::-webkit-scrollbar,
     vertical-align: middle;
 }
 
+.badge-wrapper {
+    flex-wrap: wrap;
+}
+
+.message-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .bits-number {
     white-space: nowrap;
     overflow: hidden;
@@ -104,29 +113,4 @@ body::-webkit-scrollbar,
 #loadingUI img {
     max-height: 25vh;
     object-fit: contain;
-}
-
-.information {
-    margin-left: 3px;
-    margin-right: 3px;
-    font-size: 30px;
-    font-family: "Inter";
-    text-align: center;
-}
-
-.feature-list ul, .feature-list ol {
-    list-style-type: none;
-    list-style-position: inside;
-    padding-left: 0;
-}
-
-.feature-list li {
-    font-size: 25px;
-    margin-bottom: 10px;
-    text-align: center;
-    font-family: "Inter";
-}
-
-#commit-message {
-    text-align: center;
 }

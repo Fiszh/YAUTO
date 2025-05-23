@@ -320,10 +320,10 @@ async function handleMessage(userstate, message, channel) {
     messageElement.setAttribute("message_id", message_id);
     messageElement.setAttribute("sender", username);
 
-    let messageHTML = `<div class="message-text">
-                                <span class="name-wrapper" tooltip-name="${finalUsername.replace(":", "")}" tooltip-type="User" tooltip-creator="" tooltip-image="">
-                                    <strong id="username-strong">${finalUsername}</strong>
-                                </span>
+    let messageHTML = `<span class="name-wrapper">
+                            <strong id="username-strong">${finalUsername}</strong>
+                        </span>
+                        <div class="message-text">
                             ${rendererMessage}
                         </div>`;
 
@@ -484,25 +484,30 @@ async function handleMessage(userstate, message, channel) {
         index === self.findIndex(b => b.badge_url === badge.badge_url)
     );
 
-    let badges_html = badges
-        .map(badge =>
-            `<span class="badge-wrapper">
-                <img style="background-color: ${badge.background_color || 'transparent'};" src="${badge.badge_url}" alt="${badge.alt}" class="badge" loading="lazy">
-            </span>`
-        )
-        .join("");
+    let badges_html = `<span class="badge-wrapper">
+                            ${badges.map(badge => `
+                            <img
+                                style="background-color: ${badge.background_color || 'transparent'};"
+                                src="${badge.badge_url}"
+                                alt="${badge.alt}"
+                                class="badge"
+                                loading="lazy"
+                            >
+                            `).join("")}
+                        </span>`;
+
 
     if (!await getSetting("badges")) {
         badges_html = '';
     }
 
-    messageHTML = `<div class="message-text">
-                            ${badges_html}
-                            <span class="name-wrapper">
-                                <strong id="username-strong">${finalUsername}</strong>
-                            </span>
-                            ${rendererMessage}
-                        </div>`;
+    messageHTML = `${badges_html}
+                    <span class="name-wrapper">
+                        <strong id="username-strong">${finalUsername}</strong>
+                    </span>
+                    <div class="message-text">
+                        ${rendererMessage}
+                    </div>`;
 
     messageElement.innerHTML = messageHTML;
 
@@ -510,11 +515,12 @@ async function handleMessage(userstate, message, channel) {
 
     let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
 
-    let finalMessageHTML = `<div class="message-text">
+    let finalMessageHTML = `
                             ${badges_html}
                             <span class="name-wrapper">
                                 <strong id="username-strong">${finalUsername}</strong>
                             </span>
+                        <div class="message-text">
                             ${results}
                         </div>`;
 
@@ -643,6 +649,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             ...ttvEmoteData,
             ...nonGlobalEmoteData,
             ...allEmoteData,
+            ...TTVBitsData
         ];
 
         if (emoteData.length === 0) return inputString;
