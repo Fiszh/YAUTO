@@ -75,10 +75,6 @@
                 <div id="commit-message-main" class="commit-message"></div>
             </div>
             <div class="commit-pair">
-                <div class="information">Dev commit</div>
-                <div id="commit-message-dev" class="commit-message"></div>
-            </div>
-            <div class="commit-pair">
                 <div class="information">uniiDev commit</div>
                 <div id="commit-message-uniiDev" class="commit-message"></div>
             </div>
@@ -150,20 +146,6 @@
                     commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_main.innerHTML = "Error getting main branch commit message";
-
-                    console.error(err);
-                }
-            }
-
-            if (commit_message_dev) {
-                try {
-                    const response_commit_dev = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=dev');
-                    const data_commit_dev = await response_commit_dev.json();
-                    const commitMessage_commit_dev = data_commit_dev[0].commit.message;
-
-                    commit_message_dev.innerHTML = commitMessage_commit_dev.replace(/\n/g, '<br>');
-                } catch (err) {
-                    commit_message_dev.innerHTML = "Error getting dev branch commit message";
 
                     console.error(err);
                 }

@@ -437,3 +437,29 @@ a img {
 #saveSettings-button:hover {
     background-color: #ffffff1c;
 }
+
+.information {
+    margin-left: 3px;
+    margin-right: 3px;
+    font-size: 30px;
+    font-family: "Inter";
+    text-align: center;
+}
+
+.feature-list ul,
+.feature-list ol {
+    list-style-type: none;
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.feature-list li {
+    font-size: 25px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-family: "Inter";
+}
+
+#commit-message {
+    text-align: center;
+}
