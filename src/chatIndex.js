@@ -70,7 +70,7 @@ async function safeConnect() {
         console.log('Already connected.');
         return;
     }
-    
+
     if (tmiConencting) {
         console.log('Already connecting, please wait.');
         return;
@@ -761,11 +761,11 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                     const primary = part["primary"];
 
                     emoteHTML += `<span class="emote-wrapper">
-                        <img src="${primary?.url || ''}" alt="${primary?.name || ''}" class="emote${primary?.emoji ? ' emoji' : ''}">`;
+                        <img src="${primary?.url || ''}" alt="${primary?.name || ''}" class="emote${primary?.emoji ? ' emoji' : ''}" loading="lazy">`;
 
                     if (part["overlapped"].length) {
                         emoteHTML += part["overlapped"]
-                            .map(overlapped => `<img src="${overlapped?.url || ''}" alt="${overlapped?.name || ''}" class="emote">`)
+                            .map(overlapped => `<img src="${overlapped?.url || ''}" alt="${overlapped?.name || ''}" class="emote" loading="lazy">`)
                             .join('\n');
                     }
 
@@ -776,7 +776,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
                     const bitsInfo = part["bits"];
 
                     const bitsHTML = `<span class="bits-wrapper" style="color:${bitsInfo?.color || 'white'}">
-                                <img src="${bitsInfo?.url || ''}" alt="${bitsInfo?.name || ''}" class="emote">
+                                <img src="${bitsInfo?.url || ''}" alt="${bitsInfo?.name || ''}" class="emote" loading="lazy">
                                 ${bitsInfo?.bits || ''}
                         </span>`;
 
