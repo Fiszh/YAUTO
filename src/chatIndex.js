@@ -3,6 +3,7 @@ console.log("chatIndex.js hooked up!")
 let client;
 
 let tmiConnected = false;
+let tmiConencting = false;
 
 if (document.location.href.includes("?channel=")) {
     client = new tmi.Client({
@@ -69,7 +70,15 @@ async function safeConnect() {
         console.log('Already connected.');
         return;
     }
+    
+    if (tmiConencting) {
+        console.log('Already connecting, please wait.');
+        return;
+    }
+
+    tmiConencting = true;
     await client.connect();
+    tmiConencting = false;
     tmiConnected = true;
 }
 
