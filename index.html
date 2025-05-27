@@ -1,110 +1,110 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Chat • uniiDev</title>
-    <link rel="icon" href="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" type="image/png">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YAUTO Twitch Chat Overlay Setup • uniiDev</title>
+    <link rel="icon" href="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" type="image/png" />
+
+    <meta name="description" content="YAUTO is a Twitch chat overlay supporting 7TV, BTTV, and FFZ. Made by uniiDev." />
+    <meta name="keywords" content="Twitch chat overlay, 7TV emotes, BetterTwitchTV, FrankerFaceZ, Twitch emotes, chat commands, Twitch overlay" />
+
+    <meta property="og:title" content="YAUTO Twitch Chat Overlay Setup • uniiDev" />
+    <meta name="twitter:title" content="YAUTO Twitch Chat Overlay Setup • uniiDev" />
+    <meta property="og:description" content="YAUTO is a custom Twitch chat overlay with support for 7TV, BetterTwitchTV, and FrankerFaceZ." />
+    <meta property="og:url" content="https://chat.unii.dev" />
+    <meta property="og:image" content="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" />
+    <meta name="twitter:image" content="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#43B581" />
+    <link rel="canonical" href="https://chat.unii.dev" />
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     </style>
+
     <!-- Include Twemoji -->
-    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
-
-    <meta name="darkreader-lock">
-
-    <meta content="(YAUTO) Chat • uniiDev" property="og:title" />
-    <meta content="YAUTO is a custom Twitch chat overlay with support for 7TV, BetterTwitchTV, and FrankerFaceZ."
-        property="og:description" />
-    <meta content="https://fiszh.github.io/YAUTO/" property="og:url" />
-    <meta content="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png" property="og:image" />
-
-    <!-- Theme Color for Mobile Browsers (affects browser address bar color on Android) -->
-    <meta content="#43B581" data-react-helmet="true" name="theme-color" />
-
-    <!-- For Large Image Embeds (like YouTube or image hosts) -->
-    <meta content="summary_large_image" name="twitter:card" />
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous" defer></script>
 </head>
 
 <body>
     <div id="site_blur" class="no-blur"></div>
 
     <div id="more_info_menu">
-        <div class="information">
-            <strong>YAUTO (Yet Another Useless Twitch Overlay)</strong> is a custom
-            <strong>Twitch</strong> chat overlay for your broadcasting software.
-            <br>It features integration with popular emote services like
-            <strong>7TV</strong>, <strong>BetterTwitchTV</strong>, and
-            <strong>FrankerFaceZ</strong>, allowing you to showcase a wide variety of emotes directly on your overlay.
-        </div>
+        <section class="information">
+            <strong>YAUTO</strong> is a custom <strong>Twitch</strong> chat overlay with support for emote services like
+            <strong>7TV</strong>, <strong>BetterTwitchTV</strong>, and <strong>FrankerFaceZ</strong>.
+            <br><small>Yet Another Useless Twitch Overlay</small>
+        </section>
 
-        <div class="feature-list">
+        <section class="feature-list">
             <ul>
-                <li> <img src="https://twitch.tv/favicon.ico" alt="TTV_ICON" class="icon"> Emotes (global/channel/bits),
+                <li> <img src="https://twitch.tv/favicon.ico" alt="Twitch Icon" class="icon" /> Emotes (global/channel/bits),
                     Badges (global/channel)</li>
-                <li> <img src="https://7tv.app/favicon.svg" alt="7TV_ICON" class="icon"> Emotes
+                <li> <img src="https://7tv.app/favicon.svg" alt="7TV Icon" class="icon" /> Emotes
                     (global/channel/personal/zero-width),
                     Badges, Paints, WebSocket (Automatic emote updates/Paints/Badges/Personal emotes)</li>
-                <li> <img src="https://betterttv.com/favicon.png" alt="BTTV_ICON" class="icon"> Emotes (global/channel),
+                <li> <img src="https://betterttv.com/favicon.png" alt="BTTV Icon" class="icon" /> Emotes (global/channel),
                     WebSocket (Automatic emote updates)</li>
-                <li> <img src="https://www.frankerfacez.com/static/images/favicon-32.png" alt="FFZ_ICON" class="icon">
+                <li> <img src="https://www.frankerfacez.com/static/images/favicon-32.png" alt="FFZ Icon" class="icon" />
                     Emotes (global/channel), Badges (global/channel)</li>
             </ul>
-        </div>
+        </section>
 
-        <div class="information">commands</div>
+        <section class="information">commands</section>
 
-        <div class="feature-list">
+        <section class="feature-list">
             <ul>
                 <li> !reloadoverlay - Mod and higher only, reloads the overlay</li>
                 <li> !refreshoverlay - Mod and higher only, refreshes the overlay (loads the chat again)</li>
                 <li> !reloadwebsockets - Mod and higher only, reconnects WebSockets</li>
                 <li> !reconnectchat - Mod and higher only, reconnects Twitch IRC</li>
             </ul>
-        </div>
+        </section>
 
         <a href="https://discord.com/users/703639905691238490" target="_blank" rel="noopener noreferrer">
-            <img id="discord_button" src="./imgs/discord.png" draggable="false">
+            <img id="discord_button" src="./imgs/discord.png" alt="Discord Link" draggable="false" />
         </a>
 
-        <div class="information">Latest Commits/Updates</div>
+        <section class="information">Latest Commits/Updates</section>
 
         <div id="commits">
             <div class="commit-pair">
-                <div class="information">Main commit</div>
+                <section class="information">Main commit</section>
                 <div id="commit-message-main" class="commit-message"></div>
             </div>
             <div class="commit-pair">
-                <div class="information">uniiDev commit</div>
+                <section class="information">uniiDev commit</section>
                 <div id="commit-message-uniiDev" class="commit-message"></div>
             </div>
         </div>
     </div>
 
-    <div id="topbar">
-        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp"> <strong>YAUTO (Yet Another
-            Useless Twitch Overlay)</strong>
+    <header id="topbar">
+        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp" alt="YAUTO Logo" />
+        <strong>YAUTO</strong><small>Yet Another Useless Twitch Overlay</small>
 
         <button id="login-button">Login</button>
 
-        <button id="more_info_button">
-            <img src="imgs/more_icon.png" alt="More Info">
+        <button id="more_info_button" aria-label="More Info">
+            <img src="imgs/more_icon.png" alt="More Info Icon" />
         </button>
-    </div>
+    </header>
 
     <main>
-        <div class="left_side">
-            <div class="configuration"> </div>
+        <section class="left_side">
+            <div class="configuration"></div>
             <div id="information">↓ Channel Name ↓</div>
-            <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name">
+            <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name" />
             <div id="information">↓ Testers only ↓</div>
             <div id="settingsButtons">
                 <button id="saveSettings-button">Save settings</button>
                 <button id="deleteSettings-button">Delete settings</button>
             </div>
-        </div>
+        </section>
 
-        <div class="right_side">
+        <section class="right_side">
             <button id="colorToggleButton" class="transition-button">Change chat background</button>
             <div class="chat_preview">
                 <div id="ChatDisplay" class="chat-messages"></div>
@@ -112,29 +112,30 @@
 
             <div id="click_to_copy">↓ Click To Copy ↓</div>
             <div id="url-results">site_url</div>
-        </div>
+        </section>
     </main>
 
-    <div id="footer">
-        Made by: <a href="https://api.unii.dev/twitch/528761326" target="_blank">uniiDev</a>,
-        With help of: <a href="https://api.unii.dev/twitch/404660262" target="_blank">creepycode</a>, <a
-            href="https://api.unii.dev/twitch/166427338" target="_blank">ftk789</a>
+    <footer id="footer">
+        Made by: <a href="https://api.unii.dev/twitch/528761326" target="_blank" rel="noopener noreferrer">uniiDev</a>,
+        With help of: 
+        <a href="https://api.unii.dev/twitch/404660262" target="_blank" rel="noopener noreferrer">creepycode</a>, 
+        <a href="https://api.unii.dev/twitch/166427338" target="_blank" rel="noopener noreferrer">ftk789</a>
         <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
             <img
-                src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff">
+                src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff"
+                alt="Buy Me A Coffee" />
         </a>
         YetAnotherUselessTwitchOverlay (YAUTO) is not affiliated with Twitch Interactive
-    </div>
+    </footer>
 
-    <script src="src/appendSettings.js"></script>
-
-    <script src="src/tmi.js"></script>
-    <script src="src/settings.js"></script>
+    <script src="src/appendSettings.js" defer></script>
+    
+    <script src="src/tmi.js" defer></script>
+    <script src="src/settings.js" defer></script>
 
     <script>
         async function fetchCommit() {
             const commit_message_main = document.getElementById('commit-message-main');
-            const commit_message_dev = document.getElementById('commit-message-dev');
             const commit_message_uniiDev = document.getElementById('commit-message-uniiDev');
 
             if (commit_message_main) {
@@ -146,7 +147,6 @@
                     commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_main.innerHTML = "Error getting main branch commit message";
-
                     console.error(err);
                 }
             }
@@ -160,7 +160,6 @@
                     commit_message_uniiDev.innerHTML = commitMessage_commit_uniiDev.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_uniiDev.innerHTML = "Error getting uniiDev branch commit message";
-
                     console.error(err);
                 }
             }

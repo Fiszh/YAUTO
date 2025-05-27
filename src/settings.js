@@ -49,6 +49,8 @@ if (load === "chat") {
 
     console.log(settings);
 
+    document.title = `YAUTO Chat • ${settings.channel || "None"}`;
+
     document.body.innerHTML = `<div id="ChatDisplay" class="chat-messages"></div>`;
     
     const scripts = document.querySelectorAll('script');
@@ -75,7 +77,7 @@ if (load === "chat") {
     appendScript('src/chatIndex.js');
 
     //UPDATE DETECTOR
-    appendScript('src/detectUpdate.js');
+    //appendScript('src/detectUpdate.js');
 
     // SETTINGS 
     appendSettings(document.getElementById("ChatDisplay"));
