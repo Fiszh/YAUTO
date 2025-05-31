@@ -13,12 +13,14 @@ body {
 }
 
 #ChatDisplay {
+    margin-left: 0;
+    margin-right: 0;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    overflow-y: auto;
+    justify-content: flex-start;
+    overflow: hidden;
     word-wrap: break-word;
     word-break: break-word;
     overflow-wrap: break-word;
