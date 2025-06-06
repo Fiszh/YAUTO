@@ -38,15 +38,20 @@ if (current_url_split.length && current_url_split[current_url_split.length - 1] 
     }
 }
 
-function appendScript(src, script_type) {
-    const script = document.createElement('script');
-    script.src = src;
+async function appendScript(src, script_type) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
 
-    if (script_type) {
-        script.type = script_type;
-    }
+        if (script_type) {
+            script.type = script_type;
+        }
 
-    document.body.appendChild(script);
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+
+        document.body.appendChild(script);
+    });
 }
 
 if (load === "chat") {
@@ -102,12 +107,11 @@ if (load === "chat") {
     appendScript('src/thirdParty/BTTV.js');
     appendScript('src/thirdParty/FFZ.js');
 
-    appendScript('src/TwitchIRC.js');
+    appendScript('src/TwitchIRC.js')
+        .then(() => appendScript('src/chatIndex.js')) // MAIN INDEX
+        .catch(console.error);
 
-    // MAIN INDEX
-    appendScript('src/chatIndex.js');
-
-    //UPDATE DETECTOR
+    // UPDATE DETECTOR
     //appendScript('src/detectUpdate.js');
 
     // SETTINGS 
