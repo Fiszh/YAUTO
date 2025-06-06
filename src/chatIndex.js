@@ -1243,9 +1243,13 @@ if (document.location.href.includes("?channel=")) {
     });*/
 
     irc.events.addEventListener('USERNOTICE', e => {
-        const event_details = e.detail;
+        let event_details = e.detail;
 
         console.log(event_details);
+
+        if (event_details?.["tags"]?.["login"]) {
+            event_details["tags"]["username"] = event_details["tags"]["login"];
+        }
 
         if (event_details?.["message"]?.trim()?.length && event_details?.["tags"] && event_details?.["channel"]) {
             handleMessage(event_details["tags"], event_details["message"], event_details["channel"]);
