@@ -383,8 +383,6 @@ async function handleMessage(userstate, message, channel) {
         );
     }
 
-    console.log(TTVMessageEmoteData);
-
     let badges = [];
 
     // CUSTOM BADGES
@@ -1267,7 +1265,7 @@ if (!document.location.href.includes("?channel=")) {
         deleteMessages()
     });
 
-    loadChat()
+    loadChat();
     setInterval(removeInvisibleElements, 500);
     setInterval(loadCustomBadges, 300000);
 }

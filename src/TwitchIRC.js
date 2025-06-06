@@ -182,7 +182,7 @@ function parseIrcLine(line, parseTagCb) {
     const tags = parseTagsFromString(tagsRawString, params, parseTagCb);
     if (prefix.nick) tags.username = prefix.nick;
 
-    const message = params.length > 0 ? params[params.length - 1] : "";
+    const message = params.length > 0 ? params[params.length - 1].trimEnd() : "";
 
     return { raw, tags, prefix, command, channel, params, message };
 }
