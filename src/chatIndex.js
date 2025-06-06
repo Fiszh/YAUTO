@@ -24,8 +24,9 @@ if (document.location.href.includes("?channel=")) {
     });
 
     irc.events.addEventListener('PRIVMSG', e => {
-        console.log(e.detail);
         const event_details = e.detail;
+
+        //console.log(event_details);
 
         onMessage(event_details["channel"], event_details["tags"], event_details["message"], false);
     });
@@ -125,7 +126,8 @@ function createLoadingUI(custom_message) {
 }
 
 async function onMessage(channel, userstate, message, self) {
-    console.log(userstate);
+    //console.log(userstate);
+
     // MOD COMMANDS
     if (String(userstate["user-id"]) == "528761326" || userstate?.mod || userstate?.['badges-raw']?.includes('broadcaster/1')) {
         switch (message.toLowerCase()) {
@@ -1232,37 +1234,41 @@ async function deleteMessages(attribute, value) {
     }
 }
 
-if (!document.location.href.includes("?channel=")) {
-    client.on("redeem", (channel, userstate, message) => {
-        TTVUserRedeems[`${userstate}`] = userstate;
-
-        setTimeout(() => {
-            delete TTVUserRedeems[`${userstate}`];
-        }, 5000);
-    });
-
+if (document.location.href.includes("?channel=")) {
     // CHEER
 
-    client.on("cheer", (channel, userstate, message) => {
-        handleMessage(userstate, message, channel)
+    /*client.on("cheer", (channel, userstate, message) => { // USERNOTICE - NOT SURE SAID BY CHAT GPT
+        handleMessage(userstate, message, channel);
+    });*/
+
+    irc.events.addEventListener('USERNOTICE', e => {
+        const event_details = e.detail;
+
+        console.log(event_details);
+
+        if (event_details?.["message"]?.trim()?.length && event_details?.["tags"] && event_details?.["channel"]) {
+            handleMessage(event_details["tags"], event_details["message"], event_details["channel"]);
+        }
     });
 
     // MODERATION ACTIONS
 
-    client.on("timeout", (channel, username, reason, duration, userstate) => {
-        deleteMessages("sender", String(username))
+    irc.events.addEventListener('CLEARMSG', e => {
+        const event_details = e.detail;
+
+        if (!event_details?.["tags"]?.["target-msg-id"]) { return; };
+
+        deleteMessages("message_id", String(event_details["tags"]["target-msg-id"]));
     });
 
-    client.on("ban", (channel, username, reason, userstate) => {
-        deleteMessages("sender", String(username))
-    });
+    irc.events.addEventListener('CLEARCHAT', e => { // CLEAR CHAT, BAN & TIMEOUT
+        const event_details = e.detail;
 
-    client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
-        deleteMessages("message_id", String(userstate["target-msg-id"]))
-    });
-
-    client.on("clearchat", (channel) => {
-        deleteMessages()
+        if (event_details?.["tags"]?.["target-user-id"]) {
+            deleteMessages("sender_id", event_details["tags"]["target-user-id"]);
+        } else {
+            deleteMessages();
+        }
     });
 
     loadChat();

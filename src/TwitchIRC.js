@@ -30,6 +30,9 @@ function connect(channel_name) {
             if (!message) { return; };
             const parsed = parseIrcLine(message);
 
+            //console.log(parsed.command);
+            //console.log(parsed);
+
             twitch_irc.dispatchEvent(new CustomEvent(parsed.command, { detail: parsed }));
         }
     });
