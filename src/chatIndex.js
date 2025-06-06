@@ -356,6 +356,7 @@ async function handleMessage(userstate, message, channel) {
 
     messageElement.setAttribute("message_id", message_id);
     messageElement.setAttribute("sender", username);
+    messageElement.setAttribute("sender_id", userstate["user-id"] || "0");
 
     let messageHTML = `<span class="name-wrapper">
                             <strong id="username-strong">${finalUsername}</strong>
