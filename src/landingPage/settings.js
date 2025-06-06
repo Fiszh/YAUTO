@@ -2,8 +2,6 @@ const settingsDiv = document.getElementsByClassName("configuration")[0];
 const url_results = document.getElementById('url-results');
 const channel_input = document.getElementById('channel-input');
 
-let configuration_path = 'src/landingPage/configuration.json';
-
 let currentUrl = document.location.href;
 
 if (!currentUrl.endsWith('/')) {
@@ -11,8 +9,6 @@ if (!currentUrl.endsWith('/')) {
 }
 
 url_results.textContent = currentUrl;
-
-let configuration = {};
 
 const templates = {
     boolean: {

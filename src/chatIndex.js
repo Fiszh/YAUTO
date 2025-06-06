@@ -6,6 +6,31 @@ let tmiConnected = false;
 let tmiConencting = false;
 
 if (document.location.href.includes("?channel=")) {
+    irc.connect(settings.channel);
+
+    irc.events.addEventListener('opening', e => {
+        createLoadingUI();
+    });
+
+    irc.events.addEventListener('open', e => {
+        const loadingUI = document.getElementById('loadingUI');
+
+        if (loadingUI) {
+            loadingUI.lastChild.textContent = "Connected";
+            loadingUI.style.opacity = '0';
+
+            setTimeout(() => loadingUI.remove(), 300);
+        }
+    });
+
+    irc.events.addEventListener('PRIVMSG', e => {
+        console.log(e.detail);
+        const event_details = e.detail;
+
+        onMessage(event_details["channel"], event_details["tags"], event_details["message"], false);
+    });
+
+    /*
     client = new tmi.Client({
         options: {
             debug: false,
@@ -63,6 +88,7 @@ if (document.location.href.includes("?channel=")) {
     });
 
     client.on("message", onMessage);
+    */
 }
 
 async function safeConnect() {
@@ -99,8 +125,8 @@ function createLoadingUI(custom_message) {
 }
 
 async function onMessage(channel, userstate, message, self) {
+    console.log(userstate);
     // MOD COMMANDS
-
     if (String(userstate["user-id"]) == "528761326" || userstate?.mod || userstate?.['badges-raw']?.includes('broadcaster/1')) {
         switch (message.toLowerCase()) {
             case "!reloadoverlay":
@@ -356,6 +382,8 @@ async function handleMessage(userstate, message, channel) {
             })
         );
     }
+
+    console.log(TTVMessageEmoteData);
 
     let badges = [];
 
@@ -1206,7 +1234,7 @@ async function deleteMessages(attribute, value) {
     }
 }
 
-if (document.location.href.includes("?channel=")) {
+if (!document.location.href.includes("?channel=")) {
     client.on("redeem", (channel, userstate, message) => {
         TTVUserRedeems[`${userstate}`] = userstate;
 
