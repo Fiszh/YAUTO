@@ -6,8 +6,6 @@ let tmiConnected = false;
 let tmiConencting = false;
 
 if (document.location.href.includes("?channel=")) {
-    irc.connect(settings.channel);
-
     irc.events.addEventListener('opening', e => {
         createLoadingUI();
     });
@@ -30,6 +28,8 @@ if (document.location.href.includes("?channel=")) {
 
         onMessage(event_details["channel"], event_details["tags"], event_details["message"], false);
     });
+
+    irc.connect(settings.channel);
 
     /*
     client = new tmi.Client({
@@ -357,6 +357,11 @@ async function handleMessage(userstate, message, channel) {
     messageElement.setAttribute("message_id", message_id);
     messageElement.setAttribute("sender", username);
     messageElement.setAttribute("sender_id", userstate["user-id"] || "0");
+
+    if (finalUsername?.endsWith(":") && userstate?.["action"]) {
+        finalUsername = finalUsername.slice(0, -1);
+        messageElement.style.color = userstate["color"];
+    }
 
     let messageHTML = `<span class="name-wrapper">
                             <strong id="username-strong">${finalUsername}</strong>

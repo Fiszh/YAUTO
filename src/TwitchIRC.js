@@ -28,10 +28,16 @@ function connect(channel_name) {
             TTV_IRC_WS.send('PONG :tmi.twitch.tv');
         } else {
             if (!message) { return; };
-            const parsed = parseIrcLine(message);
+            let parsed = parseIrcLine(message);
 
-            //console.log(parsed.command);
-            //console.log(parsed);
+            if (parsed?.message && parsed?.tags) {
+                const parsed_message = parsed["message"];
+
+                if (parsed_message.startsWith('\x01ACTION') && parsed_message.endsWith('\x01')) {
+                    parsed.tags["action"] = true;
+                    parsed["message"] = parsed["message"].slice(8, -1);
+                }
+            }
 
             twitch_irc.dispatchEvent(new CustomEvent(parsed.command, { detail: parsed }));
         }
