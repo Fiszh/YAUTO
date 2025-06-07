@@ -196,7 +196,7 @@ function parseIrcLine(line, parseTagCb) {
     return { raw, tags, prefix, command, channel, params, message };
 }
 
-window.irc = {
+irc = {
     connect,
     events: twitch_irc
 };
