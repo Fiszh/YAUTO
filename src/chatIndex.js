@@ -230,7 +230,6 @@ let TTVGlobalBadgeData = [];
 let TTVBitBadgeData = [];
 let TTVUsersData = [];
 let TTVBitsData = [];
-let TTVUserRedeems = [];
 let version;
 
 const twitchColors = [
@@ -321,12 +320,12 @@ async function handleMessage(userstate, message, channel) {
 
     // BLOCK REDEEMS
 
-    if ((!await getSetting("redeem")) && TTVUserRedeems?.[userstate.username]) {
-        delete TTVUserRedeems[userstate.username];
+    if ((!await getSetting("redeem")) && userstate["custom-reward-id"]) {
+        
         return;
     }
 
-    // BLOCK USERS NEEDED HERE FOR PREVIEW
+    // BLOCK USERS
 
     if (await getSetting("userBL", { action: "includes", include: userstate.username })) {
         return;
