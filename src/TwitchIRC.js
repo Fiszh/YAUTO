@@ -26,6 +26,10 @@ function connect(channel_name) {
 
         if (message.startsWith("PING")) {
             TTV_IRC_WS.send('PONG :tmi.twitch.tv');
+        } else if (message.includes('RECONNECT')) {
+            console.log('Received RECONNECT from Twitch, reconnecting...');
+            
+            TTV_IRC_WS.close();
         } else {
             if (!message) { return; };
             let parsed = parseIrcLine(message);
@@ -49,7 +53,7 @@ function connect(channel_name) {
 
         IRC_is_connected = false;
 
-        connect();
+        connect(channel_name);
     });
 
     TTV_IRC_WS.addEventListener('error', (err) => {
