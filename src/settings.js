@@ -1,23 +1,57 @@
 const url = window.location.href;
-const current_url_split = url.split('/')
-let load = 'main'
+const current_url_split = url.split('/');
+let load = 'main';
 let settings = {};
 
-if (current_url_split.length && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
-    const settings = current_url_split[current_url_split.length - 1].split("?")
+let configuration_path = 'src/landingPage/configuration.json';
+let configuration = {};
 
-    console.log(settings)
+(async (params) => {
+    try {
+        const response = await fetch(configuration_path);
+
+        if (!response.ok) {
+            throw new Error("Failed to load in configuration.json");
+        }
+
+        const data = await response.json();
+
+        if (Object.keys(data).length < 1) {
+            throw new Error("configuration.json was loaded but it seems to be empty");
+        }
+
+        configuration = data;
+    } catch (err) {
+        settingsDiv.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
+
+        return;
+    };
+})();
+
+if (current_url_split.length && current_url_split[current_url_split.length - 1] && current_url_split[current_url_split.length - 1].includes('?')) {
+    const settings = current_url_split[current_url_split.length - 1].split("?");
+
+    console.log(settings);
 
     if (settings.find(setting => setting.includes("channel="))) {
-        load = "chat"
+        load = "chat";
     }
 }
 
-function appendScript(src) {
-    const script = document.createElement('script');
-    script.src = src;
+async function appendScript(src, script_type) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
 
-    document.body.appendChild(script);
+        if (script_type) {
+            script.type = script_type;
+        }
+
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+
+        document.body.appendChild(script);
+    });
 }
 
 if (load === "chat") {
@@ -52,7 +86,7 @@ if (load === "chat") {
     document.title = `YAUTO Chat • ${settings.channel || "None"}`;
 
     document.body.innerHTML = `<div id="ChatDisplay" class="chat-messages"></div>`;
-    
+
     const scripts = document.querySelectorAll('script');
 
     scripts.forEach(script => {
@@ -73,10 +107,11 @@ if (load === "chat") {
     appendScript('src/thirdParty/BTTV.js');
     appendScript('src/thirdParty/FFZ.js');
 
-    // MAIN INDEX
-    appendScript('src/chatIndex.js');
+    appendScript('src/TwitchIRC.js')
+        .then(() => appendScript('src/chatIndex.js')) // MAIN INDEX
+        .catch(console.error);
 
-    //UPDATE DETECTOR
+    // UPDATE DETECTOR
     //appendScript('src/detectUpdate.js');
 
     // SETTINGS 
