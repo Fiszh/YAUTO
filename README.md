@@ -2,6 +2,8 @@
 
 https://chat.unii.dev/
 
+> **Notice:** Your stored data, such as access tokens and client IDs, is only saved in your cookies when you log in. All sensitive data stored will be deleted upon logging out, and no data will be shared with us.
+
 ## Configuration
 
 ### Customization
