@@ -71,12 +71,8 @@
 
         <div id="commits">
             <div class="commit-pair">
-                <section class="information">Main commit</section>
+                <section class="information">Latest branch update</section>
                 <div id="commit-message-main" class="commit-message"></div>
-            </div>
-            <div class="commit-pair">
-                <section class="information">uniiDev commit</section>
-                <div id="commit-message-uniiDev" class="commit-message"></div>
             </div>
         </div>
     </div>
@@ -136,7 +132,6 @@
     <script>
         async function fetchCommit() {
             const commit_message_main = document.getElementById('commit-message-main');
-            const commit_message_uniiDev = document.getElementById('commit-message-uniiDev');
 
             if (commit_message_main) {
                 try {
@@ -147,19 +142,6 @@
                     commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
                 } catch (err) {
                     commit_message_main.innerHTML = "Error getting main branch commit message";
-                    console.error(err);
-                }
-            }
-
-            if (commit_message_uniiDev) {
-                try {
-                    const response_commit_uniiDev = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=uniiDev');
-                    const data_commit_uniiDev = await response_commit_uniiDev.json();
-                    const commitMessage_commit_uniiDev = data_commit_uniiDev[0].commit.message;
-
-                    commit_message_uniiDev.innerHTML = commitMessage_commit_uniiDev.replace(/\n/g, '<br>');
-                } catch (err) {
-                    commit_message_uniiDev.innerHTML = "Error getting uniiDev branch commit message";
                     console.error(err);
                 }
             }
