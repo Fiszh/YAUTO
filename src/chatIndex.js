@@ -10,6 +10,10 @@ if (document.location.href.includes("?channel=")) {
         createLoadingUI();
     });
 
+    irc.events.addEventListener('reconnect_limit_reached', e => {
+        createLoadingUI("Twitch IRC failed to reconnect after 10 tries. Refresh the page or the source to retry.");
+    });
+
     irc.events.addEventListener('open', e => {
         const loadingUI = document.getElementById('loadingUI');
 
@@ -270,7 +274,7 @@ let BTTVWebsocket;
 let BTTVGlobalEmoteData = [];
 let BTTVEmoteData = [];
 
-const BTTVZeroWidth = ['cvHazmat', 'cvMask'];
+const BTTVZeroWidth = ["SoSnowy", "IceCold", "SantaHat", "TopHat", "ReinDeer", "CandyCane", "cvMask", "cvHazmat"];
 
 let allEmoteData = [];
 
@@ -321,7 +325,7 @@ async function handleMessage(userstate, message, channel) {
     // BLOCK REDEEMS
 
     if ((!await getSetting("redeem")) && userstate["custom-reward-id"]) {
-        
+
         return;
     }
 

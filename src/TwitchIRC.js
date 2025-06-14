@@ -3,6 +3,9 @@ const twitch_irc = new EventTarget();
 let TTV_IRC_WS;
 let IRC_is_connected = false;
 
+let reconnectAttempts = 0;
+const MAX_RECONNECTS = 10;
+
 function connect(channel_name) {
     if (!channel_name || IRC_is_connected) { return; };
 
@@ -11,6 +14,8 @@ function connect(channel_name) {
     TTV_IRC_WS = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
 
     TTV_IRC_WS.addEventListener('open', () => {
+        reconnectAttempts = 0;
+
         TTV_IRC_WS.send('CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership');
         TTV_IRC_WS.send(`NICK justinfan${Math.floor(Math.random() * 9999)}`);
         TTV_IRC_WS.send(`JOIN #${channel_name}`);
@@ -22,38 +27,58 @@ function connect(channel_name) {
     });
 
     TTV_IRC_WS.addEventListener('message', (event) => {
-        const message = event.data;
+        const messages = event.data.split('\r\n');
 
-        if (message.startsWith("PING")) {
-            TTV_IRC_WS.send('PONG :tmi.twitch.tv');
-        } else if (message.includes('RECONNECT')) {
-            console.log('Received RECONNECT from Twitch, reconnecting...');
-            
-            TTV_IRC_WS.close();
-        } else {
-            if (!message) { return; };
+        for (const message of messages) {
+            if (!message) { continue; };
+
             let parsed = parseIrcLine(message);
 
-            if (parsed?.message && parsed?.tags) {
-                const parsed_message = parsed["message"];
+            switch (parsed?.command) {
+                case "PING":
+                    console.log('PING...');
 
-                if (parsed_message.startsWith('\x01ACTION') && parsed_message.endsWith('\x01')) {
-                    parsed.tags["action"] = true;
-                    parsed["message"] = parsed["message"].slice(8, -1);
-                }
+                    TTV_IRC_WS.send('PONG :tmi.twitch.tv');
+
+                    console.log('PONG...');
+                    break;
+                case "RECONNECT":
+                    console.log('Twitch sent RECONNECT, reconnecting...');
+
+                    TTV_IRC_WS.close();
+
+                    return;
+                default:
+                    if (parsed?.message && parsed?.tags) {
+                        const parsed_message = parsed["message"];
+
+                        if (parsed_message.startsWith('\x01ACTION') && parsed_message.endsWith('\x01')) {
+                            parsed.tags["action"] = true;
+                            parsed["message"] = parsed["message"].slice(8, -1);
+                        }
+                    }
+
+                    twitch_irc.dispatchEvent(new CustomEvent(parsed.command, { detail: parsed }));
+                    break;
             }
-
-            twitch_irc.dispatchEvent(new CustomEvent(parsed.command, { detail: parsed }));
         }
     });
 
     TTV_IRC_WS.addEventListener('close', () => {
         console.log('Disconnected from Twitch IRC');
-        twitch_irc.dispatchEvent(new CustomEvent("close", { detail: "Twitch IRC connection has been closed, reconnecting." }));
 
         IRC_is_connected = false;
 
-        connect(channel_name);
+        reconnectAttempts++;
+
+        if (reconnectAttempts <= MAX_RECONNECTS) {
+            setTimeout(() => connect(channel_name), 1000 * reconnectAttempts);
+
+            twitch_irc.dispatchEvent(new CustomEvent("close", { detail: "Twitch IRC connection has been closed, reconnecting." }));
+        } else {
+            twitch_irc.dispatchEvent(new CustomEvent("reconnect_limit_reached", { detail: "Twitch IRC failed to reconnect after 10 tries. Refresh the page or the source to retry." }));
+            return;
+        }
     });
 
     TTV_IRC_WS.addEventListener('error', (err) => {
