@@ -63,7 +63,6 @@ main {
 }
 
 #footer {
-    height: 8.5dvh;
     padding: 10px;
     width: 100dvw;
     font-size: 20px;
@@ -463,4 +462,8 @@ a img {
 
 #commit-message {
     text-align: center;
+}
+
+.notice {
+    font-size: 1.2rem;
 }
