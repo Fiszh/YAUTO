@@ -273,6 +273,7 @@ let FFZUserBadgeData = [];
 let BTTVWebsocket;
 let BTTVGlobalEmoteData = [];
 let BTTVEmoteData = [];
+let BTTVBadgeData = [];
 
 const BTTVZeroWidth = ["SoSnowy", "IceCold", "SantaHat", "TopHat", "ReinDeer", "CandyCane", "cvMask", "cvHazmat"];
 
@@ -508,6 +509,18 @@ async function handleMessage(userstate, message, channel) {
                 background_color: foundBadge.color,
             });
         }
+    }
+
+    // BTTV Badges 
+
+    const foundBTTVBadge = BTTVBadgeData.find(badge => badge.providerId == userstate?.["user-id"]);
+
+    if (foundBTTVBadge) {
+        badges.push({
+            badge_url: foundBTTVBadge?.badge?.svg,
+            alt: foundBTTVBadge?.badge?.description,
+            background_color: undefined
+        });
     }
 
     // 7tv Badges
@@ -920,6 +933,7 @@ async function loadBTTV() {
     try {
         fetchBTTVGlobalEmoteData();
         fetchBTTVEmoteData();
+        fetchBTTVBadgeData();
 
         // WEBSOCKET
         detectBTTVEmoteSetChange();

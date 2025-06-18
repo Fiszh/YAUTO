@@ -56,6 +56,21 @@ async function fetchBTTVEmoteData() {
     }
 }
 
+async function fetchBTTVBadgeData() {
+    try {
+        const response = await fetch(`https://api.betterttv.net/3/cached/badges/twitch`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch BTTV badge data`);
+        }
+        BTTVBadgeData = await response.json();
+
+        console.log(FgRed + 'Success in getting Channel BetterTTV Badges!' + FgWhite);
+    } catch (error) {
+        console.log('Error fetching emote data:', error);
+        throw error;
+    }
+}
+
 // WEBSOCKET
 
 async function detectBTTVEmoteSetChange() {
