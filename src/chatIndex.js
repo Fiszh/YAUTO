@@ -682,10 +682,15 @@ function splitTextWithTwemoji(text) {
 }
 
 function sanitizeInput(input) {
+    if (typeof input !== "string") return input;
+
     return input
         .replace(/&/g, "&amp;")
-        .replace(/(<)(?!3)/g, "&lt;")
-        .replace(/(>)(?!\()/g, "&gt;");
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+        .replace(/\//g, "&#x2F;");
 }
 
 async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
