@@ -525,10 +525,10 @@ async function handleMessage(userstate, message, channel) {
 
     // 7tv Badges
 
-    const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`);
+    const foundUser = TTVUsersData.find(user => user.name === `@${userstate.username}`) || cosmetics?.user_info.find(user => user?.ttv_user_id == userstate?.['user-id']);
 
-    if (foundUser && foundUser.cosmetics && foundUser.cosmetics["badge_id"]) {
-        const foundBadge = cosmetics.badges.find(Badge => Badge.id === foundUser.cosmetics["badge_id"]);
+    if (foundUser && (foundUser?.cosmetics?.["badge_id"] || foundUser?.["badge_id"])) {
+        const foundBadge = cosmetics.badges.find(badge => badge.id === foundUser?.cosmetics?.["badge_id"] || foundUser?.["badge_id"]);
 
         if (foundBadge) {
             badges.push({

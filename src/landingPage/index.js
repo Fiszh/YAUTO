@@ -45,8 +45,9 @@ const PreviewMessages = [
     },
     {
         userstate: {
-            "username": 'fiszhh',
-            "display-name": 'fiszhh',
+            "username": 'uniiDev',
+            "display-name": 'uniiDev',
+            "user-id": "528761326",
             "badges-raw": "broadcaster/1,twitch-recap-2024/1",
             "badges": {},
             "color": "#ffb3ff"
@@ -111,7 +112,7 @@ const PreviewMessages = [
             "badges": {},
             "color": "#433E43"
         },
-        message: "Who the hell is FISzhh wtf 🤔"
+        message: "@uniiDev, who the hell is FISzhh wtf 🤔"
     }
 ]
 

@@ -36,6 +36,10 @@ body::-webkit-scrollbar,
     position: relative;
     display: inline-flex;
     line-height: normal;
+}
+
+.badge-wrapper,
+.bits-wrapper {
     vertical-align: middle;
 }
 

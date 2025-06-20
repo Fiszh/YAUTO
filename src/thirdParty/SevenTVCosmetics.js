@@ -289,10 +289,12 @@ async function displayCosmeticPaint(user_id, color, textElement) {
     const foundUser = cosmetics.user_info.find(user => user["ttv_user_id"] === user_id);
     const randomColor = getRandomTwitchColor();
 
-    if (foundUser && (foundUser["paint_id"] || await getSetting("paints"))) {
+    const can_display_paints = await getSetting("paints");
+
+    if (foundUser && foundUser["paint_id"]) {
         const foundPaint = cosmetics.paints.find(paint => paint.id === foundUser["paint_id"]);
 
-        if (foundPaint) {
+        if (foundPaint && can_display_paints) {
             let style = `background-image: ${foundPaint.backgroundImage};`
 
             if (await getSetting("paintShadows")) {

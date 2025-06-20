@@ -111,7 +111,7 @@ if (load === "chat") {
         .then(() => appendScript('src/chatIndex.js')) // MAIN INDEX
         .catch(console.error);
 
-    // UPDATE DETECTOR
+    // UPDATE DETECTOR - Removed because the chat is no longer hosted on GitHub, though still used on the outdated GitHub site.
     //appendScript('src/detectUpdate.js');
 
     // SETTINGS 
@@ -135,9 +135,28 @@ if (load === "chat") {
     appendScript('src/landingPage/twitchLogin.js');
 
     // NEEDED FOR CHAT PREVIEW
+    appendScript('src/thirdParty/SevenTVCosmetics.js');
 
     // CHAT INDEX
-    appendScript('src/chatIndex.js');
+    appendScript('src/chatIndex.js')
+        .then(() => {
+            // NEEDEED FOR 7TV COSMETICS AND MENTION COLOR
+            TTVUsersData.push({
+                "name": "@uniidev",
+                "color": "#FFB3FF",
+                "cosmetics": {},
+                "userId": "528761326"
+            });
+
+            appendScript('src/thirdParty/SevenTVHelperV2.js')
+                .then(async () => {
+                    await pushCosmeticUserUsingGQL("01GAK4CXN00002Z53DR6PAWQVE");
+
+                    setUpPreview();
+                })
+                .catch(console.error);
+        })
+        .catch(console.error);
 
     appendScript('src/thirdParty/7TV.js');
 
