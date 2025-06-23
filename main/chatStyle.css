@@ -49,7 +49,6 @@ body::-webkit-scrollbar,
 
 .message-text {
     display: inline-block;
-    vertical-align: middle;
 }
 
 .bits-number {
