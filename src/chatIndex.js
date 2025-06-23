@@ -313,7 +313,7 @@ async function getSetting(setting_name, action) {
 }
 
 async function handleMessage(userstate, message, channel) {
-    if (!message) { return; }
+    if (!message) { return; };
 
     // BLOCK PREFIX
 
@@ -562,7 +562,7 @@ async function handleMessage(userstate, message, channel) {
 
     messageHTML = `${badges_html}
                     <span class="name-wrapper">
-                        <strong id="username-strong">${finalUsername}</strong>
+                        <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
                     </span>
                     <div class="message-text">
                         ${rendererMessage}
@@ -577,7 +577,7 @@ async function handleMessage(userstate, message, channel) {
     let finalMessageHTML = `
                             ${badges_html}
                             <span class="name-wrapper">
-                                <strong id="username-strong">${finalUsername}</strong>
+                                <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
                             </span>
                         <div class="message-text">
                             ${results}
