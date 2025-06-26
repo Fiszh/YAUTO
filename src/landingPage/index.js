@@ -39,7 +39,8 @@ const PreviewMessages = [
             "display-name": 'OhMunchy_',
             "badges-raw": null,
             "badges": {},
-            "color": "#ff0000"
+            "color": "#ff0000",
+            "source-room-id": "preview"
         },
         message: "when are we playing furry simulator ????"
     },
@@ -50,7 +51,8 @@ const PreviewMessages = [
             "user-id": "528761326",
             "badges-raw": "broadcaster/1,twitch-recap-2024/1",
             "badges": {},
-            "color": "#ffb3ff"
+            "color": "#ffb3ff",
+            "source-room-id": "preview"
         },
         message: "Alright"
     },
@@ -60,7 +62,8 @@ const PreviewMessages = [
             "display-name": 'de_palace',
             "badges-raw": null,
             "badges": {},
-            "color": "#1dee8b"
+            "color": "#1dee8b",
+            "source-room-id": "preview"
         },
         message: "!vanish"
     },
@@ -70,7 +73,8 @@ const PreviewMessages = [
             "display-name": 'ftk789',
             "badges-raw": "subscriber/3,chatter-cs-go-2022/1",
             "badges": {},
-            "color": "#8A3DE2"
+            "color": "#8A3DE2",
+            "source-room-id": "preview"
         },
         message: "Thats a real jammer ShoulderDance RaveTime"
     },
@@ -80,7 +84,8 @@ const PreviewMessages = [
             "display-name": 'strayyzz',
             "badges-raw": "moderator/1,subscriber/3003",
             "badges": {},
-            "color": "#00FF7F"
+            "color": "#00FF7F",
+            "source-room-id": "preview"
         },
         message: "Piss is not boobs or butt Wisdom"
     },
@@ -90,7 +95,8 @@ const PreviewMessages = [
             "display-name": 'jolong66',
             "badges-raw": "vip/1,subscriber/0,sub-gift-leader/3",
             "badges": {},
-            "color": "#FF69B4"
+            "color": "#FF69B4",
+            "source-room-id": "preview"
         },
         message: "aga life is like a box of chocolate, you never know when im gonna eat them all catEat"
     },
@@ -100,7 +106,8 @@ const PreviewMessages = [
             "display-name": 'university_1',
             "badges-raw": "subscriber/2,bits/100",
             "badges": {},
-            "color": undefined
+            "color": undefined,
+            "source-room-id": "preview"
         },
         message: "Pog chat overlay with better zero width emotes catJAM WideRaveTime ALERT"
     },
@@ -110,7 +117,8 @@ const PreviewMessages = [
             "display-name": 'sonku___',
             "badges-raw": "bits/1250000,sub-gift-leader/1",
             "badges": {},
-            "color": "#433E43"
+            "color": "#433E43",
+            "source-room-id": "preview"
         },
         message: "@uniiDev, who the hell is FISzhh wtf 🤔"
     }
@@ -226,7 +234,7 @@ function checkUrlChange() {
 async function setUpPreview() {
     await waitForFunction('fetch7TVEmoteData');
 
-    SevenTVEmoteData = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
+    SevenTVEmoteData["preview"] = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
 
     await getBadges();
 
