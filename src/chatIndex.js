@@ -260,11 +260,11 @@ let SevenTVemoteSetId = '0';
 let SevenTVWebsocket;
 
 let SevenTVGlobalEmoteData = [];
-let SevenTVEmoteData = [];
+let SevenTVEmoteData = {};
 
 //FFZ
 let FFZGlobalEmoteData = [];
-let FFZEmoteData = [];
+let FFZEmoteData = {};
 
 let FFZBadgeData = [];
 let FFZUserBadgeData = [];
@@ -272,7 +272,7 @@ let FFZUserBadgeData = [];
 //BTTV
 let BTTVWebsocket;
 let BTTVGlobalEmoteData = [];
-let BTTVEmoteData = [];
+let BTTVEmoteData = {};
 let BTTVBadgeData = [];
 
 const BTTVZeroWidth = ["SoSnowy", "IceCold", "SantaHat", "TopHat", "ReinDeer", "CandyCane", "cvMask", "cvHazmat"];
@@ -312,29 +312,43 @@ async function getSetting(setting_name, action) {
     return sourceValue === "0" ? false : sourceValue;
 }
 
+async function getChannelEmotesViaTwitchID(twitchID) {
+    if (!twitchID) { return; };
+
+    // 7TV
+    if (!SevenTVEmoteData[twitchID]) {
+        SevenTVEmoteData[twitchID] = await fetch7TVEmoteSetDataViaTwitchID(twitchID);
+    }
+
+    // BTTV
+    if (!BTTVEmoteData[twitchID]) {
+        await fetchBTTVEmoteData(twitchID);
+    }
+
+    // FFZ
+    if (!FFZEmoteData[twitchID]) {
+        FFZEmoteData[twitchID] = await fetchFFZEmoteSetDataViaTwitchID(twitchID);
+    }
+}
+
 async function handleMessage(userstate, message, channel) {
     if (!message) { return; };
 
-    // BLOCK PREFIX
+    // GET CONNECTED CHAT EMOTE DATA
+
+    getChannelEmotesViaTwitchID(userstate["source-room-id"]);
+
+    // BLOCK PREFIX, REDEEMS AND USERS
 
     const messagePrefix = message.charAt(0);
 
-    if (await getSetting("prefixBL", { action: "includes", include: messagePrefix })) {
-        return;
-    }
+    const isPrefixBlocked = await getSetting("prefixBL", { action: "includes", include: messagePrefix });
+    const isRedeemBlocked = !await getSetting("redeem");
+    const isUserBlocked = await getSetting("userBL", { action: "includes", include: userstate.username });
 
-    // BLOCK REDEEMS
+    if (isPrefixBlocked || isRedeemBlocked || isUserBlocked) { return; };
 
-    if ((!await getSetting("redeem")) && userstate["custom-reward-id"]) {
-
-        return;
-    }
-
-    // BLOCK USERS
-
-    if (await getSetting("userBL", { action: "includes", include: userstate.username })) {
-        return;
-    }
+    // PROCESS MESSAGE
 
     message = String(message).trimStart();
     message = sanitizeInput(message);
@@ -572,7 +586,7 @@ async function handleMessage(userstate, message, channel) {
 
     fadeOut(messageElement);
 
-    let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate);
+    let results = await replaceWithEmotes(message, TTVMessageEmoteData, userstate, userstate?.["source-room-id"] || channelTwitchID);
 
     let finalMessageHTML = `
                             ${badges_html}
@@ -693,10 +707,10 @@ function sanitizeInput(input) {
         .replace(/\//g, "&#x2F;");
 }
 
-async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
+async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate, originChannelID) {
     if (!inputString) { return inputString }
 
-    updateAllEmoteData();
+    //updateAllEmoteData();
 
     inputString = sanitizeInput(inputString);
 
@@ -704,15 +718,14 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
         const ttvEmoteData = TTVMessageEmoteData
 
         const nonGlobalEmoteData = [
-            ...SevenTVEmoteData,
-            ...BTTVEmoteData,
-            ...FFZEmoteData,
+            ...SevenTVEmoteData?.[originChannelID] || [],
+            ...BTTVEmoteData?.[originChannelID] || [],
+            ...FFZEmoteData?.[originChannelID] || [],
         ];
 
         const emoteData = [
             ...ttvEmoteData,
             ...nonGlobalEmoteData,
-            ...allEmoteData,
             ...TTVBitsData
         ];
 
@@ -765,7 +778,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate) {
             if (!foundEmote) {
                 foundEmote = ttvEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name)) ||
                     foundMessageSender?.cosmetics?.personal_emotes?.find(emote => emote.name && part === emote.name) ||
-                    [...nonGlobalEmoteData, ...allEmoteData].find(emote => emote.name && part === sanitizeInput(emote.name));
+                    nonGlobalEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name));
             }
 
             // Search for user if no emote is found
@@ -925,7 +938,7 @@ async function load7TV() {
         await get7TVEmoteSetID(SevenTVID);
         SevenTVGlobalEmoteData = await fetch7TVEmoteData('global');
 
-        SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
+        SevenTVEmoteData[channelTwitchID] = await fetch7TVEmoteData(SevenTVemoteSetId);
 
         // WEBSOCKET
         detect7TVEmoteSetChange();
@@ -1272,7 +1285,7 @@ if (document.location.href.includes("?channel=")) {
     irc.events.addEventListener('USERNOTICE', e => {
         let event_details = e.detail;
 
-        console.log(event_details);
+        console.log(event_details); // Still needed for future updates
 
         if (event_details?.["tags"]?.["login"]) {
             event_details["tags"]["username"] = event_details["tags"]["login"];

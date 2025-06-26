@@ -40,7 +40,7 @@ async function fetchFFZUserData() {
 
         const data = await response.json();
 
-        FFZEmoteData = data.sets[data.room.set].emoticons.map(emote => {
+        FFZEmoteData[channelTwitchID] = data.sets[data.room.set].emoticons.map(emote => {
             const owner = emote.owner;
 
             const creator = owner && Object.keys(owner).length
@@ -74,13 +74,13 @@ async function fetchFFZUserData() {
             }
             if (data.room["user_badge_ids"] && Object.keys(data.room["user_badge_ids"]).length) {
                 const transformedBadges = {};
-        
+
                 Object.entries(data.room["user_badge_ids"]).forEach(([badge, users]) => {
                     users.forEach(user => {
                         transformedBadges[user] = badge;
                     });
                 });
-        
+
                 FFZUserBadgeData['user_badges'] = transformedBadges;
             }
         }
@@ -88,6 +88,42 @@ async function fetchFFZUserData() {
         console.log(FgGreen + 'Success in getting Channel FrankerFaceZ data!' + FgWhite);
     } catch (error) {
         console.error('Error fetching FFZ channel data:', error);
+        FFZEmoteData[channelTwitchID] = [];
+        throw error;
+    }
+}
+
+async function fetchFFZEmoteSetDataViaTwitchID(channelID) {
+    try {
+        const response = await fetch(`https://api.frankerfacez.com/v1/room/id/${channelID}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch FFZ channel emote set data for channel ID: ${channelID}`);
+        }
+
+        const data = await response.json();
+
+        return data.sets[data.room.set].emoticons.map(emote => {
+            const owner = emote.owner;
+
+            const creator = owner && Object.keys(owner).length
+                ? owner.display_name || owner.name || "UNKNOWN"
+                : "NONE";
+
+
+            return {
+                name: emote.name,
+                url: emote.animated ? `https://cdn.frankerfacez.com/emote/${emote.id}/animated/4` : `https://cdn.frankerfacez.com/emote/${emote.id}/4`,
+                emote_link: `https://www.frankerfacez.com/emoticon/${emote.id}`,
+                creator,
+                site: 'FFZ'
+            };
+        });
+
+        console.log(FgGreen + 'Success in getting Channel FrankerFaceZ emote data!' + FgWhite);
+    } catch (error) {
+        console.error('Error fetching FFZ channel emote data:', error);
+        return [];
         throw error;
     }
 }

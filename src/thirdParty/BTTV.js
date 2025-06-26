@@ -21,13 +21,16 @@ async function fetchBTTVGlobalEmoteData() {
     }
 }
 
-async function fetchBTTVEmoteData() {
+// Also for getChannelEmotesViaTwitchID function
+async function fetchBTTVEmoteData(channelID = channelTwitchID) {
     try {
-        const response = await fetch(`https://api.betterttv.net/3/cached/users/twitch/${channelTwitchID}`);
+        const response = await fetch(`https://api.betterttv.net/3/cached/users/twitch/${channelID}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch emote data for set BTTV`);
         }
         const data = await response.json();
+
+        // Can't it be just a single set?
 
         const sharedEmotesData = data.sharedEmotes.map(emote => ({
             name: emote.code,
@@ -47,11 +50,12 @@ async function fetchBTTVEmoteData() {
             site: 'BTTV'
         }));
 
-        BTTVEmoteData = [...sharedEmotesData, ...channelEmotesData];
+        BTTVEmoteData[channelID] = [...sharedEmotesData, ...channelEmotesData];
 
         console.log(FgRed + 'Success in getting Channel BetterTTV emotes!' + FgWhite)
     } catch (error) {
         console.log('Error fetching emote data:', error);
+        BTTVEmoteData[channelID] = [];
         throw error;
     }
 }
@@ -99,7 +103,7 @@ async function detectBTTVEmoteSetChange() {
                 let userName;
 
                 if (messageData.channel) {
-                    userName = 'none' //await getUsernameFromUserId(messageData.channel.split(':')[1])
+                    userName = 'none'; //await getUsernameFromUserId(messageData.channel.split(':')[1])
                 }
 
                 let tableData = {
@@ -111,8 +115,8 @@ async function detectBTTVEmoteSetChange() {
                 };
 
                 if (messageType === 'emote_create') {
-                    if (!messageData.emote) { return; }
-                    const emoteData = messageData.emote
+                    if (!messageData.emote) { return; };
+                    const emoteData = messageData.emote;
 
                     tableData = {
                         name: emoteData.code,
@@ -139,7 +143,7 @@ async function detectBTTVEmoteSetChange() {
                         action: 'remove'
                     };
                 } else if (messageType === 'emote_update') {
-                    if (!messageData.emote) { return; }
+                    if (!messageData.emote) { return; };
                     const emoteData = messageData.emote
 
                     tableData = {
@@ -152,7 +156,7 @@ async function detectBTTVEmoteSetChange() {
                     };
                 }
 
-                updateBTTVEmoteSet(tableData)
+                updateBTTVEmoteSet(tableData);
             }
         } catch (error) {
             console.log('Error parsing message:', error);
@@ -170,39 +174,41 @@ async function detectBTTVEmoteSetChange() {
 }
 
 async function updateBTTVEmoteSet(table) {
-    if (table.url === '4x.avif') { return; }
+    if (table.url === '4x.avif') { return; };
 
     if (table.action === 'add') {
-        BTTVEmoteData.push({
+        BTTVEmoteData[channelTwitchID].push({
             name: table.name,
             url: table.url,
             flags: table.flags,
             site: table.site
         });
 
-        console.log(FgRed + `${table.user} ADDED ${table.name}` + FgWhite);
+        console.log(FgRed + "BTTV" + FgWhite + `${table.user} added ${table.name}`);
     } else if (table.action === 'remove') {
         if (table.name !== '') {
-            console.log(FgRed + `${table.user} REMOVED ${table.name}` + FgWhite);
+            BTTVEmoteData[channelTwitchID] = BTTVEmoteData[channelTwitchID].filter(emote => emote.name !== table.name);
 
-            BTTVEmoteData = BTTVEmoteData.filter(emote => emote.name !== table.name);
+            console.log(FgRed + "BTTV" + FgWhite + `${table.user} removed ${table.name}`);
         } else {
-            console.log(FgRed + `EMOTE WAS REMOVED BUT WE ARE UNABLE TO FIND IT` + FgWhite);
+            console.log(FgRed + "BTTV" + FgWhite + `Emote was removed but we are unable to find it due to the BTTV API not providing the name of the emote.`);
         }
     } else if (table.action === 'update') {
-        const emoteFound = BTTVEmoteData.find(emote => emote.url === table.url);
+        const foundEmote = BTTVEmoteData.find(emote => emote.url === table.url);
 
-        BTTVEmoteData.push({
-            name: table.name,
-            url: table.url,
-            flags: table.flags,
-            site: table.site
-        });
+        if (!foundEmote) {
+            BTTVEmoteData[channelTwitchID].push({
+                name: table.name,
+                url: table.url,
+                flags: table.flags,
+                site: table.site
+            });
+        } else {
+            foundEmote.name = table.newName;
+        }
 
-        console.log(FgRed + `BTTV ${table.user} RENAMED ${emoteFound.name} TO ${table.name}` + FgWhite);
-
-        BTTVEmoteData = BTTVEmoteData.filter(emote => emote.name !== emoteFound.name);
+        console.log(FgRed + "BTTV" + FgWhite `${table.user} renamed ${emoteFound.name} to ${table.name}`);
     }
 
-    await updateAllEmoteData();
+    //await updateAllEmoteData();
 }

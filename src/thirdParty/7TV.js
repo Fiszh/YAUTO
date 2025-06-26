@@ -47,7 +47,7 @@ async function fetch7TVEmoteData(emoteSet) {
             throw new Error(`Failed to fetch emote data for set ${emoteSet}`);
         }
         const data = await response.json();
-        if (!data.emotes) { return null }
+        if (!data.emotes) { return [] };
         return data.emotes.map(emote => {
             const owner = emote.data?.owner;
 
@@ -55,11 +55,11 @@ async function fetch7TVEmoteData(emoteSet) {
                 ? owner.display_name || owner.username || "UNKNOWN"
                 : "NONE";
 
-            const emote4x = emote.data.host.files.find(file => file.name === "4x.avif") 
-                || emote.data.host.files.find(file => file.name === "3x.avif") 
-                || emote.data.host.files.find(file => file.name === "2x.avif") 
+            const emote4x = emote.data.host.files.find(file => file.name === "4x.avif")
+                || emote.data.host.files.find(file => file.name === "3x.avif")
+                || emote.data.host.files.find(file => file.name === "2x.avif")
                 || emote.data.host.files.find(file => file.name === "1x.avif");
-            
+
             return {
                 name: emote.name,
                 url: `https://cdn.7tv.app/emote/${emote.id}/${emote4x?.name || "1x.avif"}`,
@@ -74,6 +74,46 @@ async function fetch7TVEmoteData(emoteSet) {
         });
     } catch (error) {
         console.log('Error fetching emote data:', error);
+        return [];
+        throw error;
+    }
+}
+
+async function fetch7TVEmoteSetDataViaTwitchID(channelID) {
+    try {
+        const response = await fetch(`https://7tv.io/v3/users/twitch/${channelID}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch emote data for set ${emoteSet}`);
+        }
+        const data = await response.json();
+        if (!data?.emote_set?.emotes) { return [] };
+        return data.emote_set.emotes.map(emote => {
+            const owner = emote.data?.owner;
+
+            const creator = owner && Object.keys(owner).length
+                ? owner.display_name || owner.username || "UNKNOWN"
+                : "NONE";
+
+            const emote4x = emote.data.host.files.find(file => file.name === "4x.avif")
+                || emote.data.host.files.find(file => file.name === "3x.avif")
+                || emote.data.host.files.find(file => file.name === "2x.avif")
+                || emote.data.host.files.find(file => file.name === "1x.avif");
+
+            return {
+                name: emote.name,
+                url: `https://cdn.7tv.app/emote/${emote.id}/${emote4x?.name || "1x.avif"}`,
+                flags: emote.data?.flags,
+                original_name: emote.data?.name,
+                creator,
+                emote_link: `https://7tv.app/emotes/${emote.id}`,
+                site: '7TV',
+                height: emote4x?.height,
+                width: emote4x?.width
+            };
+        });
+    } catch (error) {
+        console.log('Error fetching emote data:', error);
+        return [];
         throw error;
     }
 }
@@ -177,7 +217,7 @@ async function detect7TVEmoteSetChange() {
                 };
 
                 if (body["pushed"]) {
-                    if (!body.pushed[0]) { return; }
+                    if (!body.pushed[0]) { return; };
 
                     const owner = body.pushed[0].value.data?.owner;
 
@@ -198,7 +238,8 @@ async function detect7TVEmoteSetChange() {
 
                     canProceed = true;
                 } else if (body["pulled"]) {
-                    if (!body.pulled[0]) { return; }
+                    if (!body.pulled[0]) { return; };
+                    
                     tableData = {
                         name: body.pulled[0]["old_value"].name,
                         url: `https://cdn.7tv.app/emote/${body.pulled[0]["old_value"].id}/4x.avif`,
@@ -208,7 +249,7 @@ async function detect7TVEmoteSetChange() {
 
                     canProceed = true;
                 } else if (body["updated"]) {
-                    if (!body.updated[0]) { return; }
+                    if (!body.updated[0]) { return; };
 
                     if (body["updated"][0]["key"] === 'connections') {
                         tableData = "emote_set.change"
@@ -226,7 +267,7 @@ async function detect7TVEmoteSetChange() {
                         canProceed = true;
                     } else {
                         if (!body.updated[0]["value"] || !body.updated[0]["old_value"]) { return; }
-                        
+
                         tableData = {
                             newName: body.updated[0]["value"].name,
                             oldName: body.updated[0]["old_value"].name,
@@ -240,7 +281,7 @@ async function detect7TVEmoteSetChange() {
                 }
 
                 if (canProceed) {
-                    update7TVEmoteSet(tableData)
+                    update7TVEmoteSet(tableData);
                 }
             }
         } catch (error) {
@@ -259,24 +300,22 @@ async function detect7TVEmoteSetChange() {
 }
 
 async function update7TVEmoteSet(table) {
-    if (table.url === '4x.avif') { return; }
+    if (table.url === '4x.avif') { return; };
 
     if (table.action === 'add') {
         delete table.action;
-        SevenTVEmoteData.push(table);
+        SevenTVEmoteData[channelTwitchID].push(table);
 
         console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} added ${table.name}`);
     } else if (table.action === 'remove') {
-        let foundEmote = SevenTVEmoteData.find(emote => emote.original_name === table.name);
+        SevenTVEmoteData[channelTwitchID] = SevenTVEmoteData[channelTwitchID].filter(emote => emote.url !== table.url);
 
-        console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} removed ${foundEmote.name}`);
-
-        SevenTVEmoteData = SevenTVEmoteData.filter(emote => emote.url !== table.url);
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} removed ${table.name}`);
     } else if (table.action === 'update') {
-        if (!table.newName || !table.newName) { return; }
-        
-        let foundEmote = SevenTVEmoteData.find(emote => emote.name === table.oldName);
-        foundEmote.name = table.newName
+        if (!table.newName || !table.newName) { return; };
+
+        let foundEmote = SevenTVEmoteData[channelTwitchID].find(emote => emote.name === table.oldName);
+        foundEmote.name = table.newName;
         //SevenTVEmoteData.push(table);
 
         console.log(FgBlue + 'SevenTV ' + FgWhite + `${table.user} renamed ${table.oldName} to ${table.newName}`);
@@ -298,11 +337,11 @@ async function update7TVEmoteSet(table) {
 
         console.log(FgBlue + 'SevenTV ' + FgWhite + 'UnSubscribed to emote_set.update');
 
-        SevenTVemoteSetId = table.newSetId
+        SevenTVemoteSetId = table.newSetId;
 
-        SevenTVEmoteData = await fetch7TVEmoteData(SevenTVemoteSetId);
+        SevenTVEmoteData[channelTwitchID] = await fetch7TVEmoteData(SevenTVemoteSetId);
 
-        console.log(FgBlue + 'SevenTV ' + FgWhite + `Emote set changed to ${table["newSetName"]}`)
+        console.log(FgBlue + 'SevenTV ' + FgWhite + `Emote set changed to ${table["newSetName"]}`);
 
         const subscribeEmoteSetMessage = {
             op: 35,
@@ -323,7 +362,7 @@ async function update7TVEmoteSet(table) {
         //await SevenTVWebsocket.close();
     }
 
-    await updateAllEmoteData();
+    //await updateAllEmoteData();
 }
 
 function argbToRgba(color) {
