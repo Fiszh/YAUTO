@@ -153,9 +153,17 @@ if (load === "chat") {
                 "userId": "528761326"
             });
 
+            TTVUsersData.push({
+                "name": "@ftk789",
+                "color": "#8A3DE2",
+                "cosmetics": {},
+                "userId": "166427338"
+            });
+
             appendScript('src/thirdParty/SevenTVHelperV2.js')
                 .then(async () => {
-                    await pushCosmeticUserUsingGQL("01GAK4CXN00002Z53DR6PAWQVE");
+                    await pushCosmeticUserUsingGQL("01GAK4CXN00002Z53DR6PAWQVE"); // uni
+                    await pushCosmeticUserUsingGQL("01FDSMJ8MG0005Y8ZGBVC26NJ6"); // ftk
 
                     setUpPreview();
                 })
