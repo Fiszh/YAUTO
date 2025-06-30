@@ -4,7 +4,7 @@ body {
     color: white;
     overflow: hidden;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     width: 100dvw !important;
     height: 100dvh !important;
     top: 0;
@@ -33,7 +33,7 @@ body {
 
 #topbar {
     width: 100dvw;
-    height: 7%;
+    height: 5dvh;
     background-color: #000000;
     display: inline-flex;
     justify-content: center;
@@ -49,6 +49,7 @@ body {
     width: 5%;
     height: 85%;
     object-fit: contain;
+    aspect-ratio: 1 / 1;
     transition: opacity 0.5s ease-in-out;
 }
 
@@ -65,7 +66,7 @@ main {
 #footer {
     padding: 10px;
     width: 100dvw;
-    font-size: 20px;
+    font-size: 1rem;
     text-align: center;
     background-color: #000000;
     border-top: 1px solid #333;
@@ -295,7 +296,7 @@ main {
 /* MORE */
 
 #more_info_button {
-    height: 5dvh;
+    height: 80%;
     aspect-ratio: 1 / 1;
     background-color: #ffffff0d;
     user-select: none;
@@ -342,6 +343,9 @@ main {
     display: none;
     overflow-y: auto;
     overflow-x: hidden;
+    justify-self: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 #more_info_menu>* {
@@ -366,11 +370,11 @@ a img {
 }
 
 #discord_button {
-    object-fit: contain;
     border-radius: 15px;
     background-color: #5865F2;
     transition: all 0.2s;
     max-height: 150px;
+    min-height: 70px;
 }
 
 #discord_button:hover {
@@ -396,9 +400,9 @@ a img {
 #login-button {
     background-color: #ffffff0d;
     margin-left: auto;
-    height: 5dvh;
+    height: 80%;
     padding: 10px;
-    font-size: 2rem;
+    font-size: 1.2rem;
     border: none;
     color: white;
     cursor: pointer;
@@ -464,6 +468,15 @@ a img {
     text-align: center;
 }
 
-.notice {
-    font-size: 1.2rem;
+#discord_button,
+#coffee {
+    display: inline-block;
+    line-height: 0;
+}
+
+#discord_button img,
+#coffee img {
+    height: 40px;
+    width: auto;
+    display: block;
 }

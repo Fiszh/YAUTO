@@ -10,6 +10,6 @@ document.body.addEventListener("click", (event) => {
         more_menu.style.display = "none";
     } else if (more_button.contains(target)) {
         site_blur.classList.remove('no-blur');
-        more_menu.style.display = "block";
+        more_menu.style.display = "flex";
     }
 });

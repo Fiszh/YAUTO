@@ -313,7 +313,7 @@ async function getSetting(setting_name, action) {
 }
 
 async function getChannelEmotesViaTwitchID(twitchID) {
-    if (!twitchID) { return; };
+    if (!twitchID || twitchID == "preview") { return; };
 
     // 7TV
     if (!SevenTVEmoteData[twitchID]) {

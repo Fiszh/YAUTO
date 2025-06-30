@@ -54,6 +54,11 @@ async function appendScript(src, script_type) {
     });
 }
 
+// Append Darkreader lock
+const meta = document.createElement('meta');
+meta.setAttribute('name', 'darkreader-lock');
+document.head.appendChild(meta);
+
 if (load === "chat") {
     var chatDiv = document.createElement('div');
 
