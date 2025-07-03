@@ -22,6 +22,9 @@
     <meta name="theme-color" content="#43B581" />
     <link rel="canonical" href="https://chat.unii.dev" />
 
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/monolith.min.css" />
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
     </style>
@@ -111,7 +114,10 @@
         </section>
 
         <section class="right_side">
-            <button id="colorToggleButton" class="transition-button">Change chat background</button>
+            <div id="colorToggleButton">
+                🎨 Change preview background
+                <div id="color-picker"></div>
+            </div>
             <div class="chat_preview">
                 <div id="ChatDisplay" class="chat-messages"></div>
             </div>

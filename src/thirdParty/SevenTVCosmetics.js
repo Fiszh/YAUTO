@@ -114,7 +114,7 @@ async function updateCosmetics(body) {
             if (body.object?.id === "00000000000000000000000000" && body.object?.ref_id) {
                 body.object.id = body.object.ref_id;
             }
-        
+
             createCosmetic7TVProfile(body);
         } else if (body?.object?.kind == "BADGE") {
             const object = body.object
@@ -204,7 +204,7 @@ async function createCosmetic7TVProfile(body) {
     if (owner.avatar_url) {
         infoTable["avatar_url"] = owner.avatar_url;
     }
-    
+
     if (body.object.flags === 4 || body.object.flags === 11) {
         infoTable["personal_set_id"].push(String(body.object.id));
     }
@@ -289,7 +289,10 @@ async function displayCosmeticPaint(user_id, color, textElement) {
     const foundUser = cosmetics.user_info.find(user => user["ttv_user_id"] === user_id);
     const randomColor = getRandomTwitchColor();
 
+    color = color || randomColor || 'white';
+
     const can_display_paints = await getSetting("paints");
+    const fontStroke = await getSetting("fontStroke");
 
     if (foundUser && foundUser["paint_id"]) {
         const foundPaint = cosmetics.paints.find(paint => paint.id === foundUser["paint_id"]);
@@ -299,13 +302,16 @@ async function displayCosmeticPaint(user_id, color, textElement) {
 
             if (await getSetting("paintShadows")) {
                 style += ` filter: ${foundPaint.shadows};`;
+            } else if (fontStroke) {
+                style += ` -webkit-text-stroke: 1px black;`;
             }
 
-            textElement.style.cssText = style;
-        }
+            textElement.classList.add('paint');
 
-        textElement.style.backgroundColor = color || randomColor || 'white';
-        textElement.classList.add('paint');
+            textElement.style.cssText = style;
+            textElement.style.backgroundColor = color;
+        }
+        textElement.style.color = color;
     }
 }
 

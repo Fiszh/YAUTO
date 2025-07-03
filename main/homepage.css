@@ -480,3 +480,24 @@ a img {
     width: auto;
     display: block;
 }
+
+#colorToggleButton {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    height: 5dvh;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* COLOR PICKER DARK THEME */
+.picker_dark {
+    background-color: #222 !important;
+    box-shadow: 0 0 15px #000 !important;
+    border: 1px #333 solid;
+}
+
+.pcr-button {
+    border: 1px white solid;
+}

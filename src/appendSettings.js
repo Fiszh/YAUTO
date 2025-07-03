@@ -30,15 +30,15 @@ function appendSettings(applyElement) {
         applyElement.style.fontWeight = "bold";
     }
 
-    if (!settings.fontShadow || String(settings.fontShadow) !== "0") {
-        const shadow_css = `#ChatDisplay > * {
-                                filter: drop-shadow(3px 3px 0rem rgba(0, 0, 0, ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
-                            }`;
-
-        ShadowStyle.textContent = shadow_css;
-    } else {
-        ShadowStyle.textContent = "";
+    if (!settings.fontShadow) {
+        settings.fontShadow = 4;
     }
+
+    const shadow_css = `#ChatDisplay > * {
+                            filter: drop-shadow(0 0 5px rgba(0, 0, 0,  ${Math.max(0, Math.min(1, Number((settings.fontShadow || 4) / 10)))}));
+                        }`;
+
+    ShadowStyle.textContent = shadow_css;
 
     if (settings.fontSize) {
         applyElement.style.fontSize = `${settings.fontSize}px`;
@@ -64,9 +64,12 @@ function appendSettings(applyElement) {
     `;
 
     if (settings && settings.fontStroke && String(settings.fontStroke) === "1") {
-        applyElement.style.webkitTextStroke = '1.3px black';
+        applyElement.style.textShadow = `1px 1px 0 black,
+                                        -1px 1px 0 black,
+                                        1px -1px 0 black,
+                                        -1px -1px 0 black`;
     } else {
-        applyElement.style.webkitTextStroke = '';
+        applyElement.style.textShadow = '';
     }
 
     tweemojiStyle.textContent = `

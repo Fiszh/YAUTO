@@ -74,6 +74,7 @@ body::-webkit-scrollbar,
     background-clip: text !important;
     -webkit-background-clip: text !important;
     background-size: cover !important;
+    text-shadow: none !important;
 }
 
 .fade {

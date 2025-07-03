@@ -32,7 +32,7 @@
         "param": "fontStroke"
     },
     "font_shadow": {
-        "name": "Message shadow",
+        "name": "Message shadow (0-10)",
         "type": "number",
         "param": "fontShadow",
         "max": 10,

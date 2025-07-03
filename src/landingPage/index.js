@@ -1,9 +1,6 @@
 const urlDiv = document.getElementById("url-results");
 let lastUrl = urlDiv.textContent.trim();
 
-const button = document.getElementById("colorToggleButton");
-let isWhite = false;
-
 const saveButton = document.getElementById("saveSettings-button");
 const deleteButton = document.getElementById("deleteSettings-button");
 
@@ -273,17 +270,6 @@ async function getBadges() {
         }
     });
 }
-
-button.addEventListener("click", () => {
-    chatDisplay.style.transition = "background-color 0.5s ease";
-
-    if (isWhite) {
-        chatDisplay.style.backgroundColor = "rgba(255, 255, 255, 0.027)";
-    } else {
-        chatDisplay.style.backgroundColor = "white";
-    }
-    isWhite = !isWhite;
-});
 
 setUpPreview();
 getImages();
