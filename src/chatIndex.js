@@ -343,10 +343,10 @@ async function handleMessage(userstate, message, channel) {
     const messagePrefix = message.charAt(0);
 
     const isPrefixBlocked = await getSetting("prefixBL", { action: "includes", include: messagePrefix });
-    const isRedeemBlocked = !await getSetting("redeem");
+    const isRedeemBlocked = await getSetting("redeem");
     const isUserBlocked = await getSetting("userBL", { action: "includes", include: userstate.username });
 
-    if (isPrefixBlocked || isRedeemBlocked || isUserBlocked) { return; };
+    if (isPrefixBlocked || (!isRedeemBlocked && userstate["custom-reward-id"]) || isUserBlocked) { return; };
 
     // PROCESS MESSAGE
 
