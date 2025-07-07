@@ -6,6 +6,9 @@ let IRC_is_connected = false;
 let reconnectAttempts = 0;
 const MAX_RECONNECTS = 10;
 
+let heartbeatInterval = null;
+let heartbeatTimeout = null;
+
 function connect(channel_name) {
     if (!channel_name || IRC_is_connected) { return; };
 
@@ -24,6 +27,19 @@ function connect(channel_name) {
         twitch_irc.dispatchEvent(new CustomEvent("open", { detail: "Twitch IRC connection has been opened." }));
 
         IRC_is_connected = true;
+
+        // FIX TRY
+        heartbeatInterval = setInterval(() => {
+            if (TTV_IRC_WS.readyState === WebSocket.OPEN) {
+                TTV_IRC_WS.send('PING');
+
+                clearTimeout(heartbeatTimeout);
+                heartbeatTimeout = setTimeout(() => {
+                    console.warn('No PONG, reconnecting...');
+                    TTV_IRC_WS.close();
+                }, 20000);
+            }
+        }, 20000);
     });
 
     TTV_IRC_WS.addEventListener('message', (event) => {
@@ -41,6 +57,7 @@ function connect(channel_name) {
                     TTV_IRC_WS.send('PONG :tmi.twitch.tv');
 
                     console.log('PONG...');
+
                     break;
                 case "RECONNECT":
                     console.log('Twitch sent RECONNECT, reconnecting...');
@@ -48,6 +65,10 @@ function connect(channel_name) {
                     TTV_IRC_WS.close();
 
                     return;
+                case "PONG":
+                    clearTimeout(heartbeatTimeout);
+
+                    break;
                 default:
                     if (parsed?.message && parsed?.tags) {
                         const parsed_message = parsed["message"];
@@ -59,6 +80,7 @@ function connect(channel_name) {
                     }
 
                     twitch_irc.dispatchEvent(new CustomEvent(parsed.command, { detail: parsed }));
+
                     break;
             }
         }
@@ -66,6 +88,9 @@ function connect(channel_name) {
 
     TTV_IRC_WS.addEventListener('close', () => {
         console.log('Disconnected from Twitch IRC');
+
+        clearInterval(heartbeatInterval);
+        clearTimeout(heartbeatTimeout);
 
         IRC_is_connected = false;
 
