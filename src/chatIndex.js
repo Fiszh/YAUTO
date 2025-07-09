@@ -1002,6 +1002,11 @@ async function loadChat() {
         return;
     };
 
+    // SET ALL USERNAMES TO LOWER CASE
+    if (settings?.userBL) {
+        settings.userBL = settings.userBL.map(b => b.toLowerCase());
+    }
+
     // OVERLAY
 
     loadCustomBadges();
