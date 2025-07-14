@@ -715,7 +715,13 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate, or
     inputString = sanitizeInput(inputString);
 
     try {
-        const ttvEmoteData = TTVMessageEmoteData
+        const ttvEmoteData = TTVMessageEmoteData;
+
+        const globalEmotesData = [
+            ...SevenTVGlobalEmoteData,
+            ...BTTVGlobalEmoteData,
+            ...FFZGlobalEmoteData,
+        ];
 
         const nonGlobalEmoteData = [
             ...SevenTVEmoteData?.[originChannelID] || [],
@@ -726,6 +732,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate, or
         const emoteData = [
             ...ttvEmoteData,
             ...nonGlobalEmoteData,
+            ...globalEmotesData,
             ...TTVBitsData
         ];
 
@@ -778,7 +785,8 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate, or
             if (!foundEmote) {
                 foundEmote = ttvEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name)) ||
                     foundMessageSender?.cosmetics?.personal_emotes?.find(emote => emote.name && part === emote.name) ||
-                    nonGlobalEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name));
+                    nonGlobalEmoteData.find(emote => emote.name && part === sanitizeInput(emote.name)) ||
+                    globalEmotesData.find(emote => emote.name && part === sanitizeInput(emote.name));
             }
 
             // Search for user if no emote is found
