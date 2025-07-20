@@ -312,8 +312,10 @@ async function getSetting(setting_name, action) {
     return sourceValue === "0" ? false : sourceValue;
 }
 
+let processing_ids = [];
 async function getChannelEmotesViaTwitchID(twitchID) {
-    if (!twitchID || twitchID == "preview") { return; };
+    if (!twitchID || twitchID == "preview" || processing_ids.includes(twitchID)) { return; };
+    processing_ids.push(twitchID); // PREVENT API SPAM IF THE ID IS ALREADY BEING PROCESSED
 
     // 7TV
     if (!SevenTVEmoteData[twitchID]) {
@@ -329,6 +331,9 @@ async function getChannelEmotesViaTwitchID(twitchID) {
     if (!FFZEmoteData[twitchID]) {
         FFZEmoteData[twitchID] = await fetchFFZEmoteSetDataViaTwitchID(twitchID);
     }
+
+    // REMOVE ID FROM PROCESSING IDS
+    processing_ids = processing_ids.filter(id => id !== twitchID);
 }
 
 async function handleMessage(userstate, message, channel) {
