@@ -111,6 +111,16 @@ function connect(channel_name) {
     });
 }
 
+function disconnect() {
+    if (TTV_IRC_WS) {
+        TTV_IRC_WS.close();
+        TTV_IRC_WS = null;
+    }
+    IRC_is_connected = false;
+    clearInterval(heartbeatInterval);
+    clearTimeout(heartbeatTimeout);
+}
+
 function parseIrcLine(line, parseTagCb) {
     if (!line) return;
 
@@ -252,5 +262,6 @@ function parseIrcLine(line, parseTagCb) {
 
 irc = {
     connect,
+    disconnect,
     events: twitch_irc
 };

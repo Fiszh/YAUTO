@@ -65,14 +65,20 @@
             </ul>
         </section>
 
-        <section class="information">commands</section>
+        <section class="information">Commands</section>
 
         <section class="feature-list">
             <ul>
-                <li> !reloadoverlay - Mod and higher only, reloads the overlay</li>
-                <li> !refreshoverlay - Mod and higher only, refreshes the overlay (loads the chat again)</li>
-                <li> !reloadwebsockets - Mod and higher only, reconnects WebSockets</li>
-                <li> !reconnectchat - Mod and higher only, reconnects Twitch IRC</li>
+                <li class="twitch-mod">- Mod or higher rank only</li>
+                <li class="twitch-broadcaster">- Broadcaster only</li>
+
+                </br>
+
+                <li class="twitch-mod"> <code>!reloadchat</code> - Reloads the overlay</li>
+                <li class="twitch-mod"> <code>!refreshchat</code> - Refreshes the overlay (loads the chat again)</li>
+                <li class="twitch-mod"> <code>!reloadws</code> - Reconnects the 7TV and BTTV WebSockets</li>
+                <li class="twitch-mod"> <code>!reconnectchat</code> - Reconnects Twitch IRC</li>
+                <li class="twitch-mod"> <code>!chatversion</code> - Displays the currently loaded version</li>
             </ul>
         </section>
 
@@ -146,7 +152,6 @@
 
     <script src="src/appendSettings.js" defer></script>
 
-    <script src="src/tmi.js" defer></script>
     <script src="src/settings.js" defer></script>
 
     <script>

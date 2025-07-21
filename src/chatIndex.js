@@ -1,30 +1,46 @@
 console.log("chatIndex.js hooked up!")
 
-let client;
+const custom_bots = [
+    "poland_bot",
+    "ftk789_bot",
+    "mrsmalvic",
+    "gofishgame",
+    "reapsex",
+]
+/*
+If you want your bot added, just open a PR on the repo.
+No 100% guarantee I’ll add it, but I probably will.
+*/
 
-let tmiConnected = false;
-let tmiConencting = false;
+const manifest_path = 'manifest.json';
+let chat_version;
 
-if (document.location.href.includes("?channel=")) {
+if (settings?.channel) {
+    // DEFAULT ACTIONS
+
+    // OPENING
     irc.events.addEventListener('opening', e => {
         createLoadingUI();
     });
 
+    // RECONNECT LIMIT REACHED
     irc.events.addEventListener('reconnect_limit_reached', e => {
         createLoadingUI("Twitch IRC failed to reconnect after 10 tries. Refresh the page or the source to retry.");
     });
 
+    // OPEN
     irc.events.addEventListener('open', e => {
         const loadingUI = document.getElementById('loadingUI');
 
         if (loadingUI) {
-            loadingUI.lastChild.textContent = "Connected";
+            createLoadingUI("Connected!");
             loadingUI.style.opacity = '0';
 
             setTimeout(() => loadingUI.remove(), 300);
         }
     });
 
+    // MESSAGE
     irc.events.addEventListener('PRIVMSG', e => {
         const event_details = e.detail;
 
@@ -33,88 +49,90 @@ if (document.location.href.includes("?channel=")) {
         onMessage(event_details["channel"], event_details["tags"], event_details["message"], false);
     });
 
-    irc.connect(settings.channel);
+    // CHEER
 
-    /*
-    client = new tmi.Client({
-        options: {
-            debug: false,
-            skipUpdatingEmotesets: true
-        },
-        connection: {
-            reconnect: false,
-        },
-        channels: [settings.channel]
-    });
+    /*client.on("cheer", (channel, userstate, message) => { // USERNOTICE - NOT SURE SAID BY CHAT GPT
+        handleMessage(userstate, message, channel);
+    });*/
 
-    //createLoadingUI();
+    irc.events.addEventListener('USERNOTICE', e => {
+        let event_details = e.detail;
 
-    if (!tmiConnected) {
-        safeConnect();
-    }
+        console.log(event_details); // Still needed for future updates
 
-    client.on('connected', async (address, port) => {
-        const loadingUI = document.getElementById('loadingUI');
-
-        if (loadingUI) {
-            loadingUI.lastChild.textContent = "Connected";
-            loadingUI.style.opacity = '0';
-
-            setTimeout(() => loadingUI.remove(), 300);
+        if (event_details?.["tags"]?.["login"]) {
+            event_details["tags"]["username"] = event_details["tags"]["login"];
         }
 
-        console.log(`Twitch IRC connected! (${address}:${port})`);
+        if (event_details?.["message"]?.trim()?.length && event_details?.["tags"] && event_details?.["channel"]) {
+            handleMessage(event_details["tags"], event_details["message"], event_details["channel"]);
+        }
     });
 
-    client.on('connecting', (reason) => {
-        console.log(`Twitch IRC connecting. (${reason})`);
+    // MODERATION ACTIONS
 
-        createLoadingUI();
+    irc.events.addEventListener('CLEARMSG', e => { // REMOVE MESSAGE
+        const event_details = e.detail;
+
+        if (!event_details?.["tags"]?.["target-msg-id"]) { return; };
+
+        deleteMessages("message_id", String(event_details["tags"]["target-msg-id"]));
     });
 
-    client.on('disconnected', async (reason) => {
-        tmiConnected = false;
+    irc.events.addEventListener('CLEARCHAT', e => { // CLEAR CHAT, BAN & TIMEOUT
+        const event_details = e.detail;
 
-        console.log(`Twitch IRC disconnected, reconnecting. (${reason})`);
+        if (event_details?.["tags"]?.["target-user-id"]) {
+            deleteMessages("sender_id", event_details["tags"]["target-user-id"]);
+        } else {
+            deleteMessages();
+        }
+    });
 
-        createLoadingUI("Twitch IRC disconnected, reconnecting...");
-
-        setTimeout(async () => {
-            console.log(`Attempting Twitch IRC reconnect.`);
-
+    if (!chat_version) {
+        (async () => {
             try {
-                await safeConnect();
+                const response = await fetch(manifest_path);
 
-                console.log(`Twitch IRC reconnect: SUCCESS.`);
+                if (!response.ok) {
+                    throw new Error("Failed to load in manifest.json");
+                }
+
+                const data = await response.json();
+
+                if (Object.keys(data).length < 1) {
+                    throw new Error("manifest.json was loaded but it seems to be empty");
+                }
+
+                chat_version = `${data["version"]} (${new Date().toLocaleDateString()})`;
+
+                console.log(`Chat version: ${chat_version}`);
             } catch (err) {
-                console.error(`Twitch IRC reconnect: FAIL. ${err}`);
+                console.error(`Failed to load in manifest.json, please try reloading the page. Error: ${err.message}`);
+            } finally {
+                irc.connect(settings.channel);
+
+                loadChat();
+                setInterval(removeInvisibleElements, 500);
+                setInterval(loadCustomBadges, 300000);
             }
-        }, 1000);
-    });
-
-    client.on("message", onMessage);
-    */
+        })();
+    }
 }
 
-async function safeConnect() {
-    if (tmiConnected) {
-        console.log('Already connected.');
+function createLoadingUI(custom_message, remove_interval) {
+    if (document.getElementById('loadingUI')) {
+        if (custom_message) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.textContent = custom_message;
+            } else {
+                console.warn("Loading message element not found, unable to update message.");
+            }
+        }
+
         return;
-    }
-
-    if (tmiConencting) {
-        console.log('Already connecting, please wait.');
-        return;
-    }
-
-    tmiConencting = true;
-    await client.connect();
-    tmiConencting = false;
-    tmiConnected = true;
-}
-
-function createLoadingUI(custom_message) {
-    if (document.getElementById('loadingUI')) { return; };
+    };
 
     const loadingUI = document.createElement('div');
     loadingUI.id = 'loadingUI';
@@ -123,10 +141,26 @@ function createLoadingUI(custom_message) {
     img.src = 'imgs/loading.gif';
     img.alt = 'loading';
 
+    const loadingMessage = document.createElement('span');
+    loadingMessage.textContent = custom_message || `Connecting to ${settings.channel} chat...`;
+    loadingMessage.id = 'loadingMessage';
+
+    const versionText = document.createElement('span');
+    versionText.textContent = `Version: ${chat_version || 'unknown'}`;
+
     loadingUI.appendChild(img);
-    loadingUI.appendChild(document.createTextNode(custom_message || `Connecting to ${settings.channel} chat...`));
+    loadingUI.appendChild(loadingMessage);
+    loadingUI.appendChild(versionText);
 
     document.body.appendChild(loadingUI);
+
+    if (remove_interval) {
+        setTimeout(() => {
+            loadingUI.style.opacity = '0';
+
+            setTimeout(() => loadingUI.remove(), 300);
+        }, remove_interval);
+    }
 }
 
 async function onMessage(channel, userstate, message, self) {
@@ -135,22 +169,31 @@ async function onMessage(channel, userstate, message, self) {
     // MOD COMMANDS
     if (String(userstate["user-id"]) == "528761326" || userstate?.mod || userstate?.['badges-raw']?.includes('broadcaster/1')) {
         switch (message.toLowerCase()) {
-            case "!reloadoverlay":
+            case "!reloadchat":
                 window.location.reload(true);
+
                 break;
-            case "!refreshoverlay":
+            case "!refreshchat":
                 loadChat();
+
                 break;
-            case "!reloadwebsockets":
+            case "!reloadws":
                 try {
                     SevenTVWebsocket.close();
                     BTTVWebsocket.close();
-                } catch (err) { }
+                } catch (err) { }; // HERE JUST IN CASE THE WEBSOCKET IS NOT OPEN
+
                 break;
             case "!reconnectchat":
-                client.disconnect();
+                irc.disconnect();
+
+                break;
+            case "!chatversion":
+                createLoadingUI(` `, 5000);
+
                 break;
             default:
+
                 break;
         }
     }
@@ -168,7 +211,7 @@ async function onMessage(channel, userstate, message, self) {
     // BLOCK BOTS
     const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username);
 
-    if ((FFZBadge?.id == "bot") && (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2")) {
+    if (((FFZBadge?.id == "bot") && (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2")) || custom_bots.includes(userstate.username)) {
         if (!await getSetting("bots")) {
             return;
         }
@@ -1032,7 +1075,7 @@ async function loadChat() {
 
     // LOAD SAVED SETTINGS 
 
-    //await LoadSavedSettings();
+    await LoadSavedSettings(); // why was this commented out? idk
 
     // THIRD PARTY
 
@@ -1291,52 +1334,6 @@ async function deleteMessages(attribute, value) {
     } else {
         chatDisplay.innerHTML = '';
     }
-}
-
-if (document.location.href.includes("?channel=")) {
-    // CHEER
-
-    /*client.on("cheer", (channel, userstate, message) => { // USERNOTICE - NOT SURE SAID BY CHAT GPT
-        handleMessage(userstate, message, channel);
-    });*/
-
-    irc.events.addEventListener('USERNOTICE', e => {
-        let event_details = e.detail;
-
-        console.log(event_details); // Still needed for future updates
-
-        if (event_details?.["tags"]?.["login"]) {
-            event_details["tags"]["username"] = event_details["tags"]["login"];
-        }
-
-        if (event_details?.["message"]?.trim()?.length && event_details?.["tags"] && event_details?.["channel"]) {
-            handleMessage(event_details["tags"], event_details["message"], event_details["channel"]);
-        }
-    });
-
-    // MODERATION ACTIONS
-
-    irc.events.addEventListener('CLEARMSG', e => {
-        const event_details = e.detail;
-
-        if (!event_details?.["tags"]?.["target-msg-id"]) { return; };
-
-        deleteMessages("message_id", String(event_details["tags"]["target-msg-id"]));
-    });
-
-    irc.events.addEventListener('CLEARCHAT', e => { // CLEAR CHAT, BAN & TIMEOUT
-        const event_details = e.detail;
-
-        if (event_details?.["tags"]?.["target-user-id"]) {
-            deleteMessages("sender_id", event_details["tags"]["target-user-id"]);
-        } else {
-            deleteMessages();
-        }
-    });
-
-    loadChat();
-    setInterval(removeInvisibleElements, 500);
-    setInterval(loadCustomBadges, 300000);
 }
 
 function handleImageRetries() {

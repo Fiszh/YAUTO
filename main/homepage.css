@@ -491,6 +491,26 @@ a img {
     font-weight: bold;
 }
 
+.twitch-mod::before,
+.twitch-broadcaster::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.twitch-mod::before {
+    background-image: url('https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3');
+}
+
+.twitch-broadcaster::before {
+    background-image: url('https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/3');
+}
+
 /* COLOR PICKER DARK THEME */
 .picker_dark {
     background-color: #222 !important;
