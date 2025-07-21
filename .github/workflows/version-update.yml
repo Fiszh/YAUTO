@@ -1,5 +1,8 @@
 name: Update Version Manifest
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: ["main"]
