@@ -2,8 +2,7 @@ name: Update Version Manifest
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   update-version:
@@ -13,11 +12,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Get latest tag or version
+      - name: Get latest commit message as version
         id: get_version
         run: |
-          # You can customize how you get version, here just use last tag
-          VERSION=$(git describe --tags --abbrev=0)
+          VERSION=$(git log -1 --pretty=%s)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update manifest.json
@@ -26,6 +24,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add manifest.json
-          git commit -m "Update version manifest to ${{ steps.get_version.outputs.version }}"
+          git commit -m "Update version manifest to ${{ steps.get_version.outputs.version }}" || echo "No changes to commit"
           git push
-
