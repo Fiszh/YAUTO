@@ -32,17 +32,6 @@ let images = [
 const PreviewMessages = [
     {
         userstate: {
-            "username": 'OhMunchy_',
-            "display-name": 'OhMunchy_',
-            "badges-raw": null,
-            "badges": {},
-            "color": "#ff0000",
-            "source-room-id": "preview"
-        },
-        message: "when are we playing furry simulator ????"
-    },
-    {
-        userstate: {
             "username": 'uniiDev',
             "display-name": 'uniiDev',
             "user-id": "528761326",
@@ -123,19 +112,19 @@ const PreviewMessages = [
 ]
 
 const logoElements = document.getElementsByClassName('logo');
-if (logoElements) {
-    const intervalTime = 3000;
-    let lastImageIndex = -1;
+window.onload = () => {
+    if (logoElements.length) {
+        const intervalTime = 3000;
+        let lastImageIndex = -1;
 
-    const preloadedImages = [];
-    for (let i = 0; i < images.length; i++) {
-        const img = new Image();
-        img.src = images[i];
-        preloadedImages.push(img);
-    }
+        const preloadedImages = [];
+        for (let i = 0; i < images.length; i++) {
+            const img = new Image();
+            img.src = images[i];
+            preloadedImages.push(img);
+        }
 
-    function changeImage() {
-        if (logoElements[0]) {
+        function changeImage() {
             const logo = logoElements[0];
             let randomIndex;
 
@@ -149,14 +138,13 @@ if (logoElements) {
             setTimeout(() => {
                 logo.src = images[randomIndex];
                 logo.style.opacity = 1;
-
                 lastImageIndex = randomIndex;
             }, 500);
         }
-    }
 
-    setInterval(changeImage, intervalTime);
-}
+        setInterval(changeImage, intervalTime);
+    }
+};
 
 async function getImages() {
     const response = await fetch(`https://7tv.io/v3/emote-sets/01JC6TW7DYGXY01896S0VB34MF`);

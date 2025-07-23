@@ -73,9 +73,9 @@ async function checkLoginStatus() {
 
     if (accessToken) {
         try {
-            const response = await fetch('https://id.twitch.tv/oauth2/validate', {
+            const response = await fetch('https://api.unii.dev/validate', {
                 headers: {
-                    "Authorization": `Bearer ${accessToken}`
+                    "x-auth-token": `Bearer ${accessToken}`
                 }
             });
 
@@ -97,6 +97,13 @@ async function checkLoginStatus() {
                 alert(`Missing scopes: ${missingScopes.join(', ')}. Please log in again.`);
             } else {
                 authButton.textContent = 'Logout';
+
+                if (data["YAUTO_Tester"]) {
+                    const settingsButtons = document.getElementById('settingsButtons');
+                    if (settingsButtons) {
+                        settingsButtons.style.display = 'flex';
+                    }
+                }
             }
         } catch (error) {
             console.error('Error checking login status:', error.message);

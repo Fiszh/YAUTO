@@ -112,7 +112,6 @@
             <div class="configuration"></div>
             <div id="information">↓ Channel Name ↓</div>
             <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name" />
-            <div id="information">↓ Testers only ↓</div>
             <div id="settingsButtons">
                 <button id="saveSettings-button">Save settings</button>
                 <button id="deleteSettings-button">Delete settings</button>
@@ -146,12 +145,14 @@
                 style="vertical-align:middle; margin-right:4px;">privacy_tip</span>IP addresses are logged to protect
             the service from abuse. This data is only accessed internally and isn’t shared with anyone else.</div>
         <div class="notice"><span class="material-icons"
+                style="vertical-align:middle; margin-right:4px;">privacy_tip</span>Your token is only sent to the server
+            for user validation. It’s not stored anywhere except in your cookies and is deleted when you log out.</div>
+        <div class="notice"><span class="material-icons"
                 style="vertical-align:middle; margin-right:4px;">gavel</span>YetAnotherUselessTwitchOverlay (YAUTO) is
             not affiliated with Twitch Interactive</div>
     </footer>
 
     <script src="src/appendSettings.js" defer></script>
-
     <script src="src/settings.js" defer></script>
 
     <script>
