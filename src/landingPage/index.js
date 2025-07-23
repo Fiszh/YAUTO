@@ -167,27 +167,13 @@ async function getImages() {
 async function displayPreview() {
     if (!urlDiv) { return; }
 
-    const url = urlDiv.textContent.trim();
-    const current_url_split = url.split('/');
+    Object.entries(settings).forEach(([key, value]) => {
+        if (["userBL", "prefixBL"].includes(String(key))) {
+            const parts = String(value).split(' ');
 
-    let settings_url = current_url_split[current_url_split.length - 1].split("?");
-
-    settings = {};
-
-    settings_url.forEach(item => {
-        const parts = item.split('=');
-
-        if (parts.length === 2) {
-            const key = parts[0].trim();
-            const value = decodeURIComponent(parts[1].trim());
-
-            if (["userBL", "prefixBL"].includes(String(key))) {
-                const parts = String(value).split(' ');
-
-                settings[key] = parts;
-            } else {
-                settings[key] = value;
-            }
+            settings[key] = parts;
+        } else {
+            settings[key] = value;
         }
     });
 
@@ -284,13 +270,11 @@ saveButton.addEventListener("click", async () => {
 
     if (!saveSettings_response.ok) {
         alert("There was a error saving your settings");
-        return;
     } else {
         const saveSettings_data = await saveSettings_response.json();
 
         if (!saveSettings_data) {
             alert("No data recived from the server!");
-            return;
         } else {
             alert(saveSettings_data["message"] || saveSettings_data["error"]);
         }
@@ -312,13 +296,11 @@ deleteButton.addEventListener("click", async () => {
 
     if (!deleteSettings_response.ok) {
         alert("There was a error saving your settings");
-        return;
     } else {
         const deleteSettings_data = await deleteSettings_response.json();
 
         if (!deleteSettings_data) {
             alert("No data recived from the server!");
-            return;
         } else {
             alert(deleteSettings_data["message"] || deleteSettings_data["error"]);
         }

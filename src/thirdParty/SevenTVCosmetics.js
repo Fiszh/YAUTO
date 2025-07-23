@@ -291,8 +291,8 @@ async function displayCosmeticPaint(user_id, color, textElement) {
 
     color = color || randomColor || 'white';
 
-    const can_display_paints = await getSetting("paints");
-    const fontStroke = await getSetting("fontStroke");
+    const can_display_paints = getSetting("paints");
+    const fontStroke = getSetting("fontStroke");
 
     if (foundUser && foundUser["paint_id"]) {
         const foundPaint = cosmetics.paints.find(paint => paint.id === foundUser["paint_id"]);
@@ -300,7 +300,7 @@ async function displayCosmeticPaint(user_id, color, textElement) {
         if (foundPaint && can_display_paints) {
             let style = `background-image: ${foundPaint.backgroundImage};`
 
-            if (await getSetting("paintShadows")) {
+            if (getSetting("paintShadows")) {
                 style += ` filter: ${foundPaint.shadows};`;
             } else if (fontStroke) {
                 style += ` -webkit-text-stroke: 1px black;`;

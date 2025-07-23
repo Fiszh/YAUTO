@@ -106,10 +106,13 @@
             <img src="imgs/more_icon.png" alt="More Info Icon" />
         </button>
     </header>
-
+    <div class="important_notice">
+        <a href="https://chat.unii.dev/convert" target="_blank" rel="noopener noreferrer">If you got an "Invalid URL" notice, click here. (this notice will be removed at the end of the month)</a>
+    </div>
+    
     <main>
         <section class="left_side">
-            <div class="configuration"></div>
+            <div id="configuration"></div>
             <div id="information">↓ Channel Name ↓</div>
             <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name" />
             <div id="settingsButtons">
@@ -152,8 +155,7 @@
             not affiliated with Twitch Interactive</div>
     </footer>
 
-    <script src="src/appendSettings.js" defer></script>
-    <script src="src/settings.js" defer></script>
+    <script src="src/pageLoader.js" defer></script>
 
     <script>
         async function fetchCommit() {

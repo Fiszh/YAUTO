@@ -120,6 +120,7 @@ async function fetch7TVEmoteSetDataViaTwitchID(channelID) {
 
 // WEBSOCKET
 
+const timeout = 5000;
 async function detect7TVEmoteSetChange() {
     SevenTVWebsocket = new WebSocket('wss://events.7tv.io/v3');
 

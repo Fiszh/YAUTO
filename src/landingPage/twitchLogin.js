@@ -4,6 +4,8 @@ const AUTH_URL = 'https://id.twitch.tv/oauth2/authorize';
 
 const SCOPES = 'user:read:email';
 
+let userSettings = [];
+
 const authButton = document.getElementById('login-button');
 
 function setCookie(name, value, days) {
@@ -30,52 +32,18 @@ if (!accessToken) {
     userToken = undefined;
 }
 
-async function handleToken() {
+async function checkLoginStatus() {
+    const accessTokenCookie = getCookie('twitch_access_token');
+
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
-    const accessToken = params.get('access_token');
+    const accessTokenHash = params.get('access_token');
 
-    if (accessToken) {
-        try {
-            setCookie('twitch_access_token', accessToken, 60);
-
-            if (authButton) {
-                authButton.textContent = 'Logout';
-            }
-
-            const userDataResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                }
-            });
-
-            if (userDataResponse.ok) {
-                const userData = await userDataResponse.json();
-                console.log('User Data:', userData);
-
-                window.location.href = REDIRECT_URI;
-            } else {
-                throw new Error('Failed to fetch user data');
-            }
-        } catch (error) {
-            console.error('Error processing access token:', error);
-        }
-    } else {
-
-    }
-}
-
-handleToken();
-
-async function checkLoginStatus() {
-    const accessToken = getCookie('twitch_access_token');
-    const authButton = document.getElementById('login-button');
-
-    if (accessToken) {
+    if (accessTokenCookie) {
         try {
             const response = await fetch('https://api.unii.dev/validate', {
                 headers: {
-                    "x-auth-token": `Bearer ${accessToken}`
+                    "x-auth-token": `Bearer ${accessTokenCookie}`
                 }
             });
 
@@ -102,11 +70,43 @@ async function checkLoginStatus() {
                     const settingsButtons = document.getElementById('settingsButtons');
                     if (settingsButtons) {
                         settingsButtons.style.display = 'flex';
+
+                        // GET SAVED SETTINGS
+                        const settingsResponse = await fetch(`https://api.unii.dev/settings/${data["user_id"]}`);
+
+                        const settingsData = await settingsResponse.json();
                     }
                 }
             }
         } catch (error) {
             console.error('Error checking login status:', error.message);
+        }
+    } else if (accessTokenHash) {
+        try {
+            setCookie('twitch_access_token', accessTokenHash, 60);
+
+            window.history.replaceState(null, null, window.location.pathname + window.location.search);
+
+            if (authButton) {
+                authButton.textContent = 'Logout';
+            }
+
+            const userDataResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
+                headers: {
+                    'Authorization': `Bearer ${accessTokenHash}`,
+                }
+            });
+
+            if (userDataResponse.ok) {
+                const userData = await userDataResponse.json();
+                console.log('User Data:', userData);
+
+                window.location.href = REDIRECT_URI;
+            } else {
+                throw new Error('Failed to fetch user data');
+            }
+        } catch (error) {
+            console.error('Error processing access token:', error);
         }
     } else {
         authButton.textContent = 'Login';
