@@ -212,14 +212,14 @@ async function onMessage(channel, userstate, message, self) {
     const FFZBadge = FFZBadgeData.find(badge => badge.owner_username == userstate.username);
 
     if (((FFZBadge?.id == "bot") && (FFZUserBadgeData?.user_badges?.[userstate["user-id"]] === "2")) || custom_bots.includes(userstate.username)) {
-        if (!await getSetting("bots")) {
+        if (!getSetting("bots")) {
             return;
         }
     }
 
     // BLOCK USERS
 
-    if (await getSetting("userBL", { action: "includes", include: userstate.username })) {
+    if (getSetting("userBL", { action: "includes", include: userstate.username })) {
         return;
     }
 
@@ -257,7 +257,7 @@ let chatDisplay = document.getElementById("ChatDisplay");
 //CUSTOM 
 let customBadgeData = [];
 
-let config_path = 'src/landingPage/configuration.json';
+let config_path = 'src/landingPage/defaultConfig.json';
 let config = {};
 
 //CONSOLE COLORS
@@ -330,7 +330,7 @@ async function trimPart(text) {
     }
 }
 
-async function getSetting(setting_name, action) {
+function getSetting(setting_name, action) {
     const value = settings[setting_name];
 
     if (value !== undefined) {
@@ -341,15 +341,20 @@ async function getSetting(setting_name, action) {
         return value === "0" ? false : value;
     }
 
-    const sourceKey = Object.keys(config).find(k => config[k].param === setting_name)
-        || (configuration && Object.keys(configuration).find(k => configuration[k].param === setting_name));
+    const sourceKey = (config && Object.keys(config).find(k => config[k].param === setting_name))
+        || (defaultConfig && Object.keys(defaultConfig).find(k => defaultConfig[k].param === setting_name));
 
     if (!sourceKey) {
         console.log(setting_name, "not found");
+
         return false;
     }
 
-    const source = config[sourceKey] ? config : configuration;
+    const source = settings[sourceKey] !== undefined
+        ? settings
+        : (config && config[sourceKey] !== undefined)
+            ? config
+            : defaultConfig;
     const sourceValue = source[sourceKey].value;
 
     return sourceValue === "0" ? false : sourceValue;
@@ -390,9 +395,9 @@ async function handleMessage(userstate, message, channel) {
 
     const messagePrefix = message.charAt(0);
 
-    const isPrefixBlocked = await getSetting("prefixBL", { action: "includes", include: messagePrefix });
-    const isRedeemBlocked = await getSetting("redeem");
-    const isUserBlocked = await getSetting("userBL", { action: "includes", include: userstate.username });
+    const isPrefixBlocked = getSetting("prefixBL", { action: "includes", include: messagePrefix });
+    const isRedeemBlocked = getSetting("redeem");
+    const isUserBlocked = getSetting("userBL", { action: "includes", include: userstate.username });
 
     if (isPrefixBlocked || (!isRedeemBlocked && userstate["custom-reward-id"]) || isUserBlocked) { return; };
 
@@ -618,7 +623,7 @@ async function handleMessage(userstate, message, channel) {
                         </span>`;
 
 
-    if (!await getSetting("badges")) {
+    if (!getSetting("badges")) {
         badges_html = '';
     }
 
@@ -669,10 +674,10 @@ async function handleMessage(userstate, message, channel) {
 }
 
 async function fadeOut(element) {
-    if (!await getSetting("fadeOut")) { return; }
+    if (!getSetting("fadeOut")) { return; }
     if (!document.location.href.includes("?channel=")) { return; }
 
-    const fadeOutTime = await getSetting("fadeOut") * 1000
+    const fadeOutTime = getSetting("fadeOut") * 1000
 
     setTimeout(() => {
         element.style.transition = 'opacity 1s ease';
@@ -838,7 +843,7 @@ async function replaceWithEmotes(inputString, TTVMessageEmoteData, userstate, or
             }
 
             // Search for user if no emote is found
-            if (!foundEmote && (await getSetting("mentionColor"))) { // check if mention color is enabled
+            if (!foundEmote && (getSetting("mentionColor"))) { // check if mention color is enabled
                 foundUser = TTVUsersData.find(user => {
                     const userName = user.name.toLowerCase();
                     return [userName, userName.slice(1), `${userName},`, `${userName.slice(1)},`].some(val => part.toLowerCase() == val);
@@ -1032,13 +1037,13 @@ async function loadChat() {
         const response = await fetch(config_path);
 
         if (!response.ok) {
-            throw new Error("Failed to load in configuration.json");
+            throw new Error("Failed to load in defaultConfig.json");
         }
 
         const data = await response.json();
 
         if (Object.keys(data).length < 1) {
-            throw new Error("configuration.json was loaded but it seems to be empty");
+            throw new Error("defaultConfig.json was loaded but it seems to be empty");
         }
 
         config = data;
@@ -1051,7 +1056,7 @@ async function loadChat() {
             return acc;
         }, {});
     } catch (err) {
-        chatDisplay.innerHTML = `Failed to load in configuration.json, please try reloading the page. <br> Error: ${err.message}`;
+        chatDisplay.innerHTML = `Failed to load in defaultConfig.json, please try reloading the page. <br> Error: ${err.message}`;
 
         chatDisplay.style.webkitTextStroke = '1.3px black';
 
@@ -1323,7 +1328,7 @@ function removeInvisibleElements() {
 }
 
 async function deleteMessages(attribute, value) {
-    if (!await getSetting("modAction")) { return; }
+    if (!getSetting("modAction")) { return; }
 
     if (attribute) {
         const elementsToDelete = chatDisplay.querySelectorAll(`[${attribute}="${value}"]`);
