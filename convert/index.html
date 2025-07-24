@@ -21,12 +21,12 @@
 
     <script>
         document.getElementById('convertButton').addEventListener('click', function () {
-            const oldUrl = document.getElementById('oldUrl').value.trim().split("?");
+            const oldUrl = document.getElementById('oldUrl').value.trim().split("?").filter(Boolean);
 
             const mappedParams = oldUrl.flatMap(param => {
                 let paramSplit = param.split("=");
 
-                paramSplit[1] = decodeURIComponent(encodeURIComponent(paramSplit[1]));
+                paramSplit[1] = decodeURIComponent(paramSplit[1]);
                 return paramSplit[0] && paramSplit[1]
                     ? [[paramSplit[0], paramSplit[1]]]
                     : [];
@@ -37,9 +37,10 @@
 
             let orderedParams = channelPair ? [channelPair, ...otherParams] : otherParams;
             const urlParams = new URLSearchParams(orderedParams);
+            const paramString = urlParams.toString().replace(/\+/g, '%20');
 
             const channel = urlParams.get('channel');
-            const newUrl = `https://chat.unii.dev/?${urlParams}`;
+            const newUrl = `https://chat.unii.dev/?${paramString}`;
 
             if (channel) {
                 navigator.clipboard.writeText(newUrl);
