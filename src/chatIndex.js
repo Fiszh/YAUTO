@@ -6,10 +6,13 @@ const custom_bots = [
     "mrsmalvic",
     "gofishgame",
     "reapsex",
+    "timeoutwithbits", // from speedyemperor
+    "soundalerts", // from speedyemperor
 ]
 /*
-If you want your bot added, just open a PR on the repo.
-No 100% guarantee I’ll add it, but I probably will.
+If you want your bot added, open a PR on the repo.
+I’ll probably accept it, but no guarantees.
+Make sure your bot isn’t on the FFZ bots list before submitting.
 */
 
 const manifest_path = 'manifest.json';
