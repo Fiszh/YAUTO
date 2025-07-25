@@ -105,7 +105,7 @@
 
                 let found_section;
 
-                if (hash == "#help-notice") {
+                if (hash === "#help-notice") {
                     hash = "#help";
                     learn_more = true;
                 }
@@ -137,6 +137,20 @@
                     }
                 }
 
+                // Update active button in sidebar
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                let targetSelector = hash || '#';
+                const activeBtn = Array.from(buttons).find(btn => {
+                    if (targetSelector === '#' && btn.getAttribute('href') === '#') {
+                        return true;
+                    }
+                    return btn.getAttribute('href') === targetSelector;
+                });
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
             }
 
             setTab();
