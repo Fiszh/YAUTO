@@ -165,7 +165,7 @@ async function getImages() {
 }
 
 async function displayPreview() {
-    if (!urlDiv) { return; }
+    if (!urlDiv) { return; };
 
     Object.entries(settings).forEach(([key, value]) => {
         if (["userBL", "prefixBL"].includes(String(key))) {

@@ -141,7 +141,7 @@ function createLoadingUI(custom_message, remove_interval) {
     loadingUI.id = 'loadingUI';
 
     const img = document.createElement('img');
-    img.src = 'imgs/loading.gif';
+    img.src = 'https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png';
     img.alt = 'loading';
 
     const loadingMessage = document.createElement('span');
@@ -149,6 +149,7 @@ function createLoadingUI(custom_message, remove_interval) {
     loadingMessage.id = 'loadingMessage';
 
     const versionText = document.createElement('span');
+    versionText.id = 'versionText';
     versionText.textContent = `Version: ${chat_version || 'unknown'}`;
 
     loadingUI.appendChild(img);

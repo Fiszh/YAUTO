@@ -7,6 +7,8 @@ const SCOPES = 'user:read:email';
 let userSettings = [];
 
 const authButton = document.getElementById('login-button');
+const accountName = document.querySelector('#account #username');
+const settings_text = document.querySelector('#account #settings_text');
 
 function setCookie(name, value, days) {
     const date = new Date();
@@ -65,6 +67,13 @@ async function checkLoginStatus() {
                 alert(`Missing scopes: ${missingScopes.join(', ')}. Please log in again.`);
             } else {
                 authButton.textContent = 'Logout';
+
+                authButton.style.marginTop = "unset !important";
+
+                accountName.textContent = data?.login;
+                accountName.style.display = "unset";
+
+                settings_text.style.display = "unset";
 
                 if (data["YAUTO_Tester"]) {
                     const settingsButtons = document.getElementById('settingsButtons');

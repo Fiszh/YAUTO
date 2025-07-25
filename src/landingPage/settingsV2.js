@@ -2,6 +2,7 @@ const settingsDiv = document.getElementById("configuration");
 const ChatDisplay = document.getElementById("ChatDisplay");
 const url_results = document.getElementById("url-results");
 const channel_input = document.getElementById("channel-input");
+const copyURLButton = document.getElementById("click_to_copy");
 
 let defaultConfig_path = 'src/landingPage/defaultConfig.json';
 let defaultConfig = {};
@@ -118,7 +119,7 @@ channel_input.addEventListener('input', () => {
     updateUrl();
 });
 
-url_results.addEventListener('click', () => {
+copyURLButton.addEventListener('click', () => {
     if (url_results.textContent) {
         if (settings.channel) {
             navigator.clipboard.writeText(url_results.textContent)
