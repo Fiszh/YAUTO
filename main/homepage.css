@@ -497,7 +497,7 @@ main {
     margin-bottom: 15px;
 }
 
-#reset-settings,
+.settings_button,
 #click_to_copy {
     all: unset;
     cursor: pointer;
@@ -515,7 +515,7 @@ main {
     transition: all 0.2s;
 }
 
-#reset-settings:hover,
+.settings_button:hover,
 #click_to_copy:hover {
     padding: 0.8rem;
     font-size: 1.7rem;
@@ -524,12 +524,12 @@ main {
     border: 1px solid #ffffff38;
 }
 
-#reset-settings svg,
+.settings_button svg,
 #click_to_copy svg {
     transition: all 0.2s;
 }
 
-#reset-settings:hover svg,
+.settings_button:hover svg,
 #click_to_copy:hover svg {
     transform: scale(1.3);
 }

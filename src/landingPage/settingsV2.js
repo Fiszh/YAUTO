@@ -77,7 +77,7 @@ function displaySettings() {
             input.type = 'text';
             input.placeholder = setting.value;
 
-            input.value = local_settings[setting.param] ? local_settings[setting.param] : (userSettings[setting.param] ? userSettings[setting.param] : "");
+            input.value = local_settings[setting.param] ? local_settings[setting.param] : (userSettings[setting.param] ? userSettings[setting.param] : (setting.value != settings?.[setting.param] && settings?.[setting.param] != undefined ? settings?.[setting.param] : ""));
 
             input.addEventListener('input', () => {
                 input.value = validateSettings(input.value, setting.type);
@@ -96,11 +96,11 @@ function displaySettings() {
             input = document.createElement('input');
             input.type = 'checkbox';
 
-            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ? Number(userSettings[setting.param]) : setting.value);
+            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ? Number(userSettings[setting.param]) : (setting.value != settings?.[setting.param] && settings?.[setting.param] != undefined ? settings?.[setting.param] : setting.value));
 
-            input.checked = isEnabled;
+            input.checked = Number(isEnabled) == 1 ? true : false;
 
-            if (isEnabled) {
+            if (input.checked) {
                 input.classList.add('active');
             } else {
                 input.classList.remove('active');
@@ -170,7 +170,9 @@ function updateUrl(save_local = true) {
         if (settings.channel) {
             params.set('channel', settings.channel);
 
-            settings_to_save['channel'] = settings.channel;
+            if (save_local) {
+                settings_to_save['channel'] = settings.channel;
+            }
         }
 
         for (let [key, value] of Object.entries(settings)) {
@@ -208,18 +210,14 @@ updateUrl();
 displaySettings();
 
 reset_settings.addEventListener("click", () => {
-    for (const [key, value] of Object.keys(local_settings)) {
-        if (setting[key] == value) {
-            delete setting[key];
-        }
-    }
-
-    updateUrl(false);
-    displaySettings();
+    settings = {};
 
     local_settings = {};
 
     storage.save("settings", {});
+
+    updateUrl();
+    displaySettings();
 })
 
 const validateSettings = (input, type) => {
