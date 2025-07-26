@@ -420,9 +420,9 @@ async function handleMessage(userstate, message, channel) {
 
     if (username && displayname) {
         if (username.toLowerCase() == displayname.toLowerCase()) {
-            finalUsername = `${displayname}:`
+            finalUsername = `${displayname}`
         } else {
-            finalUsername = `${username} (${displayname}):`
+            finalUsername = `${username} (${displayname})`
         }
     }
 
@@ -633,7 +633,7 @@ async function handleMessage(userstate, message, channel) {
 
     messageHTML = `${badges_html}
                     <span class="name-wrapper">
-                        <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
+                        <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>:
                     </span>
                     <div class="message-text">
                         ${rendererMessage}
@@ -648,7 +648,7 @@ async function handleMessage(userstate, message, channel) {
     let finalMessageHTML = `
                             ${badges_html}
                             <span class="name-wrapper">
-                                <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
+                                <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>:
                             </span>
                         <div class="message-text">
                             ${results}

@@ -326,7 +326,12 @@
                 <div id="privacy">
                     <p><i data-lucide="lock"></i> Your Twitch token is only used to validate you and is never stored on
                         our servers.</p>
+
+                    <p><i data-lucide="settings"></i> The settings you change are only saved in your browser and never
+                        sent to our servers.</p>
+
                     <p><i data-lucide="shield-alert"></i> We log IP addresses to prevent API abuse.</p>
+
                     <p><i data-lucide="ban"></i> YAUTO and all services under unii.dev are not affiliated with Twitch
                         Interactive, Inc.</p>
                 </div>
@@ -339,7 +344,7 @@
     <script>
         (async (params) => {
             const version_text = document.getElementById("version_text");
-            
+
             try {
                 const response_version = await fetch('manifest.json');
                 const data_version = await response_version.json();
