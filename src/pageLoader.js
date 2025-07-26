@@ -9,12 +9,19 @@ if (url.includes('?')) {
 
     if (oldUrlParams.length > 1) {
         load = "error";
-        document.body.innerHTML = `<h1>Invalid URL</h1><p>Please go to chat.unii.dev/convert to fix your link</p><p><strong>OBS does not allow us to change the URL directly</br>Please update your browser source link manually</strong></p>`;
+        document.body.innerHTML = `<h1>Invalid URL</h1><p>Please go to chat.unii.dev/convert to fix your link</p><p><strong>We can't change URL</br>Please update browser source manually</strong></p>`;
 
-        document.body.style.fontSize = "3.2rem";
+        document.body.style.fontSize = "7dvh";
         document.body.style.fontWeight = "bold";
         document.body.style.fontFamily = "Inter, sans-serif";
         document.body.style.textAlign = "center";
+        document.body.style.color = "white";
+        document.body.style.textShadow = `
+            -1px -1px 0 black,
+            1px -1px 0 black,
+            -1px  1px 0 black,
+            1px  1px 0 black
+        `;
     }
 }
 
