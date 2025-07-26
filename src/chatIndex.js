@@ -18,7 +18,7 @@ Make sure your bot isn’t on the FFZ bots list before submitting.
 const manifest_path = 'manifest.json';
 let chat_version;
 
-if (settings?.channel) {
+if (window.location.href.includes("?channel=")) {
     // DEFAULT ACTIONS
 
     // OPENING
