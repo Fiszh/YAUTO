@@ -206,6 +206,10 @@ function checkUrlChange() {
 async function setUpPreview() {
     await waitForFunction('fetch7TVEmoteData');
 
+    if (!SevenTVEmoteData) {
+        window.SevenTVEmoteData = {};
+    }
+
     SevenTVEmoteData["preview"] = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
 
     await getBadges();
