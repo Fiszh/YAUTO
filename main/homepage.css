@@ -238,9 +238,6 @@ main {
 #home {
     display: flex;
     overflow: hidden;
-}
-
-#home {
     width: 100%;
     height: 100%;
 }
@@ -434,6 +431,20 @@ main {
     overflow: hidden;
 }
 
+#ChatDisplay {
+    position: relative !important;
+    padding: 10px;
+    box-sizing: border-box;
+    max-height: 30dvh;
+}
+
+.chat_preview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .note {
     text-align: center;
     color: #c9c9c9;
@@ -453,6 +464,12 @@ main {
     text-decoration: underline;
 }
 
+#window_preview_settings #inside {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 #window_preview_settings #inside #setting {
     display: flex;
     align-items: center;
@@ -461,20 +478,6 @@ main {
     box-sizing: border-box;
     font-size: 1.5rem;
     font-weight: bold;
-}
-
-#ChatDisplay {
-    position: relative !important;
-    padding: 10px;
-    box-sizing: border-box;
-    max-height: 50dvh
-}
-
-.chat_preview {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
 }
 
 #url-results {
@@ -494,6 +497,7 @@ main {
     margin-bottom: 15px;
 }
 
+#reset-settings,
 #click_to_copy {
     all: unset;
     cursor: pointer;
@@ -511,6 +515,7 @@ main {
     transition: all 0.2s;
 }
 
+#reset-settings:hover,
 #click_to_copy:hover {
     padding: 0.8rem;
     font-size: 1.7rem;
@@ -519,10 +524,12 @@ main {
     border: 1px solid #ffffff38;
 }
 
+#reset-settings svg,
 #click_to_copy svg {
     transition: all 0.2s;
 }
 
+#reset-settings:hover svg,
 #click_to_copy:hover svg {
     transform: scale(1.3);
 }

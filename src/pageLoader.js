@@ -62,9 +62,9 @@ if (params.channel) {
         document.head.appendChild(link1);
 
         appendScript('src/landingPage/settingsV2.js');
+        appendScript('src/landingPage/twitchLogin.js');
         appendScript('src/landingPage/index.js');
         appendScript('src/landingPage/events.js');
-        appendScript('src/landingPage/twitchLogin.js');
 
         // NEEDED FOR CHAT PREVIEW
         appendScript('src/thirdParty/SevenTVCosmetics.js');

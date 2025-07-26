@@ -3,9 +3,25 @@ const ChatDisplay = document.getElementById("ChatDisplay");
 const url_results = document.getElementById("url-results");
 const channel_input = document.getElementById("channel-input");
 const copyURLButton = document.getElementById("click_to_copy");
+const reset_settings = document.getElementById("reset-settings");
+
+const storage = {
+    save: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
+    get: (key) => {
+        const item = localStorage.getItem(key);
+        try {
+            return JSON.parse(item);
+        } catch {
+            return item;
+        }
+    },
+    remove: (key) => localStorage.removeItem(key),
+};
 
 let defaultConfig_path = 'src/landingPage/defaultConfig.json';
 let defaultConfig = {};
+
+let local_settings = storage.get('settings');
 
 // LOAD DEFAULT CONFIGURATION
 (async () => {
@@ -40,6 +56,8 @@ function displaySettings() {
     if (!Object.keys(settings)) { return; };
     settingsDiv.innerHTML = "";
 
+    channel_input.value = settings.channel || "";
+
     for (const key in defaultConfig) {
         const setting = defaultConfig[key];
 
@@ -55,7 +73,9 @@ function displaySettings() {
         if (setting.type === "number" || setting.type === "text") {
             input = document.createElement('input');
             input.type = 'text';
-            input.value = setting.value;
+            input.placeholder = setting.value;
+
+            input.value = local_settings[setting.param] ? local_settings[setting.param] : (userSettings[setting.param] ? userSettings[setting.param] : "");
 
             input.addEventListener('input', () => {
                 input.value = validateSettings(input.value, setting.type);
@@ -73,9 +93,12 @@ function displaySettings() {
         } else if (setting.type === "boolean") {
             input = document.createElement('input');
             input.type = 'checkbox';
-            input.checked = setting.value;
 
-            if (setting.value) {
+            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ?  Number(userSettings[setting.param]) : "");
+
+            input.checked = isEnabled;
+
+            if (isEnabled) {
                 input.classList.add('active');
             } else {
                 input.classList.remove('active');
@@ -135,31 +158,65 @@ copyURLButton.addEventListener('click', () => {
     }
 });
 
-function updateUrl() {
+function updateUrl(save_local = true) {
     if (updateUrl._timeout) { clearTimeout(updateUrl._timeout); }; // DEBOUNCE
     updateUrl._timeout = setTimeout(() => {
+        let settings_to_save = {};
+
         const params = new URLSearchParams();
 
         if (settings.channel) {
             params.set('channel', settings.channel);
         }
 
-        for (const [key, value] of Object.entries(settings)) {
+        for (let [key, value] of Object.entries(settings)) {
             const foundSetting = Object.values(defaultConfig).find(setting => setting.param === key);
             if (foundSetting) {
                 const settingValue = foundSetting.type === "boolean" ? (value === "1" ? true : false) : value;
 
                 if (foundSetting.value !== settingValue) {
-                    params.append(key, encodeURIComponent(value));
+                    if (Array.isArray(value)) {
+                        value = value.join(" ").replace(/,/g, " ");
+                    } // REMOVE ARRAYS
+
+                    params.append(key, value);
+
+                    if (save_local && value !== userSettings?.[key]) {
+                        settings_to_save[key] = value;
+                    }
                 }
             }
         }
 
-        url_results.textContent = `${window.location.origin}${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+        const paramString = params.toString().replace(/\+/g, '%20');
+
+        url_results.textContent = `${window.location.origin}${window.location.pathname}${paramString.toString() ? '?' + paramString.toString() : ''}`;
+
+        storage.save("settings", settings_to_save);
     }, 100);
 }
 
+url_results.textContent = `${window.location.origin}${window.location.pathname}`;
+
+settings = { ...settings, ...local_settings };
+
 updateUrl();
+displaySettings();
+
+reset_settings.addEventListener("click", () => {
+    for (const [key, value] of Object.keys(local_settings)) {
+        if (setting[key] == value) {
+            delete setting[key];
+        }
+    }
+
+    updateUrl(false);
+    displaySettings();
+
+    local_settings = {};
+
+    storage.save("settings", {});
+})
 
 const validateSettings = (input, type) => {
     if (type === "number") {

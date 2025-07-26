@@ -4,7 +4,7 @@ const AUTH_URL = 'https://id.twitch.tv/oauth2/authorize';
 
 const SCOPES = 'user:read:email';
 
-let userSettings = [];
+let userSettings = {};
 
 const authButton = document.getElementById('login-button');
 const accountName = document.querySelector('#account #username');
@@ -75,7 +75,7 @@ async function checkLoginStatus() {
 
                 settings_text.style.display = "unset";
 
-                if (data["YAUTO_Tester"]) {
+                if (data?.["YAUTO_Tester"]) {
                     const settingsButtons = document.getElementById('settingsButtons');
                     if (settingsButtons) {
                         settingsButtons.style.display = 'flex';
@@ -83,7 +83,25 @@ async function checkLoginStatus() {
                         // GET SAVED SETTINGS
                         const settingsResponse = await fetch(`https://api.unii.dev/settings/${data["user_id"]}`);
 
-                        const settingsData = await settingsResponse.json();
+                        if (response.ok) {
+                            const settingsData = await settingsResponse.json();
+
+                            let settings_data = settingsData?.settings;
+
+                            for (let key of Object.keys(settings_data)) {
+                                if (Array.isArray(settings_data[key])) {
+                                    settings_data[key] = settings_data[key].join(" ").replace(/,/g, " ");
+                                }
+                            } // REMOVE ARRAYS
+
+                            if (settings_data) {
+                                userSettings = settings_data;
+                                settings = { ...settings_data, ...settings };
+
+                                updateUrl();
+                                displaySettings();
+                            }
+                        }
                     }
                 }
             }

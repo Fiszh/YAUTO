@@ -47,6 +47,7 @@
             <div id="name">
                 <strong>YAUTO</strong>
                 <small>Yet Another Useless Twitch Overlay</small>
+                <small id="version_text">version_text</small>
             </div>
         </section>
 
@@ -62,6 +63,9 @@
             </a>
             <a href="https://github.com/Fiszh/YAUTO" target="_blank" rel="noopener noreferrer">
                 <i data-lucide="github"></i> GitHub
+            </a>
+            <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="coffee"></i> Support
             </a>
         </section>
 
@@ -196,6 +200,11 @@
                                 Background Color:
                                 <div id="color-picker"></div>
                             </div>
+                            <div id="setting">
+                                <button id="reset-settings">
+                                    <i data-lucide="trash-2"></i> Remove Locally Saved Settings
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -210,7 +219,6 @@
                             <a href="#help-notice" class="learn_more">[Learn more]</a>
                         </div>
                     </div>
-
                 </section>
             </section>
             <section id="help" style="opacity: 0; pointer-events: none;">
@@ -231,6 +239,17 @@
                         <h4>How do I get my overlay URL?</h4>
                         <p>After entering your channel name and customizing your settings, the overlay URL will appear
                             in the "Overlay URL" section, where you can copy it using the copy button.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>What if I get an "Invalid URL" notice?</h4>
+                        <p>If you see this notice, click the Invalid URL button in the sidebar, or <a href="/convert/"
+                                target="_blank" rel="noopener noreferrer">click here</a>.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Why do my settings stay after refreshing?</h4>
+                        <p>They're saved in your browser. Click "Remove Locally Saved Settings" to reset.</p>
                     </section>
 
                     <section class="faq-item">
@@ -280,12 +299,6 @@
                     </section>
 
                     <section class="faq-item">
-                        <h4>What if I get an "Invalid URL" notice?</h4>
-                        <p>If you see this notice, click the Invalid URL button in the sidebar, or <a href="/convert/"
-                                target="_blank" rel="noopener noreferrer">click here</a>.</p>
-                    </section>
-
-                    <section class="faq-item">
                         <h4>Where can I find the API?</h4>
                         <p>You can access the API documentation <a href="https://api.unii.dev/docs/" target="_blank"
                                 rel="noopener noreferrer">here</a>.</p>
@@ -324,24 +337,19 @@
     <script src="src/pageLoader.js" defer></script>
 
     <script>
-        async function fetchCommit() {
-            const commit_message_main = document.getElementById('commit-message-main');
+        (async (params) => {
+            const version_text = document.getElementById("version_text");
+            
+            try {
+                const response_version = await fetch('manifest.json');
+                const data_version = await response_version.json();
 
-            if (commit_message_main) {
-                try {
-                    const response_commit_main = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=main');
-                    const data_commit_main = await response_commit_main.json();
-                    const commitMessage_commit_main = data_commit_main[0].commit.message;
-
-                    commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
-                } catch (err) {
-                    commit_message_main.innerHTML = "Error getting main branch commit message";
-                    console.error(err);
-                }
+                version_text.innerHTML = data_version.version;
+            } catch (err) {
+                version_text.innerHTML = "Unknown version";
+                console.error(err);
             }
-        }
-
-        fetchCommit();
+        })();
     </script>
 
     <script>
