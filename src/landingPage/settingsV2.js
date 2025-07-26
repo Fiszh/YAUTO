@@ -5,6 +5,8 @@ const channel_input = document.getElementById("channel-input");
 const copyURLButton = document.getElementById("click_to_copy");
 const reset_settings = document.getElementById("reset-settings");
 
+let userSettings = {};
+
 const storage = {
     save: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
     get: (key) => {
@@ -75,9 +77,7 @@ function displaySettings() {
             input.type = 'text';
             input.placeholder = setting.value;
 
-            input.value = (local_settings && local_settings[setting.param])
-                || (userSettings && userSettings[setting.param])
-                || "";
+            input.value = local_settings[setting.param] ? local_settings[setting.param] : (userSettings[setting.param] ? userSettings[setting.param] : "");
 
             input.addEventListener('input', () => {
                 input.value = validateSettings(input.value, setting.type);
@@ -96,12 +96,8 @@ function displaySettings() {
             input = document.createElement('input');
             input.type = 'checkbox';
 
-            let isEnabled = (local_settings[setting.param] !== undefined)
-                ? Number(local_settings[setting.param])
-                : (userSettings && userSettings[setting.param] !== undefined)
-                    ? Number(userSettings[setting.param])
-                    : 0;
-                    
+            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ?  Number(userSettings[setting.param]) : "");
+
             input.checked = isEnabled;
 
             if (isEnabled) {

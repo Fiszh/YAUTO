@@ -4,8 +4,6 @@ const AUTH_URL = 'https://id.twitch.tv/oauth2/authorize';
 
 const SCOPES = 'user:read:email';
 
-let userSettings = {};
-
 const authButton = document.getElementById('login-button');
 const accountName = document.querySelector('#account #username');
 const settings_text = document.querySelector('#account #settings_text');
