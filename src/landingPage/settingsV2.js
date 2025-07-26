@@ -96,7 +96,7 @@ function displaySettings() {
             input = document.createElement('input');
             input.type = 'checkbox';
 
-            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ?  Number(userSettings[setting.param]) : "");
+            let isEnabled = local_settings[setting.param] ? Number(local_settings[setting.param]) : (userSettings[setting.param] ? Number(userSettings[setting.param]) : setting.value);
 
             input.checked = isEnabled;
 
@@ -169,12 +169,14 @@ function updateUrl(save_local = true) {
 
         if (settings.channel) {
             params.set('channel', settings.channel);
+
+            settings_to_save['channel'] = settings.channel;
         }
 
         for (let [key, value] of Object.entries(settings)) {
             const foundSetting = Object.values(defaultConfig).find(setting => setting.param === key);
             if (foundSetting) {
-                const settingValue = foundSetting.type === "boolean" ? (value === "1" ? true : false) : value;
+                const settingValue = foundSetting.type === "boolean" ? (value === "1") : (foundSetting.type === "number" ? Number(value) : value);
 
                 if (foundSetting.value !== settingValue) {
                     if (Array.isArray(value)) {
