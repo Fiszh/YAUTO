@@ -4,11 +4,9 @@ body {
     color: white;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100dvw !important;
     height: 100dvh !important;
-    top: 0;
-    left: 0;
 }
 
 *::-webkit-scrollbar {
@@ -31,24 +29,167 @@ body {
     font-variant-ligatures: none;
 }
 
+aside {
+    border-right: 1px solid #333;
+    width: 17dvw;
+    position: relative;
+}
+
 #topbar {
-    width: 100dvw;
-    height: 5dvh;
+    width: 100%;
     background-color: #000000;
-    display: inline-flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem;
-    gap: 5px;
+    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    padding: 0px 15px;
+    box-sizing: border-box;
     border-bottom: 1px solid #333;
 }
 
+small {
+    font-size: 0.7rem;
+}
+
+#topbar img {
+    margin-top: 2dvh;
+    margin-bottom: 2dvh;
+    width: 3dvh;
+    height: 3dvh;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#topbar #name {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+aside #buttons {
+    display: flex;
+    width: 100%;
+    padding: 15px;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: 15px;
+}
+
+#buttons>* {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    gap: 15px;
+    font-size: 1.5rem;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    border-radius: 23px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
+#buttons>*.active {
+    background: #ffffff14;
+    border-radius: 15px;
+    gap: 20px;
+}
+
+#buttons>*:hover {
+    background: #ffffff26;
+    border-radius: 7px;
+    gap: 25px;
+}
+
+#buttons>* svg {
+    transition: all 0.3s;
+}
+
+#buttons>*:hover svg {
+    transform: scale(1.2);
+}
+
+aside #account {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px #333 solid;
+}
+
+#login-button {
+    background-color: #ffffff0d;
+    height: 80%;
+    width: 10dvw;
+    padding: 10px;
+    font-size: 1.2rem;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px #333 solid;
+    transition: all 0.3s;
+    margin-top: 15px;
+}
+
+#login-button:hover {
+    width: 11dvw;
+    border-radius: 7px;
+    background-color: #ffffff1c;
+    border: 1px #424242 solid;
+}
+
+.note.login_note {
+    margin-bottom: 0px;
+}
+
+#settingsButtons {
+    display: none;
+    width: 100%;
+}
+
+#deleteSettings-button,
+#saveSettings-button {
+    border: none;
+    width: 100%;
+    color: white;
+    cursor: pointer;
+    padding: 7px;
+    font-size: 1.0rem;
+    border-top: 1px solid;
+}
+
+#saveSettings-button {
+    background-color: #02ff0096;
+}
+
+#deleteSettings-button {
+    border-left: 1px solid;
+    background-color: #ff00009c;
+}
+
+#saveSettings-button:hover {
+    background-color: #02ff00bd;
+}
+
+#deleteSettings-button:hover {
+    background-color: #ff0000c4;
+}
+
 .important_notice {
+    display: block;
     width: 100%;
     text-align: center;
-    padding: 10px;
-    background-color: red;
     font-weight: bold;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: red;
+    border-bottom: 1px #ffffff solid;
 }
 
 .important_notice a {
@@ -57,6 +198,7 @@ body {
     height: 100%;
     color: inherit;
     text-decoration: none;
+    box-sizing: border-box;
 }
 
 .important_notice:hover:has(a) {
@@ -64,24 +206,40 @@ body {
     cursor: pointer;
 }
 
-.logo {
-    margin-top: 2dvh;
-    margin-bottom: 2dvh;
-    width: 5%;
-    height: 85%;
-    object-fit: contain;
-    aspect-ratio: 1 / 1;
-    transition: opacity 0.5s ease-in-out;
+h2 {
+    font-size: 2.5rem;
+    line-height: 0;
+    text-align: center;
 }
 
+h3 {
+    line-height: 0;
+    font-size: 1rem;
+    text-align: center;
+}
+
+#section_display,
 main {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+}
+
+#section_display>section {
     height: 100%;
     width: 100%;
-    gap: 2rem;
-    padding: 1rem 2rem;
-    box-sizing: border-box;
+    position: absolute;
+}
+
+#home {
+    display: flex;
     overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
 #footer {
@@ -109,7 +267,6 @@ main {
     background-color: #ffffff05;
     height: 100%;
     width: 50%;
-    left: 1%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -118,13 +275,18 @@ main {
 
 .left_side #information {
     border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
     width: 100%;
     text-align: center;
+    padding: 5px;
+    font-size: 1rem;
 }
 
 #channel-input {
     width: 100%;
-    height: 10%;
+    font-size: 2rem;
+    padding: 15px;
+    box-sizing: border-box;
     user-select: none;
     border: none;
     outline: none;
@@ -134,7 +296,6 @@ main {
     overflow-wrap: break-word;
     font-weight: bolder;
     color: white;
-    font-size: 2rem;
 }
 
 #configuration {
@@ -234,42 +395,143 @@ main {
     background-color: #ffffff05;
     height: 100%;
     width: 50%;
-    right: 1%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    gap: 25px;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.window {
+    width: 100%;
+    border-radius: 15px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.027);
+}
+
+.window #name {
+    font-weight: 500;
+    padding: 10px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #333;
+    background-color: rgb(0 0 0 / 3%);
+}
+
+.window #inside {
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#window_chat #inside {
+    all: unset;
+    overflow: hidden;
+}
+
+#ChatDisplay {
+    position: relative !important;
+    padding: 10px;
+    box-sizing: border-box;
+    max-height: 30dvh;
 }
 
 .chat_preview {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.027);
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    overflow: hidden;
 }
 
-#click_to_copy,
+.note {
+    text-align: center;
+    color: #c9c9c9;
+    margin-top: 5px;
+}
+
+.learn_more {
+    all: unset;
+    display: block;
+    color: #8b8bff;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.learn_more:hover {
+    text-decoration: underline;
+}
+
+#window_preview_settings #inside {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#window_preview_settings #inside #setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 5px;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 #url-results {
-    border-radius: 4px;
-    padding: 10px;
+    font-size: 1.5rem;
+    padding: 15px;
     box-sizing: border-box;
     text-align: center;
-    font-size: 25px;
     width: 100%;
     cursor: pointer;
     user-select: none;
-    background-color: #161616;
     word-wrap: break-word;
     word-break: break-word;
     overflow-wrap: break-word;
+    background-color: #00000012;
+    border: 1px #333 solid;
+    border-radius: 15px;
+    margin-bottom: 15px;
 }
 
+.settings_button,
 #click_to_copy {
-    font-weight: bolder;
-    cursor: default;
-    background-color: #131313;
-    border-bottom: 1px solid #333;
+    all: unset;
+    cursor: pointer;
+    padding: 1rem;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    border-radius: 15px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #ffffff03;
+    border: 1px solid #333;
+    transition: all 0.2s;
+}
+
+.settings_button:hover,
+#click_to_copy:hover {
+    padding: 0.8rem;
+    font-size: 1.7rem;
+    border-radius: 10px;
+    background-color: #ffffff12;
+    border: 1px solid #ffffff38;
+}
+
+.settings_button svg,
+#click_to_copy svg {
+    transition: all 0.2s;
+}
+
+.settings_button:hover svg,
+#click_to_copy:hover svg {
+    transform: scale(1.3);
 }
 
 .transition-button {
@@ -287,24 +549,91 @@ main {
     background-color: #111111;
 }
 
-/* MORE */
+/* HELP PAGE */
 
-#more_info_button {
-    height: 80%;
-    aspect-ratio: 1 / 1;
-    background-color: #ffffff0d;
-    user-select: none;
-    border: none;
-    border-radius: 7px;
+#help {
+    overflow-y: auto;
+    padding: 0px 0px 50px;
+    box-sizing: border-box;
+}
+
+h5 {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    text-align: center;
+    line-height: 0;
+}
+
+h5 svg {
+    transform: scale(1.3);
+}
+
+#faq {
+    margin: 0px 175px;
+    background-color: #ffffff05;
+    border: 1px #333 solid;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#faq a {
+    all: unset;
+    color: #8b8bff;
     cursor: pointer;
-    margin-right: 10px;
 }
 
-#more_info_button img {
-    object-fit: contain;
-    height: 100%;
-    width: 100%;
+#faq a:hover {
+    text-decoration: underline;
 }
+
+.faq-item {
+    border-top: 1px #333 solid;
+    padding: 0px 25px;
+}
+
+.faq-item:first-child {
+    border-top: none;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item ul {
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    border: 1px #333 solid;
+    list-style-type: none;
+    background-color: #ffffff05;
+    font-size: 1rem;
+}
+
+.faq-item ul li code span {
+    cursor: pointer;
+}
+
+/* PRIVACY */
+
+#privacy {
+    margin: 0px 175px;
+    background-color: #78ff7d0f;
+    border: 1px #4fff8a6e solid;
+    padding: 0px 15px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#privacy p {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+/* MORE */
 
 #site_blur {
     backdrop-filter: blur(5px);
@@ -320,189 +649,6 @@ main {
 #site_blur.no-blur {
     display: none;
     backdrop-filter: blur(0px);
-}
-
-#more_info_menu {
-    border: 1px solid #333;
-    position: absolute;
-    background-color: rgb(22, 22, 22);
-    width: 90dvw;
-    max-height: 90dvh;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 4;
-    padding-left: 25px;
-    padding-right: 25px;
-    display: none;
-    overflow-y: auto;
-    overflow-x: hidden;
-    justify-self: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-#more_info_menu>* {
-    margin-bottom: 15px;
-    margin-top: 15px;
-}
-
-li img {
-    height: 35px;
-    vertical-align: middle;
-}
-
-.commit-message {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-a img {
-    display: flex;
-    justify-self: center;
-}
-
-#discord_button {
-    border-radius: 15px;
-    background-color: #5865F2;
-    transition: all 0.2s;
-    max-height: 150px;
-    min-height: 70px;
-}
-
-#discord_button:hover {
-    border-radius: 12px;
-    background-color: #4049aa;
-}
-
-#commits {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-}
-
-.commit-pair {
-    display: flex;
-    flex-direction: column;
-}
-
-.commit-pair .information {
-    font-weight: bold;
-}
-
-#login-button {
-    background-color: #ffffff0d;
-    margin-left: auto;
-    height: 80%;
-    padding: 10px;
-    font-size: 1.2rem;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 7px;
-    text-align: center;
-}
-
-#login-button:hover {
-    background-color: #ffffff1c;
-}
-
-#settingsButtons {
-    display: none;
-    width: 100%;
-}
-
-#deleteSettings-button,
-#saveSettings-button {
-    border: none;
-    width: 100%;
-    color: white;
-    cursor: pointer;
-    padding: 7px;
-    font-size: 1.0rem;
-}
-
-#saveSettings-button {
-    background-color: #02ff0096;
-}
-
-#deleteSettings-button {
-    background-color: #ff00009c;
-}
-
-#deleteSettings-button:hover,
-#saveSettings-button:hover {
-    background-color: #ffffff1c;
-}
-
-.information {
-    margin-left: 3px;
-    margin-right: 3px;
-    font-size: 30px;
-    font-family: "Inter";
-    text-align: center;
-}
-
-.feature-list ul,
-.feature-list ol {
-    list-style-type: none;
-    list-style-position: inside;
-    padding-left: 0;
-}
-
-.feature-list li {
-    font-size: 25px;
-    margin-bottom: 10px;
-    text-align: center;
-    font-family: "Inter";
-}
-
-#commit-message {
-    text-align: center;
-}
-
-#discord_button,
-#coffee {
-    display: inline-block;
-    line-height: 0;
-}
-
-#discord_button img,
-#coffee img {
-    height: 40px;
-    width: auto;
-    display: block;
-}
-
-#colorToggleButton {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    height: 5dvh;
-    font-size: 1.3rem;
-    font-weight: bold;
-}
-
-.twitch-mod::before,
-.twitch-broadcaster::before {
-    content: "";
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-right: 6px;
-    vertical-align: middle;
-}
-
-.twitch-mod::before {
-    background-image: url('https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3');
-}
-
-.twitch-broadcaster::before {
-    background-image: url('https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/3');
 }
 
 /* COLOR PICKER DARK THEME */

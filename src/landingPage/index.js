@@ -165,7 +165,7 @@ async function getImages() {
 }
 
 async function displayPreview() {
-    if (!urlDiv) { return; }
+    if (!urlDiv) { return; };
 
     Object.entries(settings).forEach(([key, value]) => {
         if (["userBL", "prefixBL"].includes(String(key))) {
@@ -205,6 +205,10 @@ function checkUrlChange() {
 
 async function setUpPreview() {
     await waitForFunction('fetch7TVEmoteData');
+
+    if (!SevenTVEmoteData) {
+        window.SevenTVEmoteData = {};
+    }
 
     SevenTVEmoteData["preview"] = await fetch7TVEmoteData('01JGAC1F503T2852YKXC8G9VN1');
 

@@ -34,148 +34,348 @@
     <!-- Include Twemoji -->
     <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"
         defer></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
     <div id="site_blur" class="no-blur"></div>
 
-    <div id="more_info_menu">
-        <section class="information">
-            <strong>YAUTO</strong> is a custom <strong>Twitch</strong> chat overlay with support for emote services like
-            <strong>7TV</strong>, <strong>BetterTwitchTV</strong>, and <strong>FrankerFaceZ</strong>.<br>
-            Overlay supports <strong>Twitch connected chat</strong>, each message uses the corresponding
-            <strong>7TV</strong>, <strong>BetterTwitchTV</strong>, or <strong>FrankerFaceZ</strong> emote set from its
-            origin channel.
-            <br><small>Yet Another Useless Twitch Overlay</small>
-        </section>
-
-        <section class="feature-list">
-            <ul>
-                <li> <img src="https://twitch.tv/favicon.ico" alt="Twitch Icon" class="icon" /> Emotes
-                    (global/channel/bits),
-                    Badges (global/channel)</li>
-                <li> <img src="https://7tv.app/favicon.svg" alt="7TV Icon" class="icon" /> Emotes
-                    (global/channel/personal/zero-width),
-                    Badges, Paints, WebSocket (Automatic emote updates/Paints/Badges/Personal emotes)</li>
-                <li> <img src="https://betterttv.com/favicon.png" alt="BTTV Icon" class="icon" /> Emotes
-                    (global/channel),
-                    WebSocket (Automatic emote updates)</li>
-                <li> <img src="https://www.frankerfacez.com/static/images/favicon-32.png" alt="FFZ Icon" class="icon" />
-                    Emotes (global/channel), Badges (global/channel)</li>
-            </ul>
-        </section>
-
-        <section class="information">Commands</section>
-
-        <section class="feature-list">
-            <ul>
-                <li class="twitch-mod">- Mod or higher rank only</li>
-                <li class="twitch-broadcaster">- Broadcaster only</li>
-
-                </br>
-
-                <li class="twitch-mod"> <code>!reloadchat</code> - Reloads the overlay</li>
-                <li class="twitch-mod"> <code>!refreshchat</code> - Refreshes the overlay (loads the chat again)</li>
-                <li class="twitch-mod"> <code>!reloadws</code> - Reconnects the 7TV and BTTV WebSockets</li>
-                <li class="twitch-mod"> <code>!reconnectchat</code> - Reconnects Twitch IRC</li>
-                <li class="twitch-mod"> <code>!chatversion</code> - Displays the currently loaded version</li>
-            </ul>
-        </section>
-
-        <a href="https://discord.com/users/703639905691238490" target="_blank" rel="noopener noreferrer">
-            <img id="discord_button" src="./imgs/discord.png" alt="Discord Link" draggable="false" />
-        </a>
-
-        <section class="information">Latest Commits/Updates</section>
-
-        <div id="commits">
-            <div class="commit-pair">
-                <section class="information">Latest branch update</section>
-                <div id="commit-message-main" class="commit-message"></div>
+    <aside id="sidebar">
+        <section id="topbar">
+            <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp" alt="YAUTO Logo" />
+            <div id="name">
+                <strong>YAUTO</strong>
+                <small>Yet Another Useless Twitch Overlay</small>
+                <small id="version_text">version_text</small>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <header id="topbar">
-        <img class="logo" src="https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.webp" alt="YAUTO Logo" />
-        <strong>YAUTO</strong><small>Yet Another Useless Twitch Overlay</small>
+        <section id="buttons">
+            <a href="#" class="active">
+                <i data-lucide="house"></i> Home
+            </a>
+            <a href="convert/" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="refresh-ccw"></i> Invalid URL
+            </a>
+            <a href="#help">
+                <i data-lucide="info"></i> Info & Privacy
+            </a>
+            <a href="https://github.com/Fiszh/YAUTO" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="github"></i> GitHub
+            </a>
+            <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="coffee"></i> Support
+            </a>
+        </section>
 
-        <button id="login-button">Login</button>
-
-        <button id="more_info_button" aria-label="More Info">
-            <img src="imgs/more_icon.png" alt="More Info Icon" />
-        </button>
-    </header>
-    <div class="important_notice">
-        <a href="https://chat.unii.dev/convert" target="_blank" rel="noopener noreferrer">If you got an "Invalid URL" notice, click here. (this notice will be removed at the end of the month)</a>
-    </div>
-    
-    <main>
-        <section class="left_side">
-            <div id="configuration"></div>
-            <div id="information">↓ Channel Name ↓</div>
-            <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name" />
+        <section id="account">
+            <p id="username" style="display: none;">username</p>
+            <button id="login-button">Login</button>
+            <p class="note login_note">Login is not required.</p>
+            <p class="note">Your token is only shared to validate and never stored on the server.</p>
+            <a href="#help-notice" class="learn_more">[Learn more]</a>
+            <p id="settings_text" style="display: none;">Global Settings</p>
             <div id="settingsButtons">
-                <button id="saveSettings-button">Save settings</button>
-                <button id="deleteSettings-button">Delete settings</button>
+                <button id="saveSettings-button">Save</button>
+                <button id="deleteSettings-button">Delete</button>
             </div>
         </section>
+    </aside>
 
-        <section class="right_side">
-            <div id="colorToggleButton">
-                🎨 Change preview background
-                <div id="color-picker"></div>
-            </div>
-            <div class="chat_preview">
-                <div id="ChatDisplay" class="chat-messages"></div>
-            </div>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const buttons = document.querySelectorAll('#buttons *');
 
-            <div id="click_to_copy">↓ Click To Copy ↓</div>
-            <div id="url-results">site_url</div>
+        buttons.forEach(button => {
+            if (!button.target) {
+                button.addEventListener('click', () => {
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function setTab() {
+                let hash = window.location.hash;
+                let learn_more = false;
+
+                const section_display = document.getElementById('section_display');
+                const home_section = section_display.querySelector('#home');
+                const privacy_notice = document.getElementById('privacy');
+
+                let found_section;
+
+                if (hash === "#help-notice") {
+                    hash = "#help";
+                    learn_more = true;
+                }
+
+                if (hash) {
+                    found_section = section_display.querySelector(hash);
+                } else {
+                    found_section = home_section;
+                }
+
+                if (found_section) {
+                    Array.from(section_display.children)
+                        .filter(el => el.tagName.toLowerCase() === 'section')
+                        .forEach(section => {
+                            section.style.opacity = '0';
+                            section.style.pointerEvents = 'none';
+                        });
+                    found_section.style.opacity = '1';
+                    found_section.style.pointerEvents = 'auto';
+
+                    found_section.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    if (learn_more) {
+                        if (privacy_notice) {
+                            setTimeout(() => {
+                                privacy_notice.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
+                        }
+                    }
+                }
+
+                // Update active button in sidebar
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                let targetSelector = hash || '#';
+                const activeBtn = Array.from(buttons).find(btn => {
+                    if (targetSelector === '#' && btn.getAttribute('href') === '#') {
+                        return true;
+                    }
+                    return btn.getAttribute('href') === targetSelector;
+                });
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                }
+            }
+
+            setTab();
+
+            window.addEventListener('hashchange', setTab);
+        });
+    </script>
+
+    <main id="sections">
+        <!-- This is doubled for notices -->
+        <div class="important_notice">
+            <a href="https://chat.unii.dev/convert" target="_blank" rel="noopener noreferrer">If you got an "Invalid
+                URL"
+                notice, click here. (this notice will be removed at the end of the month)</a>
+        </div>
+
+        <section id="section_display">
+            <section id="home">
+                <section class="left_side">
+                    <div id="configuration"></div>
+                    <div id="information">↓ Channel Name ↓</div>
+                    <input id="channel-input" type="text" autocomplete="off" placeholder="Channel Name" />
+                    <div id="settingsButtons">
+                        <button id="saveSettings-button">Save settings</button>
+                        <button id="deleteSettings-button">Delete settings</button>
+                    </div>
+                </section>
+
+                <section class="right_side">
+                    <div class="window" id="window_chat">
+                        <div id="name">Chat preview</div>
+                        <div id="inside">
+                            <div class="chat_preview">
+                                <div id="ChatDisplay" class="chat-messages"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="window" id="window_preview_settings">
+                        <div id="name">Chat Preview Settings</div>
+                        <div id="inside">
+                            <div id="setting">
+                                Background Color:
+                                <div id="color-picker"></div>
+                            </div>
+                            <div id="setting">
+                                <button id="reset-settings" class="settings_button">
+                                    <i data-lucide="trash-2"></i> Reset settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="window" id="window_url">
+                        <div id="name">Overlay URL</div>
+                        <div id="inside">
+                            <div id="url-results">site_url</div>
+                            <button id="click_to_copy">
+                                <i data-lucide="copy"></i>Copy url
+                            </button>
+                            <p class="note">We log IP addresses for abuse prevention.</p>
+                            <a href="#help-notice" class="learn_more">[Learn more]</a>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section id="help" style="opacity: 0; pointer-events: none;">
+                <h2>Info & Privacy</h2>
+                <h3>All the info you need to get started with YAUTO</h3>
+
+                <h5>
+                    <i data-lucide="circle-question-mark"></i>FAQ
+                </h5>
+                <div id="faq">
+                    <section class="faq-item">
+                        <h4>What is YAUTO?</h4>
+                        <p>YAUTO is a custom Twitch chat overlay that supports 7TV, BetterTTV, and FrankerFaceZ emotes.
+                        </p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>How do I get my overlay URL?</h4>
+                        <p>After entering your channel name and customizing your settings, the overlay URL will appear
+                            in the "Overlay URL" section, where you can copy it using the copy button.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>What if I get an "Invalid URL" notice?</h4>
+                        <p>If you see this notice, click the Invalid URL button in the sidebar, or <a href="/convert/"
+                                target="_blank" rel="noopener noreferrer">click here</a>.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Why do my settings stay after refreshing?</h4>
+                        <p>They're saved in your browser. Click "Reset Settings" to reset.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>What chat commands are available?</h4>
+                        <p><strong>Note:</strong> Commands can only be used by the broadcaster or a mod.</p>
+                        <ul>
+                            <li><code><span onclick="copyCommand('!reloadchat')">!reloadchat</span></code> – Reloads the
+                                overlay</li>
+                            <li><code><span onclick="copyCommand('!refreshchat')">!refreshchat</span></code> – Refreshes
+                                the overlay</li>
+                            <li><code><span onclick="copyCommand('!reloadws')">!reloadws</span></code> – Reconnects the
+                                7TV and BTTV WebSockets</li>
+                            <li><code><span onclick="copyCommand('!reconnectchat')">!reconnectchat</span></code> –
+                                Reconnects to Twitch IRC</li>
+                            <li><code><span onclick="copyCommand('!chatversion')">!chatversion</span></code> – Displays
+                                the currently loaded version</li>
+                        </ul>
+
+                        <script>
+                            function copyCommand(cmd) {
+                                navigator.clipboard.writeText(cmd).then(() => {
+                                    alert(`Copied command!`);
+                                });
+                            }
+                        </script>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>How do the Save and Delete buttons work for testers?</h4>
+                        <p>Pressing <strong>Save</strong> updates only the settings you’ve changed on the server, linked
+                            to your user ID. <strong>Delete</strong> removes all your saved global settings from the
+                            server. Local browser settings aren’t affected by Delete.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Is Twitch login required?</h4>
+                        <p>No.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Why is there a login button?</h4>
+                        <p>Early testers of YAUTO can log in to save their settings globally. This way, they only need
+                            to enter their channel name without using a long overlay URL.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Is my Twitch token safe?</h4>
+                        <p>Your token is only used for validation and is never stored on our servers.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>What are the chances of becoming a tester?</h4>
+                        <p>The testing phase is over. Currently, no new testers are being accepted.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Where can I find the API?</h4>
+                        <p>You can access the API documentation <a href="https://api.unii.dev/docs/" target="_blank"
+                                rel="noopener noreferrer">here</a>.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>What if my question isn't listed here?</h4>
+                        <p>For more information, you can reach out via <a href="https://api.unii.dev/twitch/528761326"
+                                target="_blank" rel="noopener noreferrer">Twitch</a> or <a
+                                href="https://discord.com/users/703639905691238490" target="_blank"
+                                rel="noopener noreferrer">Discord</a>.</p>
+                    </section>
+
+                    <section class="faq-item">
+                        <h4>Where can I find the source code?</h4>
+                        <p>You can find the source code on <a href="https://github.com/Fiszh/YAUTO" target="_blank"
+                                rel="noopener noreferrer">GitHub</a>.</p>
+                    </section>
+                </div>
+
+                <h5>
+                    <i data-lucide="shield-check"></i>Privacy & Security
+                </h5>
+
+                <div id="privacy">
+                    <p><i data-lucide="lock"></i> Your Twitch token is only used to validate you and is never stored on
+                        our servers.</p>
+
+                    <p><i data-lucide="settings"></i> Overlay settings changed here are saved only in your browser and
+                        not sent to our servers.</p>
+
+                    <p><i data-lucide="cloud"></i> For testers, we save only changed settings (non-default) and your
+                        user ID on our servers to load your config when you use the overlay.</p>
+
+                    <p><i data-lucide="save"></i> Pressing "Save" updates your saved global settings; "Delete" removes
+                        all your saved settings from our servers.</p>
+
+                    <p><i data-lucide="refresh-ccw"></i> Using "Reset Settings" clears all locally saved settings in
+                        your browser.</p>
+
+                    <p><i data-lucide="shield-alert"></i> We log IP addresses to prevent API abuse.</p>
+
+                    <p><i data-lucide="ban"></i> <strong>YAUTO</strong> and all services under <strong>unii.dev</strong>
+                        are not affiliated with <strong>Twitch
+                            Interactive, Inc.</strong></p>
+                </div>
+            </section>
         </section>
     </main>
-
-    <footer id="footer">
-        Made by: <a href="https://api.unii.dev/twitch/528761326" target="_blank" rel="noopener noreferrer">uniiDev</a>,
-        With help of:
-        <a href="https://api.unii.dev/twitch/404660262" target="_blank" rel="noopener noreferrer">creepycode</a>,
-        <a href="https://api.unii.dev/twitch/166427338" target="_blank" rel="noopener noreferrer">ftk789</a><br>
-        <a href="https://buymeacoffee.com/jzlnkf5qgo" target="_blank" rel="noopener noreferrer" id="coffee">
-            <img src="https://img.buymeacoffee.com/button-api/?text=Support%20the%20a%20project&emoji=%E2%98%95&slug=jzlnkf5qgo&button_colour=0e0f0f&font_colour=ffffff&font_family=Inter&outline_colour=ffffff&coffee_colour=ffffff"
-                alt="Buy Me A Coffee" />
-        </a>
-        <div class="notice"><span class="material-icons"
-                style="vertical-align:middle; margin-right:4px;">privacy_tip</span>IP addresses are logged to protect
-            the service from abuse. This data is only accessed internally and isn’t shared with anyone else.</div>
-        <div class="notice"><span class="material-icons"
-                style="vertical-align:middle; margin-right:4px;">privacy_tip</span>Your token is only sent to the server
-            for user validation. It’s not stored anywhere except in your cookies and is deleted when you log out.</div>
-        <div class="notice"><span class="material-icons"
-                style="vertical-align:middle; margin-right:4px;">gavel</span>YetAnotherUselessTwitchOverlay (YAUTO) is
-            not affiliated with Twitch Interactive</div>
-    </footer>
 
     <script src="src/pageLoader.js" defer></script>
 
     <script>
-        async function fetchCommit() {
-            const commit_message_main = document.getElementById('commit-message-main');
+        (async (params) => {
+            const version_text = document.getElementById("version_text");
 
-            if (commit_message_main) {
-                try {
-                    const response_commit_main = await fetch('https://api.github.com/repos/Fiszh/YAUTO/commits?per_page=1&page=1&sha=main');
-                    const data_commit_main = await response_commit_main.json();
-                    const commitMessage_commit_main = data_commit_main[0].commit.message;
+            try {
+                const response_version = await fetch('manifest.json');
+                const data_version = await response_version.json();
 
-                    commit_message_main.innerHTML = commitMessage_commit_main.replace(/\n/g, '<br>');
-                } catch (err) {
-                    commit_message_main.innerHTML = "Error getting main branch commit message";
-                    console.error(err);
-                }
+                version_text.innerHTML = data_version.version;
+            } catch (err) {
+                version_text.innerHTML = "Unknown version";
+                console.error(err);
             }
-        }
+        })();
+    </script>
 
-        fetchCommit();
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

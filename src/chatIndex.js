@@ -18,7 +18,7 @@ Make sure your bot isn’t on the FFZ bots list before submitting.
 const manifest_path = 'manifest.json';
 let chat_version;
 
-if (settings?.channel) {
+if (window.location.href.includes("?channel=")) {
     // DEFAULT ACTIONS
 
     // OPENING
@@ -141,7 +141,7 @@ function createLoadingUI(custom_message, remove_interval) {
     loadingUI.id = 'loadingUI';
 
     const img = document.createElement('img');
-    img.src = 'imgs/loading.gif';
+    img.src = 'https://cdn.7tv.app/emote/6297ed14d1b61557a52b21cb/4x.png';
     img.alt = 'loading';
 
     const loadingMessage = document.createElement('span');
@@ -149,6 +149,7 @@ function createLoadingUI(custom_message, remove_interval) {
     loadingMessage.id = 'loadingMessage';
 
     const versionText = document.createElement('span');
+    versionText.id = 'versionText';
     versionText.textContent = `Version: ${chat_version || 'unknown'}`;
 
     loadingUI.appendChild(img);
@@ -419,9 +420,9 @@ async function handleMessage(userstate, message, channel) {
 
     if (username && displayname) {
         if (username.toLowerCase() == displayname.toLowerCase()) {
-            finalUsername = `${displayname}:`
+            finalUsername = `${displayname}`
         } else {
-            finalUsername = `${username} (${displayname}):`
+            finalUsername = `${username} (${displayname})`
         }
     }
 
@@ -632,7 +633,7 @@ async function handleMessage(userstate, message, channel) {
 
     messageHTML = `${badges_html}
                     <span class="name-wrapper">
-                        <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
+                        <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>:
                     </span>
                     <div class="message-text">
                         ${rendererMessage}
@@ -647,7 +648,7 @@ async function handleMessage(userstate, message, channel) {
     let finalMessageHTML = `
                             ${badges_html}
                             <span class="name-wrapper">
-                                <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>
+                                <strong id="username-strong" style="color:${userstate["color"]};">${finalUsername}</strong>:
                             </span>
                         <div class="message-text">
                             ${results}
