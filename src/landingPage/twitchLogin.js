@@ -88,18 +88,20 @@ async function checkLoginStatus() {
 
                             let settings_data = settingsData?.settings;
 
-                            for (let key of Object.keys(settings_data)) {
-                                if (Array.isArray(settings_data[key])) {
-                                    settings_data[key] = settings_data[key].join(" ").replace(/,/g, " ");
-                                }
-                            } // REMOVE ARRAYS
-
                             if (settings_data) {
-                                userSettings = settings_data;
-                                settings = { ...settings_data, ...settings };
+                                for (let key of Object.keys(settings_data)) {
+                                    if (Array.isArray(settings_data[key])) {
+                                        settings_data[key] = settings_data[key].join(" ").replace(/,/g, " ");
+                                    }
+                                } // REMOVE ARRAYS
 
-                                updateUrl();
-                                displaySettings();
+                                if (settings_data) {
+                                    userSettings = settings_data;
+                                    settings = { ...settings_data, ...settings };
+
+                                    updateUrl();
+                                    displaySettings();
+                                }
                             }
                         }
                     }
