@@ -21,7 +21,7 @@ const storage = {
 let defaultConfig_path = 'src/landingPage/defaultConfig.json';
 let defaultConfig = {};
 
-let local_settings = storage.get('settings');
+let local_settings = storage.get('settings') || {};
 
 // LOAD DEFAULT CONFIGURATION
 (async () => {
