@@ -10,6 +10,9 @@ A highly customizable Twitch & Kick chat overlay for OBS and other streaming pro
 
 Create a pull request.
 
+> [!WARNING]
+> The readme isn't frequently updates, make sure to check the deployment over at https://chat.unii.dev/
+
 ## Chat Customization Settings
 
 - Messages in **bold**
