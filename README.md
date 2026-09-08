@@ -6,12 +6,12 @@ Project is currently deployed at: https://chat.unii.dev/
 
 A highly customizable Twitch & Kick chat overlay for OBS and other streaming programs.
 
+> [!WARNING]
+> The readme isn't frequently updated, make sure to check the deployment over at https://chat.unii.dev/
+
 ## Want your app’s badges or your bot added to the overlay?
 
 Create a pull request.
-
-> [!WARNING]
-> The readme isn't frequently updates, make sure to check the deployment over at https://chat.unii.dev/
 
 ## Chat Customization Settings
 
