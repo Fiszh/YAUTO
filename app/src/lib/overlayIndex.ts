@@ -85,8 +85,8 @@ export async function getMainUser(channel: string | number) {
         };
 
         // CHANNEL INFO LOGIN
-        globals.channelTwitchID = data.channel_info.id ?? null;
-        globals.channelTwitchName = data.channel_info.login ?? null;
+        globals["channels"]["TWITCH"]["ID"] = data.channel_info.id ?? null;
+        globals["channels"]["TWITCH"]["Name"] = data.channel_info.login ?? null;
         const channel_color = data.channel_info.chatColor ?? "white";
 
         // CHANNEL BADGES
@@ -296,11 +296,11 @@ export function getSavedSet(
 
 export async function connectToWS() {
     services["7TV"].ws.connect();
-    if (globals.channelTwitchID) services["BTTV"].ws.connect();
+    if (globals["channels"]["TWITCH"]["ID"]) services["BTTV"].ws.connect();
 }
 
 export async function subscribeEventAPIToSharedChatUser(room_id: string) {
-    if (room_id == globals.channelTwitchID) return;
+    if (room_id == globals["channels"]["TWITCH"]["ID"]) return;
 
     // BTTV
     if (emote_data["BTTV"]["channel"][room_id])
@@ -338,7 +338,7 @@ export async function subscribeEventAPIToSharedChatUser(room_id: string) {
 }
 
 export async function unsubscribeEventAPISharedChatUser(room_id: string) {
-    if (room_id == globals.channelTwitchID) return;
+    if (room_id == globals["channels"]["TWITCH"]["ID"]) return;
 
     // BTTV
     services["BTTV"].ws.unsubscribe(room_id);
@@ -379,29 +379,31 @@ export async function cleanUpSharedChat() {
     }, []);
 
     for (const room_id of room_ids) {
-        if (room_id == globals.channelTwitchID) continue;
+        if (room_id == globals["channels"]["TWITCH"]["ID"]) continue;
 
         await unsubscribeEventAPISharedChatUser(room_id);
     }
 
-    if (globals.channelTwitchID) {
+    if (globals["channels"]["TWITCH"]["ID"]) {
         emotes.update((emotesData) => {
             emotesData["7TV"]["channel"] = emotesData["7TV"]["channel"].filter(
                 (s) =>
-                    s["owners"].some((o) => o["id"] == globals.channelTwitchID),
+                    s["owners"].some(
+                        (o) => o["id"] == globals["channels"]["TWITCH"]["ID"],
+                    ),
             );
 
             emotesData["BTTV"]["channel"] = {
-                [globals.channelTwitchID as string]:
+                [globals["channels"]["TWITCH"]["ID"] as string]:
                     emotesData["BTTV"]["channel"][
-                        globals.channelTwitchID as string
+                        globals["channels"]["TWITCH"]["ID"] as string
                     ],
             };
 
             emotesData["FFZ"]["channel"] = {
-                [globals.channelTwitchID as string]:
+                [globals["channels"]["TWITCH"]["ID"] as string]:
                     emotesData["FFZ"]["channel"][
-                        globals.channelTwitchID as string
+                        globals["channels"]["TWITCH"]["ID"] as string
                     ],
             };
 
@@ -414,9 +416,9 @@ export async function cleanUpSharedChat() {
 
 // ANCHOR 7TV WEBSOCKET
 services["7TV"].ws.on("open", () => {
-    if (globals.channelTwitchID) {
+    if (globals["channels"]["TWITCH"]["ID"]) {
         services["7TV"].ws.subscribe(
-            globals.channelTwitchID,
+            globals["channels"]["TWITCH"]["ID"],
             "entitlement.create",
             {
                 platform: "TWITCH",
@@ -425,11 +427,15 @@ services["7TV"].ws.on("open", () => {
         ); // 7TV account not needed to recieve cosmetic info
     }
 
-    if (globals.userKickID) {
-        services["7TV"].ws.subscribe(globals.userKickID, "entitlement.create", {
-            platform: "KICK",
-            ctx: "channel",
-        }); // 7TV account not needed to recieve cosmetic info
+    if (globals["channels"]["KICK"]["userID"]) {
+        services["7TV"].ws.subscribe(
+            globals["channels"]["KICK"]["userID"],
+            "entitlement.create",
+            {
+                platform: "KICK",
+                ctx: "channel",
+            },
+        ); // 7TV account not needed to recieve cosmetic info
     }
 
     const unique7TVIDs = [
@@ -689,10 +695,10 @@ services["7TV"].ws.on("delete_entitlement", (data) => {
 // ANCHOR BTTV WEBSOCKET
 services["BTTV"].ws.on("open", () => {
     if (
-        globals.channelTwitchID &&
-        emote_data["BTTV"].channel[globals.channelTwitchID]?.length
+        globals["channels"]["TWITCH"]["ID"] &&
+        emote_data["BTTV"].channel[globals["channels"]["TWITCH"]["ID"]]?.length
     ) {
-        services["BTTV"].ws.subscribe(globals.channelTwitchID); // SET CHANGES
+        services["BTTV"].ws.subscribe(globals["channels"]["TWITCH"]["ID"]); // SET CHANGES
     }
 });
 

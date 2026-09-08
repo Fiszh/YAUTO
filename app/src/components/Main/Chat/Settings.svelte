@@ -14,6 +14,7 @@
     import SettingsSelector from "$components/settings/Settings-selector.svelte";
     import { removeParam, setParam } from "$lib/params";
     import { t } from "svelte-i18n";
+    import SettingsDropdown from "$components/settings/Settings-dropdown.svelte";
 
     let showHidden = $state(false);
     let hiddenWarning = $state(false);
@@ -130,6 +131,20 @@
                     param={setting.param}
                     selectors={setting.selectors}
                     defaultValue={setting.default}
+                    onChange={(value) =>
+                        handleInput(
+                            setting.param,
+                            value,
+                            typeof setting["default"],
+                        )}
+                />
+            {:else if setting.type == "dropdown"}
+                <SettingsDropdown
+                    hidden={setting.hide}
+                    value={setting.value}
+                    list={setting["list"]}
+                    param={setting.param}
+                    defaultValue={setting["default"]}
                     onChange={(value) =>
                         handleInput(
                             setting.param,

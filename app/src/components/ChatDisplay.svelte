@@ -277,7 +277,7 @@
                     room_id:
                         msg?.tags?.["source-room-id"] ??
                         msg?.["chatroom_id"] ??
-                        globals.channelTwitchID,
+                        globals["channels"]["TWITCH"]["ID"],
                     ...msg,
                     formattedUser: formatUsername(
                         username,
@@ -391,7 +391,7 @@
                 text={msg.content}
                 tags={msg.sender}
                 message_id={msg.id}
-                room_id={globals.userKickID ?? msg.room_id}
+                room_id={globals["channels"]["KICK"]["userID"] ?? msg.room_id}
                 /*
                 random id
                 user id

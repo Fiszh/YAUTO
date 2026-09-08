@@ -44,6 +44,12 @@
         <Button primary wide center onclick={() => (show = false)}>
             {$t("labels.save")}
         </Button>
+        <small>
+            Want to help us translate? Click
+            <a href="/translate" target="_blank" rel="noopener noreferrer">
+                here
+            </a>
+        </small>
     </div>
 </Dialog>
 
@@ -52,5 +58,16 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+
+        small {
+            display: inline;
+            text-align: center;
+
+            opacity: 0.75;
+
+            a {
+                display: inline;
+            }
+        }
     }
 </style>

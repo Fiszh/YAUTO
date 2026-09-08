@@ -82,10 +82,10 @@
 
         &.wide {
             width: 100%;
+        }
 
-            input {
-                width: 100%;
-            }
+        input {
+            width: 100%;
         }
 
         &:not(.readonly) {
@@ -101,6 +101,7 @@
 
         &.invalid {
             border-color: var(--danger-hover);
+            color: var(--danger-hover);
         }
 
         span,

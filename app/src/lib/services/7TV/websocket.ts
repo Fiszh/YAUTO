@@ -98,7 +98,7 @@ class SevenTVWebSocket {
         this.ws = new WebSocket(this.url);
 
         this.ws.addEventListener("open", () => {
-            console.log("7TV WS OPEN");
+            console.log("7TV WS OPENING");
             this.emit("opening");
 
             // RESUB TO EVERY TOPIC
@@ -115,6 +115,7 @@ class SevenTVWebSocket {
                 this.subscriptions = [];
             }
 
+            console.log("7TV WS OPEN");
             this.emit("open");
         });
 
@@ -136,6 +137,13 @@ class SevenTVWebSocket {
 
             const message_data = data.d;
             const message_body = message_data.body;
+
+            //console.log(message_data);
+
+            // if (message_data["session_id"]) {
+            //     console.log("7TV WS OPEN");
+            //     this.emit("open");
+            // }
 
             switch (message_data.type as string) {
                 case "emote_set.update":
@@ -449,9 +457,7 @@ class SevenTVWebSocket {
         }
     }
 
-    close() {
-        this.ws?.close();
-    }
+    close = () => this.ws?.close();
 }
 
 export default SevenTVWebSocket;

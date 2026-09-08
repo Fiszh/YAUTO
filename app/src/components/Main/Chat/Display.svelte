@@ -23,7 +23,7 @@
     import CalloutBubble from "$components/CalloutBubble.svelte";
     import { shake } from "$lib/shake";
     import Pogly from "$components/logos/pogly.svelte";
-    import { generatePoglyWidget } from "$lib/pogly";
+    import PoglyWidget from "$components/dialogs/pogly_widget.svelte";
 
     let hex = $state("#191919");
     let customMessageValue = $state("");
@@ -48,13 +48,15 @@
                 name: "",
                 id: "",
             },
-            mode: "name",
+            mode: "id",
         },
     });
 
     let showChannelManager = $state(false);
     let showAttentionManager = $state(false);
     let channelManagerButton = $state<HTMLButtonElement | HTMLAnchorElement>();
+
+    let showPoglyDialog = $state(false);
 
     const params = $derived(
         new URLSearchParams(
@@ -78,6 +80,9 @@
 
         channelInfo["kick"]["input"]["name"] = "";
         channelInfo["kick"]["input"]["id"] = "";
+
+        channelInfo["google"]["input"]["name"] = "";
+        channelInfo["google"]["input"]["id"] = "";
 
         settings.set(
             configs.map((c) => {
@@ -120,17 +125,6 @@
                 if (channelManagerButton) shake(channelManagerButton);
             }
         }
-    }
-
-    function copyAsPoglyWidget() {
-        navigator.clipboard
-            .writeText(JSON.stringify(generatePoglyWidget()))
-            .then(() => {
-                alert($t("toasts.pogly_widget_copied"));
-            })
-            .catch((err) => {
-                console.error("Failed to copy URL: ", err);
-            });
     }
 
     function addMessage() {
@@ -182,16 +176,20 @@
     );
 
     $effect(() =>
-        channelInfo["google"]["input"]["name"].length
+        channelInfo["google"]["input"]["id"].length
             ? setParam(
                   "youtube",
-                  String(channelInfo["google"]["input"]["name"]),
+                  encodeURIComponent(
+                      String(channelInfo["google"]["input"]["id"]),
+                  ),
               )
             : removeParam("youtube"),
     );
 </script>
 
 <ChannelManager bind:show={showChannelManager} inputs={channelInfo} />
+
+<PoglyWidget bind:show={showPoglyDialog} />
 
 {#snippet loadBadgesIcon()}
     <ShieldPlus size={$isMobile ? "1rem" : "1.5rem"} />
@@ -313,10 +311,10 @@
                     {$t("labels.copy")}
                 </Button>
                 <Button
-                    title="Copy as Pogly widget"
+                    title="Use as Pogly widget"
                     secondary
-                    onclick={copyAsPoglyWidget}
                     icon={PoglyIcon}
+                    onclick={() => (showPoglyDialog = true)}
                 />
             </div>
         </section>

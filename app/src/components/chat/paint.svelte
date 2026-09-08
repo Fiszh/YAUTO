@@ -73,4 +73,8 @@
         background-size: 100% 100%;
         text-shadow: none;
     }
+
+    strong {
+        font-weight: inherit;
+    }
 </style>

@@ -14,6 +14,7 @@
     import KICKSocket from "$lib/services/KICK/chat";
     import { isPogly } from "$lib/pogly";
     import { flags } from "$lib/bitmap";
+    import YOUTUBESocket from "$lib/services/YOUTUBE/chat";
 
     // REFRESH IMAGES IF FAILED
     function handleImageRetries(): void {
@@ -38,19 +39,32 @@
         const TwitchChannelName = params.get("channel");
         const TwitchChannelID = params.get("id");
         const KickChannelName = params.get("kick");
-        const YouTubeChannelName = params.get("youtube");
+        const YouTubeChannelID = params.get("youtube");
 
         let loadedIn = $state({
             twitch: TwitchChannelName || TwitchChannelID ? false : null,
             kick: KickChannelName ? false : null,
+            youtube: YouTubeChannelID ? false : null,
         });
+
+        console.log(YouTubeChannelID);
 
         let allChannelsLoaded = $derived(
             Object.values(loadedIn).every((c) => c === null || c === true),
         );
 
         if (TwitchChannelName) connect(TwitchChannelName);
-        //if (YouTubeChannelName) startTestWS();
+        if (YouTubeChannelID) {
+            const YouTubeClient = new YOUTUBESocket(YouTubeChannelID);
+
+            YouTubeClient.on("open", () => {
+                loadedIn["youtube"] = true;
+
+                globals["channels"]["GOOGLE"]["ID"] = YouTubeChannelID;
+            });
+
+            YouTubeClient.connect();
+        }
 
         for (const [key, value] of params) {
             settings.update((list) =>
@@ -92,8 +106,11 @@
                 if (successGettingUser) {
                     loadedIn["twitch"] = true;
 
-                    if (!TwitchChannelName && globals.channelTwitchName)
-                        connect(globals.channelTwitchName);
+                    if (
+                        !TwitchChannelName &&
+                        globals["channels"]["TWITCH"]["Name"]
+                    )
+                        connect(globals["channels"]["TWITCH"]["Name"]);
                 }
             }
 
@@ -106,10 +123,13 @@
                     const KickClient = new KICKSocket();
 
                     KickClient.on("first_open", () => {
-                        if (globals.channelKickID && globals.chatroomKickID)
+                        if (
+                            globals["channels"]["KICK"]["channelID"] &&
+                            globals["channels"]["KICK"]["chatroomID"]
+                        )
                             KickClient.subToChannelId(
-                                globals.channelKickID,
-                                globals.chatroomKickID,
+                                globals["channels"]["KICK"]["channelID"],
+                                globals["channels"]["KICK"]["chatroomID"],
                             );
                     });
 

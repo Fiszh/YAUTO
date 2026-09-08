@@ -12,7 +12,8 @@
         },
         "manage_channels": {
             "title": "Manage Channels",
-            "use_channel_id": "Use Channel ID"
+            "use_channel_id": "Use Channel ID",
+            "use_channel_handle": "Use Channel Handle"
         },
         "localization": {
             "title": "Language",
@@ -43,7 +44,8 @@
     },
     "channel_input": {
         "name": "{platform} Channel Name",
-        "id": "{platform} Channel ID"
+        "id": "{platform} Channel ID",
+        "handle": "{platform} Channel Handle"
     },
     "mobile_footer": {
         "settings": "Settings",
@@ -207,7 +209,11 @@
             },
             "gifs": {
                 "name": "GIFs",
-                "description": "Display GIFs in the chat overlay"
+                "": "Display GIFs in the chat overlay"
+            },
+            "track": {
+                "name": "Error tracking",
+                "description": "Opt in or out of error tracking via Better Stack."
             }
         }
     },
@@ -367,6 +373,10 @@
                     "answer": "Your token is only used for validation and is never stored on our servers."
                 },
                 "item_15": {
+                    "question": "What do we track?",
+                    "answer": "We log error messages, stack traces, and basic browser/OS data during a crash. We never collect personal data or session recordings, data is only shared with our error-tracking provider."
+                },
+                "item_16": {
                     "question": "What if my question isn't listed here?",
                     "answer": "For more information, you can reach out via {twitch} or {discord}."
                 }

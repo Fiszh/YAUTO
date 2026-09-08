@@ -4,7 +4,7 @@ import { get } from "svelte/store";
 import { flags } from "./bitmap";
 
 const defaultJSON = {
-    widgetName: "UChat embed " + __APP_VERSION,
+    widgetName: "UChat Chat Overlay " + __APP_VERSION,
     widgetWidth: 400,
     widgetHeight: 600,
     headerTag: "",
@@ -120,6 +120,8 @@ export function generatePoglyWidget() {
                 foundConfig["variableValue"] = enabledSelectors.map(
                     (sl) => sl["label"],
                 );
+            } else if (s["type"] == "dropdown") {
+                foundConfig["variableValue"] = s["default"];
             } else {
                 foundConfig["variableValue"] = s["value"];
             }
@@ -148,7 +150,15 @@ export function generatePoglyWidget() {
             variableValue: "",
             variableLive: true,
             variableDescription:
-                "Kick channel name. Can run alongside a Twitch channel.",
+                "Kick channel name. Can run alongside a other channels.",
+        },
+        {
+            variableName: "youtube",
+            variableType: 1,
+            variableValue: "",
+            variableLive: true,
+            variableDescription:
+                "YouTube channel ID, not the handle. Can run alongside a other channels.",
         },
         ...defaults,
     ];

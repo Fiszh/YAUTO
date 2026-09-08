@@ -83,17 +83,26 @@ export const badges = writable<GlobalBadges>({
 interface Globals {
     custom_bots: string[];
 
-    channelTwitchID: string | null;
-    channelTwitchName: string | null;
-
     inSharedChat: boolean;
 
-    channelKickName: string | null;
-    channelKickID: string | null;
-    chatroomKickID: string | null;
-    userKickID: string | null;
-
     userNameColor: Record<string, string>;
+
+    channels: {
+        TWITCH: {
+            ID: string | null;
+            Name: string | null;
+        };
+        KICK: {
+            Name: string | null;
+            channelID: string | null;
+            chatroomID: string | null;
+            userID: string | null;
+        };
+        GOOGLE: {
+            ID: string | null;
+            Handle: string | null;
+        };
+    };
 }
 
 export const globals: Globals = {
@@ -116,19 +125,29 @@ export const globals: Globals = {
     Make sure your bot isn’t on the FFZ bots list or doesn't have the Twitch Chat Bot badge before submitting
     */
 
-    // TTV
-    channelTwitchID: null,
-    channelTwitchName: null,
-
+    //TTV
     inSharedChat: false,
 
-    // KICK
-    channelKickName: null,
-    channelKickID: null,
-    chatroomKickID: null,
-    userKickID: null,
+    channels: {
+        TWITCH: {
+            ID: null,
+            Name: null,
+        },
+        KICK: {
+            Name: null,
+            channelID: null,
+            chatroomID: null,
+            userID: null,
+        },
+        GOOGLE: {
+            ID: null,
+            Handle: null,
+        },
+    },
+
     // OTHER
     userNameColor: {},
 };
 
 export const API_URL = import.meta.env.API_URL;
+export const WS_URL = import.meta.env.WS_URL;

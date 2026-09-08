@@ -22,7 +22,8 @@ export async function getChannelEmotesViaTwitchID(twitchID: string) {
     if (!twitchID || twitchID === "0" || processing_ids.includes(twitchID))
         return;
 
-    if (twitchID != globals.channelTwitchID) globals.inSharedChat = true;
+    if (twitchID != globals["channels"]["TWITCH"]["ID"])
+        globals.inSharedChat = true;
 
     processing_ids.push(twitchID); // prevent API spam
 
@@ -83,7 +84,7 @@ export async function getChannelEmotesViaTwitchID(twitchID: string) {
                 return emoteData;
             });
 
-            if (twitchID == globals.channelTwitchID) {
+            if (twitchID == globals["channels"]["TWITCH"]["ID"]) {
                 badges.update((badgeData) => {
                     if (ffzData.badges?.vip?.length) {
                         badgeData["FFZ"]["user"]["vip"] =
@@ -149,7 +150,7 @@ export async function getChannelEmotesViaTwitchID(twitchID: string) {
         console.error(`Badge error for ${twitchID}:`, e);
     }
 
-    if (twitchID != globals.channelTwitchID)
+    if (twitchID != globals["channels"]["TWITCH"]["ID"])
         await subscribeEventAPIToSharedChatUser(twitchID);
 
     // remove from processing

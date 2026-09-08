@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 import { settings } from "$stores/settings";
 import { execCommand } from "./chatCommands";
+import { YTNodes } from "youtubei.js";
 
 let modActions = false;
 let usernotices = false;
@@ -47,7 +48,15 @@ interface ParsedMessage {
     service: "TWITCH";
 }
 
-export const messages = writable<Record<string, any>[]>([]);
+export const messages = writable<
+    (
+        | Record<string, any>
+        | (YTNodes.LiveChatTextMessage & {
+              service: "GOOGLE";
+              removed?: boolean;
+          })
+    )[]
+>([]);
 export const connectionStatus = writable<string>("");
 
 let TTV_IRC_WS: WebSocket | null;
@@ -84,6 +93,7 @@ function assignMessage(parsed: ReturnType<typeof parseIrcLine>) {
             messages.update((arr) =>
                 arr.filter((item) => {
                     if (item["service"] != "TWITCH") return item;
+                    if ("tags" in item == false) return item;
                     if (item.tags["id"] != parsed.tags.merged["target-msg-id"])
                         return item;
                 }),
@@ -97,6 +107,7 @@ function assignMessage(parsed: ReturnType<typeof parseIrcLine>) {
                 messages.update((arr) =>
                     arr.filter((item) => {
                         if (item["service"] != "TWITCH") return item;
+                        if ("tags" in item == false) return item;
                         if (
                             item.tags["user-id"] !=
                             parsed.tags.merged["target-user-id"]

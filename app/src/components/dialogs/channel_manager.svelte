@@ -6,7 +6,10 @@
     import Kick from "$components/logos/kick.svelte";
     import Twitch from "$components/logos/twitch.svelte";
     import Youtube from "$components/logos/youtube.svelte";
+    import { addToast } from "$lib/toast";
+    import { API_URL } from "$stores/global";
     import { t } from "svelte-i18n";
+    import { slide } from "svelte/transition";
 
     type InputMode = "name" | "id" | string; // im to lazy to fix this rn so i will leave string here
 
@@ -46,6 +49,10 @@
             return value.replace(/[^a-zA-Z0-9_]+/g, "");
         } else if (type == "kick_name") {
             return value.replace(/[^a-zA-Z0-9-]+/g, "");
+        } else if (type == "youtube_id") {
+            return value.replace(/[^a-zA-Z0-9_-]+/g, "");
+        } else if (type == "youtube_handle") {
+            return value.replace(/[^a-zA-Z0-9_.@-]+/g, "");
         }
         return value;
     }
@@ -79,6 +86,12 @@
                     platform: "KICK",
                     input: e.target.dataset.platform as Platforms,
                 };
+            } else if (pasted_url.host.endsWith("youtube.com")) {
+                pastedName = {
+                    name: pastedUsername,
+                    platform: "GOOGLE",
+                    input: e.target.dataset.platform as Platforms,
+                };
             }
         }
     }
@@ -103,6 +116,48 @@
         }
 
         pastedName = emptyPastedName;
+    }
+
+    async function handleSave() {
+        if (inputs["google"]["mode"] == "name") {
+            let handle = inputs["google"]["input"]["name"].trim();
+
+            if (!handle.length)
+                return addToast({
+                    msg: "No YouTube handle inputed!",
+                    type: "error",
+                    timeout: 5,
+                });
+
+            addToast({
+                msg: "Resolving your handle, please wait.",
+                timeout: 5,
+            });
+
+            if (!handle.startsWith("@")) handle = "@" + handle;
+
+            const res = await fetch(
+                API_URL + "/youtube/resolve/" + encodeURIComponent(handle),
+            );
+
+            if (!res.ok)
+                return addToast({
+                    msg: "Failed resolving YouTube handle!",
+                    type: "error",
+                    timeout: 5,
+                });
+
+            inputs["google"]["input"]["id"] = await res.text();
+            inputs["google"]["input"]["name"] = "";
+            inputs["google"]["mode"] = "id";
+        }
+
+        addToast({
+            msg: "Saved channel info!",
+            type: "success",
+            timeout: 5,
+        });
+        show = false;
     }
 </script>
 
@@ -144,7 +199,7 @@
     </p>
 </Dialog>
 
-<Dialog bind:show name={$t("dialogs.manage_channels.title")}>
+<Dialog bind:show name={$t("dialogs.manage_channels.title")} hideClose>
     <div id="layout">
         <section>
             <p>
@@ -152,14 +207,14 @@
                 Twitch
             </p>
 
-            {#if inputs.twitch.mode === "name"}
+            {#if inputs.twitch.mode == "name"}
                 <Input
                     bind:value={inputs["twitch"]["input"]["name"]}
                     placeholder={$t("channel_input.name", {
                         values: {
                             platform: "",
                         },
-                    }) + "..."}
+                    }).trim() + "..."}
                     data-platform="TWITCH"
                     invalid={!inputs["twitch"]["input"]["name"].length}
                     onPaste={checkForChannelLink}
@@ -176,7 +231,7 @@
                         values: {
                             platform: "",
                         },
-                    }) + "..."}
+                    }).trim() + "..."}
                     invalid={!inputs["twitch"]["input"]["id"].length}
                     onChange={(e) =>
                         (inputs["twitch"]["input"]["id"] = validateInput(
@@ -187,7 +242,7 @@
             {/if}
 
             <Checkbox
-                checked={inputs.twitch.mode === "id"}
+                checked={inputs.twitch.mode == "id"}
                 onchange={(e) =>
                     (inputs.twitch.mode = (e.target as HTMLInputElement).checked
                         ? "id"
@@ -203,14 +258,14 @@
                 Kick
             </p>
 
-            {#if inputs.kick.mode === "name"}
+            {#if inputs.kick.mode == "name"}
                 <Input
                     bind:value={inputs["kick"]["input"]["name"]}
                     placeholder={$t("channel_input.name", {
                         values: {
                             platform: "",
                         },
-                    }) + "..."}
+                    }).trim() + "..."}
                     data-platform="KICK"
                     invalid={!inputs["kick"]["input"]["name"].length}
                     onPaste={checkForChannelLink}
@@ -227,7 +282,7 @@
                         values: {
                             platform: "",
                         },
-                    }) + "..."}
+                    }).trim() + "..."}
                     invalid={!inputs["kick"]["input"]["id"].length}
                     onChange={(e) =>
                         (inputs["twitch"]["input"]["id"] = validateInput(
@@ -237,15 +292,16 @@
                 />
             {/if}
 
-            <!-- <Checkbox
-                checked={inputs.kick.mode === "id"}
+            <Checkbox
+                disabled
+                checked={inputs.kick.mode == "id"}
                 onchange={(e) =>
                     (inputs.kick.mode = (e.target as HTMLInputElement).checked
                         ? "id"
                         : "name")}
             >
                 {$t("dialogs.manage_channels.use_channel_id")}
-            </Checkbox> -->
+            </Checkbox>
         </section>
 
         <section>
@@ -254,34 +310,59 @@
                 YouTube
             </p>
 
-            {#if inputs.google.mode === "name"}
+            {#if inputs.google.mode == "id"}
                 <Input
-                    bind:value={inputs["google"]["input"]["name"]}
-                    placeholder="Channel name..."
+                    bind:value={inputs["google"]["input"]["id"]}
+                    placeholder={$t("channel_input.id", {
+                        values: {
+                            platform: "",
+                        },
+                    }).trim() + "..."}
                     data-platform="GOOGLE"
-                    invalid={!inputs["google"]["input"]["name"].length}
+                    invalid={!inputs["google"]["input"]["id"].length ||
+                        !inputs["google"]["input"]["id"].startsWith("UC")}
                     onPaste={checkForChannelLink}
                     onChange={(e) =>
-                        (inputs["google"]["input"]["name"] = validateInput(
+                        (inputs["google"]["input"]["id"] = validateInput(
                             (e.currentTarget as HTMLInputElement).value,
-                            "kick_name",
+                            "youtube_id",
                         ))}
                 />
             {:else}
                 <Input
-                    bind:value={inputs["google"]["input"]["id"]}
-                    placeholder="Channel ID..."
-                    invalid={!inputs["google"]["input"]["id"].length}
+                    bind:value={inputs["google"]["input"]["name"]}
+                    placeholder={$t("channel_input.handle", {
+                        values: {
+                            platform: "",
+                        },
+                    }).trim() + "..."}
+                    invalid={!inputs["google"]["input"]["name"].length}
                     onChange={(e) =>
-                        (inputs["google"]["input"]["id"] = validateInput(
+                        (inputs["google"]["input"]["name"] = validateInput(
                             (e.currentTarget as HTMLInputElement).value,
-                            "number",
+                            "youtube_handle",
                         ))}
                 />
             {/if}
+            {#if inputs.google.mode == "name"}
+                <small style="color: var(--danger-hover);" transition:slide>
+                    YouTube handle will be resolved after pressing save.
+                </small>
+            {/if}
+
+            <Checkbox
+                // disabled
+                checked={inputs.google.mode == "name"}
+                onchange={(e) =>
+                    (inputs.google.mode = (e.target as HTMLInputElement).checked
+                        ? "name"
+                        : "id")}
+            >
+                {$t("dialogs.manage_channels.use_channel_handle")}
+            </Checkbox>
         </section>
 
-        <Button primary center onclick={() => (show = false)}>
+        <Button primary wide center onclick={handleSave}>
             {$t("labels.save")}
         </Button>
     </div>
@@ -289,7 +370,6 @@
 
 <style lang="scss">
     #layout {
-
         section {
             display: flex;
             flex-direction: column;

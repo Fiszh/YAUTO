@@ -6,7 +6,7 @@
     "license": "AGPL-3.0-or-later",
     "scripts": {
         "dev": "vite dev",
-        "dev:api": "API_URL=http://api.localhost:3000 vite dev",
+        "dev:api": "API_URL=http://api.localhost:3000 WS_URL=ws://api.localhost:3000 vite dev",
         "dev:open": "vite dev --open --host",
         "build": "vite build",
         "preview": "vite preview",
@@ -31,10 +31,12 @@
         "svelte-check": "^4.7.3",
         "svelte-render-scan": "^1.1.0",
         "typescript": "^6.0.2",
-        "vite": "^8.1.5"
+        "vite": "^8.1.5",
+        "youtubei.js": "^17.2.0"
     },
     "dependencies": {
         "@lucide/svelte": "^1.25.0",
+        "@sentry/svelte": "^10.73.0",
         "@twemoji/api": "^17.0.3",
         "html-to-image": "^1.11.13",
         "svelte-awesome-color-picker": "^4.1.3",

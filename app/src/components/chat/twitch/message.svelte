@@ -9,11 +9,13 @@
 
     onMount(() => {
         if (rest["room_id"]) {
-            if (String(rest["room_id"]) != globals.channelTwitchID) {
+            if (
+                String(rest["room_id"]) != globals["channels"]["TWITCH"]["ID"]
+            ) {
                 getChannelEmotesViaTwitchID(String(rest["room_id"]));
             } else if (
                 !rest["tags"]["source-room-id"] &&
-                String(rest["room_id"]) == globals.channelTwitchID
+                String(rest["room_id"]) == globals["channels"]["TWITCH"]["ID"]
             ) {
                 cleanUpSharedChat();
             }

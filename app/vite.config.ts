@@ -28,5 +28,8 @@ export default defineConfig({
         "import.meta.env.API_URL": JSON.stringify(
             process.env.API_URL ?? "https://api.unii.dev",
         ),
+        "import.meta.env.WS_URL": JSON.stringify(
+            process.env.WS_URL ?? "ws://api.unii.dev",
+        ),
     },
 });

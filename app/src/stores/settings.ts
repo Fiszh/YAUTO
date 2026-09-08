@@ -6,6 +6,7 @@ const logos: Record<string, Snippet<[boolean]>> = (logosModule as any).logos ??
 import { flags } from "$lib/bitmap";
 import { writable } from "svelte/store";
 import { isPogly } from "$lib/pogly";
+import { getFontFamilys } from "$lib/fonts";
 
 export interface DefaultSetting {
     param: string;
@@ -59,13 +60,21 @@ export interface SelectorSetting extends DefaultSetting {
     }[];
 }
 
+export interface DropdownSetting extends DefaultSetting {
+    type: "dropdown";
+    value: string;
+    list: string[] | (() => string[] | Promise<string[]>) | Promise<string[]>;
+    default?: string;
+}
+
 export type Setting =
     | NumberSetting
     | TextSetting
     | BooleanSetting
     | ColorPickerSetting
     | SliderSetting
-    | SelectorSetting;
+    | SelectorSetting
+    | DropdownSetting;
 
 const defaultEmoteSize = "25";
 
@@ -92,6 +101,13 @@ export const configs: Setting[] = [
         value: "Geist",
         param: "font",
     },
+    // {
+    //     type: "dropdown",
+    //     value: "Geist",
+    //     list: getFontFamilys,
+    //     param: "font",
+    // },
+
     {
         type: "color-picker",
         value: "#FFFFFF",
@@ -255,6 +271,11 @@ export const configs: Setting[] = [
         value: false,
         hide: true,
         param: "clearLive",
+    },
+    {
+        type: "boolean",
+        value: true,
+        param: "track",
     },
 ];
 
