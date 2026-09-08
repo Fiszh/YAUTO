@@ -63,8 +63,6 @@
             "pc": "Language",
             "mobile": "Lang"
         },
-        "design": "Design",
-        "teapot": "Teapot",
         "info": {
             "pc": "Info & Privacy",
             "mobile": "Info"
@@ -129,7 +127,7 @@
             },
             "font": {
                 "name": "Custom chat font",
-                "description": "Change the chat message font"
+                "description": "Change the chat message font (Custom Google Fonts are supported)"
             },
             "fontColor": {
                 "name": "Chat font colour (hex)",
@@ -149,7 +147,7 @@
             },
             "emoteSize": {
                 "name": "Emote size (px)",
-                "description": "Set the display size of emotes in pixels, scales with font size setting if not set"
+                "description": "Set the display size of emotes in pixels, adds 5 pixels to the font size setting if not set"
             },
             "fadeOut": {
                 "name": "Text fade out (seconds)",
@@ -168,8 +166,8 @@
                 "description": "Show channel points redeems, subscriptions, and announcements in chat"
             },
             "bots": {
-                "name": "Hide bot messages",
-                "description": "Hide messages from chat bots, detected using Twitch & FFZ bot badges"
+                "name": "Show bot messages",
+                "description": "Show or hide messages from chat bots (detected via Twitch, FFZ badges & custom list)"
             },
             "userBL": {
                 "name": "Custom user blacklist (separate using spaces)",
@@ -202,6 +200,14 @@
             "clearLive": {
                 "name": "Clear chat when going live (OBS ONLY)",
                 "description": "Clear the chat automatically when the channel goes live"
+            },
+            "gifSize": {
+                "name": "GIF size (px)",
+                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting."
+            },
+            "gifs": {
+                "name": "GIFs",
+                "description": "Display GIFs in the chat overlay"
             }
         }
     },
@@ -215,7 +221,8 @@
         "no_input": "No input.",
         "loading_info": "Loading user & channel info...",
         "loaded_info": "Loaded user & channel info",
-        "loading_info_fail": "Failed loading user & channel info!"
+        "loading_info_fail": "Failed loading user & channel info!",
+        "pogly_widget_copied": "Pogly Widget has been copied!"
     },
     "banners": {
         "issues": "We're having issues - some features may be unavailable",
@@ -252,22 +259,16 @@
             }
         },
         "chat_messages": {
-            "msg_1": "{status} OMEGADANCE",
-            "msg_2": "F",
-            "msg_3": "chat where is the page PauseChamp",
-            "msg_4": "bro the page is gone NOOOO",
-            "msg_5": "{status} Pepega",
-            "msg_6": "who broke the site RAGEY",
-            "msg_7": "COPIUM",
-            "msg_8": "NOOOO",
-            "msg_9": "the page is gone Sadge",
-            "msg_10": "SadgeCry the page was right here",
-            "msg_11": "@uniiDev ur site is cooked bro",
-            "msg_12": "have you tried turning it off and on again Nerd",
-            "msg_13": "bro needs to learn nginx omE",
-            "msg_14": "unban the page mods",
-            "msg_15": "mods can we get the page back Prayge",
-            "msg_16": "DIESOFCRINGE"
+            "msg_1": "chat where is the page PauseChamp",
+            "msg_2": "bro the page is gone NOOOO",
+            "msg_3": "who broke the site RAGEY",
+            "msg_4": "the page is gone Sadge",
+            "msg_5": "SadgeCry the page was right here",
+            "msg_6": "@uniiDev ur site is cooked bro",
+            "msg_7": "have you tried turning it off and on again Nerd",
+            "msg_8": "bro needs to learn nginx omE",
+            "msg_9": "unban the page mods",
+            "msg_10": "mods can we get the page back Prayge"
         }
     },
     "pages": {

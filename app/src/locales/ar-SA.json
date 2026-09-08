@@ -63,8 +63,6 @@
             "pc": "اللغة",
             "mobile": "اللغة"
         },
-        "design": "تصميم",
-        "teapot": "بريق شاي",
         "info": {
             "pc": "المعلومات والخصوصية",
             "mobile": "معلومات"
@@ -129,7 +127,7 @@
             },
             "font": {
                 "name": "Custom chat font",
-                "description": "Change the chat message font"
+                "description": "Change the chat message font (Custom Google Fonts are supported)"
             },
             "fontColor": {
                 "name": "Chat font color (hex)",
@@ -149,7 +147,7 @@
             },
             "emoteSize": {
                 "name": "Emote size (px)",
-                "description": "Set the display size of emotes in pixels, scales with font size setting if not set"
+                "description": "Set the display size of emotes in pixels, adds 5 pixels to the font size setting if not set"
             },
             "fadeOut": {
                 "name": "Text fade out (seconds)",
@@ -168,8 +166,8 @@
                 "description": "Show channel points redeems, subscriptions, and announcements in chat"
             },
             "bots": {
-                "name": "Hide bot messages",
-                "description": "Hide messages from chat bots, detected using Twitch & FFZ bot badges"
+                "name": "Show bot messages",
+                "description": "Show or hide messages from chat bots (detected via Twitch, FFZ badges & custom list)"
             },
             "userBL": {
                 "name": "Custom user blacklist (separate using spaces)",
@@ -193,7 +191,7 @@
             },
             "paintShadows": {
                 "name": "7TV Paint Shadows",
-                "description": ""
+                "description": "Toggle shadows on 7TV Paints, may cause drops in performance"
             },
             "lastMsg": {
                 "name": "قم بتحميل أحدث رسائل الشات",
@@ -202,6 +200,14 @@
             "clearLive": {
                 "name": "مسح الدردشة عند البث المباشر (خاص ببرنامج OBS فقط)",
                 "description": "يتم مسح الشات تلقائيًا عند بدء البث المباشر للقناة"
+            },
+            "gifSize": {
+                "name": "GIF size (px)",
+                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting."
+            },
+            "gifs": {
+                "name": "GIFs",
+                "description": "Display GIFs in the chat overlay"
             }
         }
     },
@@ -215,7 +221,8 @@
         "no_input": "لا توجد مدخلات.",
         "loading_info": "جارٍ تحميل معلومات المستخدم والقناة...",
         "loaded_info": "تم تحميل معلومات المستخدم والقناة",
-        "loading_info_fail": "فشل تحميل معلومات المستخدم والقناة!"
+        "loading_info_fail": "فشل تحميل معلومات المستخدم والقناة!",
+        "pogly_widget_copied": "Pogly Widget has been copied!"
     },
     "banners": {
         "issues": "نواجه بعض المشاكل - قد لا تتوفر بعض الميزات",
@@ -269,16 +276,16 @@
             "title": "قم بتحويل إعدادات الشات Overlay إلى UChat",
             "warning_bugs": "قد تحدث بعض المشاكل التقنية، يرجى الانتباه.",
             "warning_settings": "لا توجد جميع الإعدادات في برنامج UChat.",
-            "supported": "",
+            "supported": "Currently supported: JChat & ChatIS.",
             "url_input": {
-                "title": "",
-                "convert_button": ""
+                "title": "Chat Overlay URL",
+                "convert_button": "Convert & Copy"
             }
         },
         "help": {
             "info": {
                 "title": "لا توجد جميع الإعدادات في برنامج UChat.",
-                "description": ""
+                "description": "All the info you need to get started with UChat"
             },
             "faq": "FAQ",
             "privacy": "Privacy & Security",
@@ -361,14 +368,14 @@
                 },
                 "item_15": {
                     "question": "What if my question isn't listed here?",
-                    "answer": ""
+                    "answer": "For more information, you can reach out via {twitch} or {discord}."
                 }
             }
         },
         "message_creator": {
-            "title": "",
-            "fetch_channel": "",
-            "download": ""
+            "title": "UChat Message Creator",
+            "fetch_channel": "Fetch Channel & User",
+            "download": "Download image"
         }
     }
 }

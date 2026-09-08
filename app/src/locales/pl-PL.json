@@ -63,8 +63,6 @@
             "pc": "Język",
             "mobile": "Język"
         },
-        "design": "Design",
-        "teapot": "Czajniczek",
         "info": {
             "pc": "Informacje i prywatność",
             "mobile": "Info"
@@ -86,21 +84,21 @@
         },
         "bottom": {
             "header": {
-                "title": "Chat Preview Settings",
+                "title": "Ustawienia Podglądu Czatu",
                 "load_badges": {
-                    "pc": "Load More Badges",
-                    "mobile": "Load Badges"
+                    "pc": "Wczytaj Więcej Odznak",
+                    "mobile": "Wczytaj Odznaki"
                 }
             },
             "chat_background": {
-                "title": "Chat Background"
+                "title": "Tło Czatu"
             },
             "custom_message": {
-                "title": "Custom Message",
-                "input_placeholder": "Message to display..."
+                "title": "Niestandardowa Wiadomość",
+                "input_placeholder": "Wiadomość do wyświetlenia..."
             },
             "channel_info": {
-                "title": "Channel Info",
+                "title": "Informacje o Kanale",
                 "manage": "Zarządzaj Kanałami"
             },
             "overlay_url": {
@@ -129,7 +127,7 @@
             },
             "font": {
                 "name": "Niestandardowa czcionka czatu",
-                "description": "Zmień czcionkę wiadomości czatu"
+                "description": "Change the chat message font (Custom Google Fonts are supported)"
             },
             "fontColor": {
                 "name": "Kolor czcionki czatu (hex)",
@@ -149,7 +147,7 @@
             },
             "emoteSize": {
                 "name": "Rozmiar emotek (px)",
-                "description": "Ustaw wyświetlany rozmiar emotek w pikselach. Jeżeli nie ustawiono, skaluje się z rozmiarem czcionki"
+                "description": "Set the display size of emotes in pixels, adds 5 pixels to the font size setting if not set"
             },
             "fadeOut": {
                 "name": "Zanikanie wiadomości (sekundy)",
@@ -168,8 +166,8 @@
                 "description": "Pokaż odbiór nagród za punkty kanału, subskrypcje oraz ogłoszenia na czacie"
             },
             "bots": {
-                "name": "Ukryj wiadomości botów",
-                "description": "Ukryj wiadomości czat botów wykrytych za pomocą odznak botów Twitch i FFZ"
+                "name": "Show bot messages",
+                "description": "Show or hide messages from chat bots (detected via Twitch, FFZ badges & custom list)"
             },
             "userBL": {
                 "name": "Niestandardowa czarna lista użytkowników (oddziel używając spacji)",
@@ -202,6 +200,14 @@
             "clearLive": {
                 "name": "Wyczyść czat podczas uruchomienia transmisji (TYLKO OBS)",
                 "description": "Wyczyść czat automatycznie, gdy kanał uruchamia transmisje"
+            },
+            "gifSize": {
+                "name": "GIF size (px)",
+                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting."
+            },
+            "gifs": {
+                "name": "GIFs",
+                "description": "Display GIFs in the chat overlay"
             }
         }
     },
@@ -210,12 +216,13 @@
         "loaded_badges": "Wczytano wszystkie odznaki!",
         "fail_load_badges": "Nie udało się wczytać wszystkich odznak!",
         "url_copied": "Overlay URL has been copied!",
-        "url_copied_fail": "Failed to copy URL, check the console for more info.",
+        "url_copied_fail": "Nie udało się skopiować URL, sprawdź konsolę po więcej informacji.",
         "unsupported": "Nieobsługiwane.",
         "no_input": "Brak danych wejściowych.",
         "loading_info": "Wczytywanie informacji o użytkowniku i kanale...",
         "loaded_info": "Wczytano informacje o użytkowniku i kanale",
-        "loading_info_fail": "Nie udało się wczytać informacji o użytkowniku i kanale!"
+        "loading_info_fail": "Nie udało się wczytać informacji o użytkowniku i kanale!",
+        "pogly_widget_copied": "Pogly Widget has been copied!"
     },
     "banners": {
         "issues": "Mamy problemy - niektóre funkcje mogą być niedostępne",
@@ -243,7 +250,7 @@
                 "message": "Sorry, I refuse to brew coffee because I'm, permanently, a teapot."
             },
             "500": {
-                "title": "unexpected error.",
+                "title": "nieoczekiwany błąd.",
                 "message": "Please refresh or try again. If the issue persists, contact us."
             },
             "default": {
@@ -252,22 +259,16 @@
             }
         },
         "chat_messages": {
-            "msg_1": "{status} OMEGADANCE",
-            "msg_2": "F",
-            "msg_3": "chat where is the page PauseChamp",
-            "msg_4": "bro the page is gone NOOOO",
-            "msg_5": "{status} Pepega",
-            "msg_6": "who broke the site RAGEY",
-            "msg_7": "COPIUM",
-            "msg_8": "NOOOO",
-            "msg_9": "the page is gone Sadge",
-            "msg_10": "SadgeCry the page was right here",
-            "msg_11": "@uniiDev ur site is cooked bro",
-            "msg_12": "have you tried turning it off and on again Nerd",
-            "msg_13": "bro needs to learn nginx omE",
-            "msg_14": "unban the page mods",
-            "msg_15": "mods can we get the page back Prayge",
-            "msg_16": "DIESOFCRINGE"
+            "msg_1": "chat where is the page PauseChamp",
+            "msg_2": "bro the page is gone NOOOO",
+            "msg_3": "who broke the site RAGEY",
+            "msg_4": "the page is gone Sadge",
+            "msg_5": "SadgeCry the page was right here",
+            "msg_6": "@uniiDev ur site is cooked bro",
+            "msg_7": "have you tried turning it off and on again Nerd",
+            "msg_8": "bro needs to learn nginx omE",
+            "msg_9": "unban the page mods",
+            "msg_10": "mods can we get the page back Prayge"
         }
     },
     "pages": {
@@ -287,7 +288,7 @@
                 "description": "All the info you need to get started with UChat"
             },
             "faq": "FAQ",
-            "privacy": "Privacy & Security",
+            "privacy": "Prywatność i Bezpieczeństwo",
             "privacy_items": {
                 "item_1": "Your Twitch token is never stored; it is only sent to the server when needed to authenticate actions like login, saving, or deleting your settings.",
                 "item_2": "Settings you change are saved only in your browser so they stay after refresh or returning to the page; they are not stored on our servers unless you are a tester saving global settings.",

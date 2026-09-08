@@ -63,8 +63,6 @@
             "pc": "Idioma",
             "mobile": "Idioma"
         },
-        "design": "Design",
-        "teapot": "Bule de chá",
         "info": {
             "pc": "Informações & Privacidade",
             "mobile": "Informação"
@@ -129,7 +127,7 @@
             },
             "font": {
                 "name": "Fonte do chat personalizada",
-                "description": "Alterar a fonte da mensagem do chat"
+                "description": "Change the chat message font (Custom Google Fonts are supported)"
             },
             "fontColor": {
                 "name": "Cor da fonte do chat (hex)",
@@ -149,7 +147,7 @@
             },
             "emoteSize": {
                 "name": "Tamanho dos ícones expressivos (px)",
-                "description": "Defina o tamanho de exibição de ícones expressivos em pixeis, escalas com a configuração de tamanho da fonte se não estiver definido"
+                "description": "Set the display size of emotes in pixels, adds 5 pixels to the font size setting if not set"
             },
             "fadeOut": {
                 "name": "Desvanecer texto (segundos)",
@@ -168,8 +166,8 @@
                 "description": "Mostrar recompensas de pontos de canal, subscrições, e anúncios no chat"
             },
             "bots": {
-                "name": "Ocultar mensagens do bot",
-                "description": "Ocultar mensagens dos bots de chat, detetados usando os distintivos do bot Twitch & FFZ"
+                "name": "Show bot messages",
+                "description": "Show or hide messages from chat bots (detected via Twitch, FFZ badges & custom list)"
             },
             "userBL": {
                 "name": "Lista negra de utilizadores personalizada (separar por espaços)",
@@ -202,6 +200,14 @@
             "clearLive": {
                 "name": "Limpar o chat ao iniciar stream (APENAS OBS)",
                 "description": "Limpar o chat automaticamente quando o canal iniciar stream"
+            },
+            "gifSize": {
+                "name": "GIF size (px)",
+                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting."
+            },
+            "gifs": {
+                "name": "GIFs",
+                "description": "Display GIFs in the chat overlay"
             }
         }
     },
@@ -215,7 +221,8 @@
         "no_input": "Sem entrada.",
         "loading_info": "A carregar informações do utilizador & canal...",
         "loaded_info": "Informações de utilizador e canal carregados",
-        "loading_info_fail": "Falha ao carregar informações de utilizador e canal!"
+        "loading_info_fail": "Falha ao carregar informações de utilizador e canal!",
+        "pogly_widget_copied": "Pogly Widget has been copied!"
     },
     "banners": {
         "issues": "Estamos com problemas - algumas funcionalidades podem estar indisponíveis",
