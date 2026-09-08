@@ -13,6 +13,7 @@ Put an `x` in the boxes that apply. You can also fill them out later after creat
 
 - [ ] I agree to the guidelines outlined in [CONTRIBUTING.md](../CONTRIBUTING.md).
 - [ ] The code is readable and follows the existing style.
+- [ ] I have formatted and ran needed checks.
 - [ ] Any new UI text has been added to the locale files
 - [ ] Any new non-first-party API endpoints do not send user data (telemetry, analytics, etc.).
 - [ ] This change could be breaking.
