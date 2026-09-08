@@ -4,11 +4,7 @@ Describe the changes here.
 
 ## Link to the API Pull request (if API change required):
 
-...
-
-## Notes
-
-If this PR depends on the API, make sure to test it against a local build using [this repo](https://github.com/Fiszh/uniiDev) before merging.
+N/A
 
 ## Checklist
 
