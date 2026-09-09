@@ -4,22 +4,24 @@
     import TwitchChatMessage from "$components/chat/twitch/message.svelte";
     import KickChatMessage from "$components/chat/kick/message.svelte";
     import YouTubeChatMessage from "$components/chat/youtube/message.svelte";
+    import GoogleFont from "./GoogleFont.svelte";
 
-    import { messages } from "$lib/chat";
+    import { messages, type ChatMessage } from "$lib/chat";
     import { setEmoteSize, settings, type Setting } from "$stores/settings";
     import { badges, globals } from "$stores/global";
     import { generateUUID } from "$lib/overlayIndex";
-    import GoogleFont from "./GoogleFont.svelte";
     import { normalizeFont } from "$lib/font";
 
     type Props = {
         customStyle?: string;
         scrollSmoothness?: number;
+        customMessages?: ChatMessage[];
     };
 
     const {
         customStyle,
         scrollSmoothness = 0.15,
+        customMessages,
         ...restProps
     }: Props = $props();
 

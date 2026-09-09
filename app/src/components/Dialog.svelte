@@ -35,7 +35,7 @@
 {#if show}
     <section
         class="dialog"
-        style="z-index: {2 + index}; min-width: {width}rem;"
+        style="z-index: {2 + index}; --dialog-min-width: {width}rem;"
     >
         <span id="header">
             <p>{name}</p>
@@ -72,6 +72,8 @@
         transform: translate(-50%, -50%);
         background-color: #0a0a0a;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+
+        min-width: var(--dialog-min-width);
 
         // overflow: hidden;
 
@@ -119,6 +121,8 @@
 
             width: 100%;
             height: 100%;
+
+            min-width: unset;
         }
     }
 </style>

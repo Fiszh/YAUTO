@@ -209,6 +209,12 @@ export const configs: Setting[] = [
                 icon: logos["turteg"],
                 bitmap: 1 << 9,
             },
+            {
+                label: "YouTube",
+                enabled: true,
+                icon: logos["youtube"],
+                bitmap: 1 << 10,
+            },
         ],
         param: "badges",
     },

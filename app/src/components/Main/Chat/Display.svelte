@@ -210,7 +210,9 @@
         {#if !$isMobile}
             <ChatDisplay />
         {:else}
-            <ChatDisplay customStyle="--chat-font-size: 15px;" />
+            <ChatDisplay
+                customStyle="--chat-font-size: 13px; --chat-emote-size: 15px;"
+            />
         {/if}
     </section>
     <section id="bottom">

@@ -111,3 +111,25 @@ export const previewMessages = [
     },
     service: "TWITCH",
 }));
+
+export const quickPreviewMessages = [
+    {
+        tags: {
+            username: "uniiDev",
+            "display-name": "uniiDev",
+            "user-id": 528761326,
+            "badges-raw": "broadcaster/1,twitch-recap-2024/1",
+            badges: { broadcaster: "1", "twitch-recap-2024": "1" },
+            color: "#ffb3ff",
+        },
+        message: "Wave Hello mobile UChat user!",
+    },
+].map((m) => ({
+    ...m,
+    tags: {
+        ...m.tags,
+        "user-id-raw": String(m.tags["user-id"]),
+        "room-id": "0",
+    },
+    service: "TWITCH",
+}));

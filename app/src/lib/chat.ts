@@ -48,15 +48,14 @@ interface ParsedMessage {
     service: "TWITCH";
 }
 
-export const messages = writable<
-    (
-        | Record<string, any>
-        | (YTNodes.LiveChatTextMessage & {
-              service: "GOOGLE";
-              removed?: boolean;
-          })
-    )[]
->([]);
+export type ChatMessage =
+    | Record<string, any>
+    | (YTNodes.LiveChatTextMessage & {
+          service: "GOOGLE";
+          removed?: boolean;
+      });
+
+export const messages = writable<ChatMessage[]>([]);
 export const connectionStatus = writable<string>("");
 
 let TTV_IRC_WS: WebSocket | null;

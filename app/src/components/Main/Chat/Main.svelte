@@ -3,7 +3,9 @@
     import { MessageSquare, Settings } from "@lucide/svelte";
 
     import SettingsDisplay from "./Settings.svelte";
-    import ChatDisplay from "./Display.svelte";
+    import Display from "./Display.svelte";
+
+    import ChatDisplay from "$components/ChatDisplay.svelte";
 
     import { getBadges } from "$lib/preview";
     import SevenTV_main from "$lib/services/7TV/main";
@@ -14,12 +16,11 @@
     import { cosmetics } from "$stores/cosmetics";
     import { previewMessages } from "$stores/previewMessages";
     import { t } from "svelte-i18n";
+    import QuickPreview from "$components/QuickPreview.svelte";
 
     let tab: string = $state("settings");
 
     onMount(async () => {
-        messages.set(previewMessages);
-
         if (!$badges["TTV"].global.length) await getBadges();
 
         if (!$emotes["7TV"]["global"].length) {
@@ -48,14 +49,21 @@
     });
 
     const changeTab = (setTab: string) => (tab = setTab);
+
+    $effect(() => {
+        if (tab != "settings" || !$isMobile) {
+            messages.set(previewMessages);
+        }
+    });
 </script>
 
 <section>
     {#if $isMobile}
         {#if tab == "settings"}
+            <QuickPreview />
             <SettingsDisplay />
         {:else}
-            <ChatDisplay />
+            <Display />
         {/if}
 
         <footer>
@@ -70,7 +78,7 @@
         </footer>
     {:else}
         <SettingsDisplay />
-        <ChatDisplay />
+        <Display />
     {/if}
 </section>
 

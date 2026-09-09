@@ -359,7 +359,7 @@ function getKickBadges(userstate: KickUserstate): parsedBadge[] | never[] {
 function getYouTubeBadges(
     userstate: YouTubeUserstate,
 ): parsedBadge[] | never[] {
-    if (!enabledBadges.includes("kick")) return [];
+    if (!enabledBadges.includes("youtube")) return [];
 
     return userstate["badges"].map((badge) => {
         if (badge["custom_thumbnail"].length)

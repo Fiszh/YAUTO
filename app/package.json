@@ -7,6 +7,7 @@
     "scripts": {
         "dev": "vite dev",
         "dev:api": "API_URL=http://api.localhost:3000 WS_URL=ws://api.localhost:3000 vite dev",
+        "dev:apiv2": "API_URL=http://api.unii.dev/v2 WS_URL=ws://api.unii.dev/v2 vite dev",
         "dev:open": "vite dev --open --host",
         "build": "vite build",
         "preview": "vite preview",
