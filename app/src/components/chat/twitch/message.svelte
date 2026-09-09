@@ -7,6 +7,8 @@
 
     let { ...rest }: ComponentProps<typeof MessageWrapper> = $props();
 
+    let first = $state(false);
+
     onMount(() => {
         if (rest["room_id"]) {
             if (
@@ -20,7 +22,10 @@
                 cleanUpSharedChat();
             }
         }
+
+        if ("first-msg" in rest["tags"])
+            first = rest["tags"]["first-msg"] as boolean;
     });
 </script>
 
-<MessageWrapper {...rest} />
+<MessageWrapper {...rest} {first} />

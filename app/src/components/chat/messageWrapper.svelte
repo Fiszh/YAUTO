@@ -32,10 +32,19 @@
         room_id: number;
         platform: Platforms;
         removed?: boolean;
+        first?: boolean;
     };
 
-    let { user, text, tags, message_id, room_id, platform, removed }: Props =
-        $props();
+    let {
+        user,
+        text,
+        tags,
+        message_id,
+        room_id,
+        platform,
+        removed,
+        first,
+    }: Props = $props();
 
     let username = $state<Lowercase<string>>("");
     let nameColor = $state<string>("");
@@ -134,7 +143,7 @@
     </strong>
 {/snippet}
 
-<div class="chat-message" bind:this={chatMessage} class:removed>
+<div class="chat-message" bind:this={chatMessage} class:removed class:first>
     {#if (parsedBadges && parsedBadges.length) || moreThanOneService}{@render Badges()}{/if}
     <Paint
         {platform}
@@ -195,6 +204,10 @@
     .chat-message {
         display: block;
         padding: 0.15rem 0rem;
+
+        &.first {
+            background-color: rgba(0, 255, 0, 0.25);
+        }
 
         &.removed {
             opacity: 0;
