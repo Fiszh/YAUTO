@@ -4,14 +4,20 @@
 
     interface Props extends HTMLInputAttributes {
         checked?: boolean;
+        disabled?: boolean;
         children: Snippet;
     }
 
-    let { checked = $bindable(false), children, ...rest }: Props = $props();
+    let {
+        checked = $bindable(false),
+        disabled = false,
+        children,
+        ...rest
+    }: Props = $props();
 </script>
 
-<label>
-    <input type="checkbox" bind:checked {...rest} />
+<label class:disabled>
+    <input type="checkbox" bind:checked {...rest} {disabled} />
     {@render children()}
 </label>
 

@@ -3,22 +3,25 @@
 
     import TwitchChatMessage from "$components/chat/twitch/message.svelte";
     import KickChatMessage from "$components/chat/kick/message.svelte";
+    import YouTubeChatMessage from "$components/chat/youtube/message.svelte";
+    import GoogleFont from "./GoogleFont.svelte";
 
-    import { messages } from "$lib/chat";
+    import { messages, type ChatMessage } from "$lib/chat";
     import { setEmoteSize, settings, type Setting } from "$stores/settings";
     import { badges, globals } from "$stores/global";
     import { generateUUID } from "$lib/overlayIndex";
-    import GoogleFont from "./GoogleFont.svelte";
     import { normalizeFont } from "$lib/font";
 
     type Props = {
         customStyle?: string;
         scrollSmoothness?: number;
+        customMessages?: ChatMessage[];
     };
 
     const {
         customStyle,
         scrollSmoothness = 0.15,
+        customMessages,
         ...restProps
     }: Props = $props();
 
@@ -276,7 +279,7 @@
                     room_id:
                         msg?.tags?.["source-room-id"] ??
                         msg?.["chatroom_id"] ??
-                        globals.channelTwitchID,
+                        globals["channels"]["TWITCH"]["ID"],
                     ...msg,
                     formattedUser: formatUsername(
                         username,
@@ -390,7 +393,7 @@
                 text={msg.content}
                 tags={msg.sender}
                 message_id={msg.id}
-                room_id={globals.userKickID ?? msg.room_id}
+                room_id={globals["channels"]["KICK"]["userID"] ?? msg.room_id}
                 /*
                 random id
                 user id
@@ -398,6 +401,16 @@
                 ngl, we need more ids to confuse the devs instead of a unified one like twitch
                 */
                 platform={"KICK"}
+                removed={msg.removed}
+            />
+        {:else if msg.service == "GOOGLE"}
+            <YouTubeChatMessage
+                user={msg.author}
+                text={msg.text}
+                tags={msg}
+                message_id={msg.id}
+                room_id={0}
+                platform={"GOOGLE"}
                 removed={msg.removed}
             />
         {:else}

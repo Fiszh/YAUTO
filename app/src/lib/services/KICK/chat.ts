@@ -118,6 +118,7 @@ class KICKSocket {
                     messages.update((arr) =>
                         arr.filter((item) => {
                             if (item["service"] != "KICK") return item;
+                            if ("sender" in item == false) return item;
                             if (
                                 item["sender"]["id"] !=
                                 parsedBanNotif["user"]["id"]

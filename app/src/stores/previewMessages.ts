@@ -95,12 +95,34 @@ export const previewMessages = [
         tags: {
             username: "cascow_",
             "display-name": "cascoW_",
-            "user-id": 567890123,
+            "user-id": 143164700,
             "badges-raw": "bingbonglove/1",
             badges: { bingbonglove: "1" },
             color: "#00DDC0",
         },
         message: "I'm thinking Miku, Miku Ooh-ee-ooh",
+    },
+].map((m) => ({
+    ...m,
+    tags: {
+        ...m.tags,
+        "user-id-raw": String(m.tags["user-id"]),
+        "room-id": "0",
+    },
+    service: "TWITCH",
+}));
+
+export const quickPreviewMessages = [
+    {
+        tags: {
+            username: "uniiDev",
+            "display-name": "uniiDev",
+            "user-id": 528761326,
+            "badges-raw": "broadcaster/1,twitch-recap-2024/1",
+            badges: { broadcaster: "1", "twitch-recap-2024": "1" },
+            color: "#ffb3ff",
+        },
+        message: "Wave Hello mobile UChat user!",
     },
 ].map((m) => ({
     ...m,

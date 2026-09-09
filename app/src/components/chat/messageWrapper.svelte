@@ -12,6 +12,7 @@
     import { cosmetics } from "$stores/cosmetics";
     import Twitch from "$components/logos/twitch.svelte";
     import Kick from "$components/logos/kick.svelte";
+    import YouTube from "$components/logos/youtube.svelte";
     import Paint from "./paint.svelte";
     import Emote from "./emote.svelte";
     import { removeMessage } from "$lib/message";
@@ -31,10 +32,19 @@
         room_id: number;
         platform: Platforms;
         removed?: boolean;
+        first?: boolean;
     };
 
-    let { user, text, tags, message_id, room_id, platform, removed }: Props =
-        $props();
+    let {
+        user,
+        text,
+        tags,
+        message_id,
+        room_id,
+        platform,
+        removed,
+        first,
+    }: Props = $props();
 
     let username = $state<Lowercase<string>>("");
     let nameColor = $state<string>("");
@@ -105,30 +115,36 @@
             hash = name.charCodeAt(i) + ((hash << 5) - hash);
         return colors[Math.abs(hash) % colors.length];
     }
+
+    const moreThanOneService =
+        Object.values(globals["channels"]).filter((s) =>
+            Object.values(s).find((c) => c != null),
+        ).length > 1;
 </script>
 
 {#snippet Badges()}
-    {#if (parsedBadges && parsedBadges.length) || (platform == "TWITCH" && globals.channelKickName) || (platform == "KICK" && globals.channelTwitchName)}
-        <strong class="badge-wrapper">
-            {#if platform == "TWITCH" && globals.channelKickName}
-                <Twitch brandColor={true} />
+    <strong class="badge-wrapper">
+        {#if moreThanOneService}
+            {#if platform == "TWITCH"}
+                <Twitch brandColor />
+            {:else if platform == "KICK"}
+                <Kick brandColor />
+            {:else if platform == "GOOGLE"}
+                <YouTube brandColor />
             {/if}
-            {#if platform == "KICK" && globals.channelTwitchName}
-                <Kick brandColor={true} />
-            {/if}
-            {#each parsedBadges as badge, i (i)}
-                <Badge
-                    badge_url={badge.badge_url}
-                    alt={badge.alt}
-                    background_color={badge.background_color ?? ""}
-                />
-            {/each}
-        </strong>
-    {/if}
+        {/if}
+        {#each parsedBadges as badge, i (i)}
+            <Badge
+                badge_url={badge.badge_url}
+                alt={badge.alt}
+                background_color={badge.background_color ?? ""}
+            />
+        {/each}
+    </strong>
 {/snippet}
 
-<div class="chat-message" bind:this={chatMessage} class:removed>
-    {#if (parsedBadges && parsedBadges.length) || globals.channelKickName}{@render Badges()}{/if}
+<div class="chat-message" bind:this={chatMessage} class:removed class:first>
+    {#if (parsedBadges && parsedBadges.length) || moreThanOneService}{@render Badges()}{/if}
     <Paint
         {platform}
         platformID={tags["user-id-raw"]}
@@ -188,6 +204,10 @@
     .chat-message {
         display: block;
         padding: 0.15rem 0rem;
+
+        &.first {
+            background-color: rgba(0, 255, 0, 0.25);
+        }
 
         &.removed {
             opacity: 0;

@@ -19,7 +19,10 @@
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
         hasChannel =
-            params.has("channel") || params.has("id") || params.has("kick");
+            params.has("channel") ||
+            params.has("id") ||
+            params.has("kick") ||
+            params.has("youtube");
 
         const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 

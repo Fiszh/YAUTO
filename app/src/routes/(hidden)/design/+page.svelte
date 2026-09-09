@@ -25,6 +25,7 @@
     import { addToast } from "$lib/toast";
     import { t } from "svelte-i18n";
     import CalloutBubble from "$components/CalloutBubble.svelte";
+    import Pogly from "$components/logos/pogly.svelte";
 
     let selectorOptions = $state([
         { enabled: true, label: "Lorem" },
@@ -118,6 +119,7 @@
         <Stv {brandColor} />
         <Bttv {brandColor} />
         <Ffz {brandColor} />
+        <Pogly {brandColor} />
     {/snippet}
 
     {#snippet dropdown()}

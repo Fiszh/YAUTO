@@ -7,7 +7,7 @@ declare global {
     const __APP_VERSION: string;
     const __DEBUG__: boolean;
 
-    type Platforms = "TWITCH" | "KICK";
+    type Platforms = "TWITCH" | "KICK" | "GOOGLE";
 
     interface Window {
         obsstudio?: boolean;

@@ -27,7 +27,10 @@
     onMount(() => {
         const params = new URLSearchParams(window.location.search);
         hasChannel =
-            params.has("channel") || params.has("id") || params.has("kick");
+            params.has("channel") ||
+            params.has("id") ||
+            params.has("kick") ||
+            params.has("youtube");
 
         setMobile();
         window.addEventListener("resize", setMobile);

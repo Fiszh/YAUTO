@@ -18,10 +18,11 @@ export async function getKickUser(name: string): Promise<boolean> {
 
         const data = await res.json();
 
-        globals.channelKickName = data?.user?.username || null;
-        globals.userKickID = data?.user_id || null;
-        globals.channelKickID = data?.chatroom?.channel_id || null;
-        globals.chatroomKickID = data?.chatroom?.id || null;
+        globals["channels"]["KICK"]["Name"] = data?.user?.username || null;
+        globals["channels"]["KICK"]["userID"] = data?.user_id || null;
+        globals["channels"]["KICK"]["channelID"] =
+            data?.chatroom?.channel_id || null;
+        globals["channels"]["KICK"]["chatroomID"] = data?.chatroom?.id || null;
 
         // CHANNEL BADGES
         const broadcastBadges: Badge | [] = data["subscriber_badges"];

@@ -1,7 +1,7 @@
 <script lang="ts">
     import ChatDisplay from "$components/ChatDisplay.svelte";
     import { messages } from "$lib/chat";
-    import { Download, RefreshCcw } from "@lucide/svelte";
+    import { Cog, Download, RefreshCcw } from "@lucide/svelte";
     import Settings from "$components/Main/Chat/Settings.svelte";
 
     import { toPng } from "html-to-image";
@@ -20,8 +20,10 @@
     import { addToast } from "$lib/toast";
     import { previewMessages } from "$stores/previewMessages";
     import { t } from "svelte-i18n";
+    import { isMobile } from "$stores/global";
+    import MessageCreator from "$components/dialogs/messageCreator.svelte";
 
-    let messageDisplay: HTMLElement;
+    let messageDisplay = $state<HTMLElement>();
 
     async function loadChatInfo() {
         await initChat();
@@ -88,14 +90,14 @@
     }
 
     function downloadImage() {
-        if (messageDisplay) {
+        if (messageDisplay instanceof HTMLElement) {
             messageDisplay.classList.remove("bg-grid");
 
             toPng(messageDisplay, {
                 pixelRatio: 2,
                 backgroundColor: undefined,
             }).then((dataUrl) => {
-                messageDisplay.classList.add("bg-grid");
+                messageDisplay!.classList.add("bg-grid");
 
                 const link = document.createElement("a");
                 link.download = `${channel["name"]}-${message["tags"]["display-name"]}-message.png`;
@@ -124,7 +126,17 @@
 
         messages.set([{ ...message, tags }]);
     });
+
+    let showMobileSettings = $state(false);
 </script>
+
+<MessageCreator
+    bind:show={showMobileSettings}
+    bind:username={message["tags"]["display-name"]}
+    bind:message={message["message"]}
+    bind:channel={channel["name"]}
+    {loadUserInfo}
+/>
 
 <Settings />
 <main>
@@ -141,57 +153,82 @@
     <h1>
         {$t("pages.message_creator.title")}
     </h1>
-    <section id="message" class="bg-grid" bind:this={messageDisplay}>
-        <ChatDisplay />
-    </section>
-    <p>
-        {$t("channel_input.name", {
-            values: {
-                platform: "",
-            },
-        })}: {channel.name}
-    </p>
 
-    <section id="inputs">
-        <label>
-            <p>{$t("labels.username")}:</p>
-            <Input
-                type="text"
-                placeholder="Username"
-                bind:value={message["tags"]["display-name"]}
-            />
-        </label>
-        <label>
-            <p>{$t("labels.message")}:</p>
-            <Input
-                type="text"
-                placeholder="Message"
-                bind:value={message["message"]}
-            />
-        </label>
-        <label>
-            <p>{$t("labels.channel")}:</p>
-            <Input
-                type="text"
-                placeholder="Channel"
-                bind:value={channel["name"]}
-            />
-        </label>
-    </section>
-
-    {#snippet LoadIcon()}
-        <RefreshCcw />
-    {/snippet}
     {#snippet DownloadIcon()}
         <Download />
     {/snippet}
 
-    <Button secondary icon={LoadIcon} onclick={loadUserInfo}>
-        {$t("pages.message_creator.fetch_channel")}
-    </Button>
-    <Button primary icon={DownloadIcon} onclick={downloadImage}>
-        {$t("pages.message_creator.download")}
-    </Button>
+    {#if !$isMobile}
+        {#snippet LoadIcon()}
+            <RefreshCcw />
+        {/snippet}
+
+        <section id="message" class="bg-grid" bind:this={messageDisplay}>
+            <ChatDisplay />
+        </section>
+
+        <section id="inputs">
+            <label>
+                <p>{$t("labels.username")}:</p>
+                <Input
+                    type="text"
+                    placeholder="Username"
+                    bind:value={message["tags"]["display-name"]}
+                />
+            </label>
+            <label>
+                <p>{$t("labels.message")}:</p>
+                <Input
+                    type="text"
+                    placeholder="Message"
+                    bind:value={message["message"]}
+                />
+            </label>
+            <label>
+                <p>{$t("labels.channel")}:</p>
+                <Input
+                    type="text"
+                    placeholder="Channel"
+                    bind:value={channel["name"]}
+                />
+            </label>
+        </section>
+
+        <Button secondary icon={LoadIcon} onclick={loadUserInfo}>
+            {$t("pages.message_creator.fetch_channel")}
+        </Button>
+        <Button primary icon={DownloadIcon} onclick={downloadImage}>
+            {$t("pages.message_creator.download")}
+        </Button>
+    {:else}
+        {#snippet CogIcon()}
+            <Cog />
+        {/snippet}
+
+        <div id="mobile-layout">
+            <section id="message" class="bg-grid" bind:this={messageDisplay}>
+                <ChatDisplay />
+            </section>
+            <section id="mobile-buttons">
+                <Button
+                    secondary
+                    icon={CogIcon}
+                    wide
+                    onclick={() => (showMobileSettings = true)}
+                >
+                    Edit
+                </Button>
+                <Button
+                    primary
+                    icon={DownloadIcon}
+                    wide
+                    onclick={downloadImage}
+                >
+                    {$t("pages.message_creator.download")}
+                </Button>
+            </section>
+        </div>
+    {/if}
 </main>
 
 <style lang="scss">
@@ -207,6 +244,26 @@
         align-items: center;
         width: 100%;
         gap: 1rem;
+    }
+
+    #mobile-buttons,
+    #mobile-layout {
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        padding: 0 0.5rem 0.5rem 0.5rem;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    #mobile-layout #message {
+        width: fit-content;
+        align-self: center;
+    }
+
+    #mobile-buttons {
+        flex-direction: row;
+        padding: 0;
     }
 
     #message {
@@ -228,5 +285,15 @@
 
     label {
         font-size: 1.3rem;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            gap: 0.5rem;
+        }
+
+        #message {
+            border-radius: 0.5rem;
+        }
     }
 </style>

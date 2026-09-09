@@ -49,15 +49,46 @@ export async function loadChat(displayLoading?: boolean) {
 
     await initChat();
 
-    if (globals.channelTwitchID)
-        await getChannelEmotesViaTwitchID(globals.channelTwitchID);
+    if (globals["channels"]["TWITCH"]["ID"])
+        await getChannelEmotesViaTwitchID(globals["channels"]["TWITCH"]["ID"]);
 
-    if (globals.userKickID) {
-        const alreadyHasSet = getSavedSet(globals.userKickID, "KICK");
+    if (globals["channels"]["KICK"]["userID"]) {
+        const alreadyHasSet = getSavedSet(
+            globals["channels"]["KICK"]["userID"],
+            "KICK",
+        );
 
         if (!alreadyHasSet) {
             const stv_user = await services["7TV"].main.user.byKickID(
-                globals.userKickID,
+                globals["channels"]["KICK"]["userID"],
+            );
+
+            if (stv_user["id"]) {
+                emotes.update((emoteData) => {
+                    emoteData["7TV"]["channel"] = [
+                        ...emoteData["7TV"]["channel"],
+                        {
+                            id: stv_user.emote_set_id,
+                            owners: stv_user.connections,
+                            emotes: stv_user.emote_data,
+                        },
+                    ];
+
+                    return emoteData;
+                });
+            }
+        }
+    }
+
+    if (globals["channels"]["GOOGLE"]["ID"]) {
+        const alreadyHasSet = getSavedSet(
+            globals["channels"]["GOOGLE"]["ID"],
+            "KICK",
+        );
+
+        if (!alreadyHasSet) {
+            const stv_user = await services["7TV"].main.user.byYouTubeID(
+                globals["channels"]["GOOGLE"]["ID"],
             );
 
             if (stv_user["id"]) {
@@ -80,8 +111,12 @@ export async function loadChat(displayLoading?: boolean) {
     const foundSetting = overlaySettings.find(
         (setting) => setting.param == "lastMsg",
     );
-    if (globals.channelTwitchName && foundSetting && foundSetting.value)
-        getLastMessages(globals.channelTwitchName);
+    if (
+        globals["channels"]["TWITCH"]["Name"] &&
+        foundSetting &&
+        foundSetting.value
+    )
+        getLastMessages(globals["channels"]["TWITCH"]["Name"]);
 
     if (displayLoading) loadingInfo.set({ text: undefined, type: undefined });
 }

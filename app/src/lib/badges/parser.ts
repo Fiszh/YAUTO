@@ -65,7 +65,29 @@ interface KickUserstate extends TwitchUserstate {
     }[];
 }
 
-type SharedUserState = TwitchUserstate | KickUserstate;
+interface YouTubeScales {
+    url: string;
+    width: number;
+    height: number;
+}
+
+interface YouTubeUserstate extends TwitchUserstate {
+    "badges-raw": never;
+    id: string;
+    name: string;
+    thumbnails: YouTubeScales[];
+    badges: {
+        type: string;
+        icon_type: string;
+        tooltip: string;
+        custom_thumbnail: YouTubeScales[];
+    }[];
+    is_moderator: boolean;
+    is_verified: boolean;
+    is_verified_artist: boolean;
+}
+
+type SharedUserState = TwitchUserstate | KickUserstate | YouTubeUserstate;
 
 function getSharedChatAvatarBadge(
     userstate: TwitchUserstate,
@@ -92,7 +114,9 @@ function getUChatBadges(
         .filter((badge) =>
             (Array.isArray(badge["users"])
                 ? badge["users"]
-                : badge["users"][platform.toLowerCase() as Lowercase<Platforms>]
+                : (badge["users"][
+                      platform.toLowerCase() as Lowercase<Platforms>
+                  ] ?? [])
             ).includes(userstate["user-id-raw"]),
         )
         .map((foundUChatBadge) => ({
@@ -332,6 +356,27 @@ function getKickBadges(userstate: KickUserstate): parsedBadge[] | never[] {
     return sorted;
 }
 
+function getYouTubeBadges(
+    userstate: YouTubeUserstate,
+): parsedBadge[] | never[] {
+    if (!enabledBadges.includes("youtube")) return [];
+
+    return userstate["badges"].map((badge) => {
+        if (badge["custom_thumbnail"].length)
+            return {
+                badge_url: badge["custom_thumbnail"][0]["url"],
+                alt: badge["tooltip"],
+                background_color: undefined,
+            };
+
+        return {
+            badge_url: "/badges/youtube/" + badge["icon_type"] + ".svg",
+            alt: badge["tooltip"],
+            background_color: undefined,
+        };
+    });
+}
+
 function getBadgesForTwitch(userstate: TwitchUserstate): parsedBadge[] {
     const user_badges: parsedBadge[] = [];
 
@@ -377,12 +422,28 @@ function getBadgesForKick(userstate: KickUserstate): parsedBadge[] {
     return user_badges;
 }
 
+function getBadgesForYouTube(userstate: YouTubeUserstate): parsedBadge[] {
+    const user_badges: parsedBadge[] = [];
+
+    user_badges.push(...getUChatBadges(userstate, "GOOGLE"));
+
+    // THIS NEEDS TO BE ALWAYS ON THE START TO MAKE SURE YOUTUBE BADGES WILL BE FIRST
+    user_badges.push(...getYouTubeBadges(userstate));
+
+    const sevenTVBadge = get7TVBadge(userstate, "GOOGLE");
+    if (sevenTVBadge) user_badges.push(sevenTVBadge);
+
+    return user_badges;
+}
+
 export function parseBadges(
     userstate: SharedUserState,
     platform: Platforms,
 ): parsedBadge[] {
     if (platform == "KICK") {
         return getBadgesForKick(userstate as KickUserstate);
+    } else if (platform == "GOOGLE") {
+        return getBadgesForYouTube(userstate as YouTubeUserstate);
     } else {
         return getBadgesForTwitch(userstate as TwitchUserstate);
     }

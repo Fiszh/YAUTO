@@ -6,6 +6,7 @@ const logos: Record<string, Snippet<[boolean]>> = (logosModule as any).logos ??
 import { flags } from "$lib/bitmap";
 import { writable } from "svelte/store";
 import { isPogly } from "$lib/pogly";
+import { getFontFamilys } from "$lib/fonts";
 
 export interface DefaultSetting {
     param: string;
@@ -59,13 +60,21 @@ export interface SelectorSetting extends DefaultSetting {
     }[];
 }
 
+export interface DropdownSetting extends DefaultSetting {
+    type: "dropdown";
+    value: string;
+    list: string[] | (() => string[] | Promise<string[]>) | Promise<string[]>;
+    default?: string;
+}
+
 export type Setting =
     | NumberSetting
     | TextSetting
     | BooleanSetting
     | ColorPickerSetting
     | SliderSetting
-    | SelectorSetting;
+    | SelectorSetting
+    | DropdownSetting;
 
 const defaultEmoteSize = "25";
 
@@ -92,6 +101,13 @@ export const configs: Setting[] = [
         value: "Geist",
         param: "font",
     },
+    // {
+    //     type: "dropdown",
+    //     value: "Geist",
+    //     list: getFontFamilys,
+    //     param: "font",
+    // },
+
     {
         type: "color-picker",
         value: "#FFFFFF",
@@ -102,6 +118,11 @@ export const configs: Setting[] = [
         param: "fontSize",
         value: "20",
         previewReact: false,
+    },
+    {
+        type: "boolean",
+        param: "firstMsg",
+        value: false,
     },
     {
         type: "boolean",
@@ -193,6 +214,12 @@ export const configs: Setting[] = [
                 icon: logos["turteg"],
                 bitmap: 1 << 9,
             },
+            {
+                label: "YouTube",
+                enabled: true,
+                icon: logos["youtube"],
+                bitmap: 1 << 10,
+            },
         ],
         param: "badges",
     },
@@ -255,6 +282,11 @@ export const configs: Setting[] = [
         value: false,
         hide: true,
         param: "clearLive",
+    },
+    {
+        type: "boolean",
+        value: true,
+        param: "track",
     },
 ];
 

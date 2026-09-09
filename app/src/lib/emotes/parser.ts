@@ -7,6 +7,7 @@ import { getPersonalSets } from "$lib/services/7TV/cosmetics";
 import { emotes, globals } from "$stores/global";
 import { chatSettings, setEmoteSize } from "$stores/settings";
 import { getSavedSet } from "$lib/overlayIndex";
+import type { YTNodes } from "youtubei.js";
 
 const kickEmoteRegex = /\[emote:(?<id>\d+)[:]?(?<name>[a-zA-Z0-9-_!]*)[:]?\]/g; // https://github.com/KickTalkOrg/KickTalk/blob/a3570be165618f70449257bbb70df7cd16b66efe/utils/constants.js#L3
 
@@ -40,7 +41,7 @@ function splitTextWithTwemoji(text: string): TwemojiToken[] {
 
         if (node.textContent) {
             // TEXT_NODE
-            if (globals.channelKickName) {
+            if (globals["channels"]["KICK"]["Name"]) {
                 result.push(...splitKickEmotes(node.textContent));
             } else {
                 result.push(
@@ -154,6 +155,31 @@ const parseKickEmotes = (part: string): EmoteParser.KickEmoteInfo[] =>
             site: "KICK",
         }));
 
+function parseYouTubeEmotes(
+    runs: InstanceType<typeof YTNodes.LiveChatTextMessage>["message"]["runs"],
+): EmoteParser.YouTubeEmoteInfo[] {
+    if (runs?.length) {
+        return Object.values(
+            runs.reduce<Record<string, EmoteParser.YouTubeEmoteInfo>>(
+                (acc, run) => {
+                    if ("emoji" in run && !acc[run["text"]]) {
+                        acc[run["text"]] = {
+                            name: run["text"],
+                            emote_id: run["emoji"]["emoji_id"],
+                            url: run["emoji"]["image"][0]["url"],
+                            site: "YT",
+                        };
+                    }
+                    return acc;
+                },
+                {},
+            ),
+        );
+    } else {
+        return [];
+    }
+}
+
 export async function replaceWithEmotes(
     inputString: string,
     userstate: Record<string, any>,
@@ -190,11 +216,16 @@ export async function replaceWithEmotes(
         );
 
         const TTVMessageEmoteData = parseTwitchEmotes(inputString, userstate);
+        const YTMessageEmoteData =
+            "message" in userstate
+                ? parseYouTubeEmotes(userstate["message"]["runs"])
+                : [];
         const KICKMessageEmoteData = parseKickEmotes(inputString);
 
         const emoteData: EmoteParser.FoundEmote["emote"][] = [
             ...TTVMessageEmoteData,
             ...KICKMessageEmoteData,
+            ...YTMessageEmoteData,
             ...(foundPersonalSets
                 ? foundPersonalSets.flatMap((set) => set.emotes || [])
                 : []),
@@ -254,7 +285,7 @@ export async function replaceWithEmotes(
             // Other emotes
             if (!foundPart) {
                 const matchingEmote = emoteData.find(
-                    (emote) => emote.name && part === sanitizeInput(emote.name),
+                    (emote) => emote.name && part === emote.name,
                 );
 
                 if (matchingEmote) {
@@ -297,14 +328,10 @@ export async function replaceWithEmotes(
                         !!last && ["emote", "emoji"].includes(last["type"]);
                     const foundEmote =
                         "emote" in foundPart ? foundPart["emote"] : undefined;
-                    const isTTVEmote =
+                    const isServiceEmote =
                         !!foundEmote &&
                         "site" in foundEmote &&
-                        foundEmote["site"] == "TTV";
-                    const isKickEmote =
-                        !!foundEmote &&
-                        "site" in foundEmote &&
-                        foundEmote["site"] == "KICK";
+                        ["TTV", "KICK", "YT"].includes(foundEmote["site"]);
                     const hasNonStandardFlags =
                         !!foundEmote &&
                         "flags" in foundEmote &&
@@ -312,9 +339,8 @@ export async function replaceWithEmotes(
 
                     if (
                         !lastIsEmojiOrEmote ||
-                        isTTVEmote ||
+                        isServiceEmote ||
                         hasNonStandardFlags ||
-                        isKickEmote ||
                         "emoji" in foundPart
                     ) {
                         foundParts.push({

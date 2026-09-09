@@ -206,6 +206,34 @@ async function emoteSetViaKickID(twitchID: string | number): Promise<SetData> {
     }
 }
 
+async function emoteSetViaYouTubeID(youtubeID: string): Promise<SetData> {
+    let set_data: SetData = {};
+
+    try {
+        const response = await fetch(
+            `https://7tv.io/v3/users/google/${youtubeID}`,
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+
+            if (data?.emote_set?.emotes)
+                set_data = {
+                    id: data["emote_set_id"],
+                    user_id: data["user"]["id"],
+                    emotes: await getEmotes(
+                        data.emote_set.emotes,
+                        data["emote_set_id"],
+                    ),
+                };
+        }
+    } catch (error) {
+        throw new Error(`Error fetching emote data: ${error}`);
+    } finally {
+        return set_data;
+    }
+}
+
 const parseUserInfo = async (
     data: Record<string, any>,
 ): Promise<Types7TV.UserInfo> => {
@@ -237,7 +265,9 @@ interface UserInfoInvalid {
     id: null;
 }
 
-async function getUserViaTwitchID(twitchID: string | number) {
+async function getUserViaTwitchID(
+    twitchID: string | number,
+): Promise<Types7TV.UserInfo | UserInfoInvalid> {
     let user_info: Types7TV.UserInfo | UserInfoInvalid = {
         id: null,
     };
@@ -268,6 +298,30 @@ async function getUserViaKickID(
 
     try {
         const response = await fetch(`https://7tv.io/v3/users/kick/${kickID}`);
+
+        if (response.ok) {
+            const data = await response.json();
+
+            if (data?.user) user_info = await parseUserInfo(data);
+        }
+    } catch (error) {
+        throw new Error(`Error fetching user data: ${error}`);
+    } finally {
+        return user_info;
+    }
+}
+
+async function getUserViaYouTubeID(
+    youtubeID: string,
+): Promise<Types7TV.UserInfo | UserInfoInvalid> {
+    let user_info: Types7TV.UserInfo | UserInfoInvalid = {
+        id: null,
+    };
+
+    try {
+        const response = await fetch(
+            `https://7tv.io/v3/users/google/${youtubeID}`,
+        );
 
         if (response.ok) {
             const data = await response.json();
@@ -318,10 +372,12 @@ export default {
         by7TVID: getUserVia7TVID,
         byTwitchID: getUserViaTwitchID,
         byKickID: getUserViaKickID,
+        byYouTubeID: getUserViaYouTubeID,
     },
     emoteSet: {
         bySetID: emoteSetViaSetID,
         byTwitchID: emoteSetViaTwitchID,
         byKickID: emoteSetViaKickID,
+        byYouTubeID: emoteSetViaYouTubeID,
     },
 };

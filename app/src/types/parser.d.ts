@@ -6,6 +6,10 @@ declare namespace EmoteParser {
         site: "TTV";
     }
 
+    interface YouTubeEmoteInfo extends TwitchEmoteInfo {
+        site: "YT";
+    }
+
     interface KickEmoteInfo {
         name: string;
         emote_id: string;
@@ -23,7 +27,7 @@ declare namespace EmoteParser {
 
     interface FoundEmote extends FoundInfo, FoundEmoteBase {
         type: "emote";
-        emote: ParsedEmote | TwitchEmoteInfo | KickEmoteInfo;
+        emote: ParsedEmote | TwitchEmoteInfo | KickEmoteInfo | YouTubeEmoteInfo;
     }
 
     interface FoundEmoji extends FoundInfo, FoundEmoteBase {
