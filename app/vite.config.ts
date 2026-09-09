@@ -29,7 +29,7 @@ export default defineConfig({
             process.env.API_URL ?? "https://api.unii.dev",
         ),
         "import.meta.env.WS_URL": JSON.stringify(
-            process.env.WS_URL ?? "ws://api.unii.dev",
+            process.env.WS_URL ?? "wss://api.unii.dev",
         ),
     },
 });
