@@ -25,8 +25,8 @@
         }
 
         if ("first-msg" in rest["tags"])
-        if ("first-msg" in rest["tags"] && chatSettings["firstMsg"])
-            first = rest["tags"]["first-msg"] as boolean;
+            if ("first-msg" in rest["tags"] && chatSettings["firstMsg"])
+                first = rest["tags"]["first-msg"] as boolean;
     });
 </script>
 
