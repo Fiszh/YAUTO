@@ -4,6 +4,7 @@
     import MessageWrapper from "../messageWrapper.svelte";
     import { onMount, type ComponentProps } from "svelte";
     import { globals } from "$stores/global";
+    import { chatSettings } from "$stores/settings";
 
     let { ...rest }: ComponentProps<typeof MessageWrapper> = $props();
 
@@ -24,6 +25,7 @@
         }
 
         if ("first-msg" in rest["tags"])
+        if ("first-msg" in rest["tags"] && chatSettings["firstMsg"])
             first = rest["tags"]["first-msg"] as boolean;
     });
 </script>

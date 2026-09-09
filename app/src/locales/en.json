@@ -205,7 +205,7 @@
             },
             "gifSize": {
                 "name": "GIF size (px)",
-                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting."
+                "description": "Set the display size of GIFs in pixels. If unset, the size is multiplied by 4 from the emote size setting"
             },
             "gifs": {
                 "name": "GIFs",
@@ -213,7 +213,11 @@
             },
             "track": {
                 "name": "Error tracking",
-                "description": "Opt in or out of error tracking via Better Stack."
+                "description": "Opt in or out of error tracking via Better Stack"
+            },
+            "firstMsg": {
+                "name": "Highlight first-time messages",
+                "description": "Highlight users first chat messages with a green background"
             }
         }
     },

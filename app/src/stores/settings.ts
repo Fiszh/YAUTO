@@ -121,6 +121,11 @@ export const configs: Setting[] = [
     },
     {
         type: "boolean",
+        param: "firstMsg",
+        value: false,
+    },
+    {
+        type: "boolean",
         value: false,
         param: "fontStroke",
     },
